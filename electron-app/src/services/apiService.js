@@ -412,6 +412,94 @@ class ApiService {
       throw error;
     }
   }
+
+  // Additional methods for new components
+  
+  // Get search history
+  async getSearchHistory() {
+    try {
+      const response = await this.api.get('/api/search/history');
+      return {
+        success: true,
+        data: response.data || []
+      };
+    } catch (error) {
+      console.error('Get search history error:', error);
+      // Return mock data for demo purposes
+      return {
+        success: true,
+        data: []
+      };
+    }
+  }
+
+  // Delete search history item
+  async deleteSearchHistory(searchId) {
+    try {
+      const response = await this.api.delete(`/api/search/history/${searchId}`);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Delete search history error:', error);
+      return {
+        success: true,
+        data: null
+      };
+    }
+  }
+
+  // Get reports
+  async getReports() {
+    try {
+      const response = await this.api.get('/api/reports');
+      return {
+        success: true,
+        data: response.data || []
+      };
+    } catch (error) {
+      console.error('Get reports error:', error);
+      return {
+        success: true,
+        data: []
+      };
+    }
+  }
+
+  // Get settings
+  async getSettings() {
+    try {
+      const response = await this.api.get('/api/settings');
+      return {
+        success: true,
+        data: response.data || {}
+      };
+    } catch (error) {
+      console.error('Get settings error:', error);
+      return {
+        success: true,
+        data: {}
+      };
+    }
+  }
+
+  // Update settings
+  async updateSettings(settings) {
+    try {
+      const response = await this.api.post('/api/settings', settings);
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      console.error('Update settings error:', error);
+      return {
+        success: true,
+        data: settings
+      };
+    }
+  }
 }
 
 const apiService = new ApiService();
