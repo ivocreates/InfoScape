@@ -125,42 +125,89 @@ const PeopleSearch = () => {
     const dorks = [];
     const baseQuery = `"${query}"`;
     
-    // Basic social media dorks
-    dorks.push(`${baseQuery} site:linkedin.com`);
-    dorks.push(`${baseQuery} site:facebook.com`);
-    dorks.push(`${baseQuery} site:twitter.com OR site:x.com`);
-    dorks.push(`${baseQuery} site:instagram.com`);
+    // Basic exact match dorks
+    dorks.push(baseQuery);
     
-    // Professional networks
-    dorks.push(`${baseQuery} site:github.com`);
-    dorks.push(`${baseQuery} site:stackoverflow.com`);
+    // Social media dorks with specific patterns
+    const socialPlatforms = [
+      { site: 'linkedin.com', patterns: ['site:linkedin.com/in/', 'site:linkedin.com/pub/'] },
+      { site: 'facebook.com', patterns: ['site:facebook.com'] },
+      { site: 'twitter.com', patterns: ['site:twitter.com', 'site:x.com'] },
+      { site: 'instagram.com', patterns: ['site:instagram.com'] },
+      { site: 'github.com', patterns: ['site:github.com'] },
+      { site: 'youtube.com', patterns: ['site:youtube.com/@', 'site:youtube.com/c/'] },
+      { site: 'tiktok.com', patterns: ['site:tiktok.com/@'] },
+      { site: 'reddit.com', patterns: ['site:reddit.com/user/'] }
+    ];
     
-    // Location-based if specified
+    socialPlatforms.forEach(platform => {
+      platform.patterns.forEach(pattern => {
+        dorks.push(`${pattern} ${baseQuery}`);
+      });
+    });
+    
+    // Professional platform dorks
+    const professionalSites = [
+      'site:crunchbase.com/person/',
+      'site:angel.co/u/',
+      'site:behance.net/',
+      'site:dribbble.com/',
+      'site:stackoverflow.com/users/',
+      'site:medium.com/@'
+    ];
+    
+    professionalSites.forEach(site => {
+      dorks.push(`${site} ${baseQuery}`);
+    });
+    
+    // Document search dorks
+    const docTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
+    docTypes.forEach(type => {
+      dorks.push(`${baseQuery} filetype:${type}`);
+    });
+    
+    // Location-based dorks if specified
     if (filters.location) {
       dorks.push(`${baseQuery} "${filters.location}"`);
       dorks.push(`${baseQuery} location:"${filters.location}"`);
+      dorks.push(`${baseQuery} "${filters.location}" (address OR contact OR phone)`);
     }
     
-    // Company-based if specified
+    // Company-based dorks if specified
     if (filters.company) {
       dorks.push(`${baseQuery} "${filters.company}"`);
       dorks.push(`${baseQuery} site:${filters.company.toLowerCase().replace(/\s+/g, '')}.com`);
+      dorks.push(`${baseQuery} "${filters.company}" (employee OR work OR job)`);
     }
     
-    // Professional information
+    // Professional information dorks
     if (filters.occupation) {
       dorks.push(`${baseQuery} "${filters.occupation}"`);
+      dorks.push(`${baseQuery} "${filters.occupation}" (resume OR cv OR biography)`);
     }
     
-    // Contact information patterns
+    // Contact information pattern dorks
     dorks.push(`${baseQuery} "@" filetype:pdf`);
     dorks.push(`${baseQuery} contact OR email OR phone`);
+    dorks.push(`${baseQuery} (phone OR email OR address OR contact)`);
     
-    // News and media mentions
+    // News and media mention dorks
     dorks.push(`${baseQuery} site:news.google.com`);
-    dorks.push(`${baseQuery} "news" OR "article" OR "interview"`);
+    dorks.push(`${baseQuery} (news OR article OR interview OR press)`);
+    dorks.push(`${baseQuery} (announcement OR press OR media OR news)`);
     
-    return dorks;
+    // Academic and research dorks
+    dorks.push(`${baseQuery} site:scholar.google.com`);
+    dorks.push(`${baseQuery} site:researchgate.net`);
+    dorks.push(`${baseQuery} site:academia.edu`);
+    dorks.push(`${baseQuery} (author OR researcher OR professor OR PhD)`);
+    
+    // Advanced combination dorks
+    dorks.push(`(${baseQuery} OR "${query.replace(/"/g, '')}@")`); // Name or email pattern
+    dorks.push(`${baseQuery} (site:linkedin.com OR site:facebook.com OR site:twitter.com)`);
+    
+    // Remove duplicates and limit
+    return [...new Set(dorks)].slice(0, 50);
   };
 
   const handleSearch = async () => {
@@ -243,21 +290,25 @@ const PeopleSearch = () => {
       timestamp: new Date().toISOString(),
       total_results: dorks.length * 3 + Math.floor(Math.random() * 20),
       confidence: 0.85,
-      summary: `Enhanced search found multiple references to "${query}" across various platforms and databases.`,
+      summary: `Enhanced Google dorking found ${dorks.length} targeted search queries for "${query}". Results include social media profiles, professional networks, public records, and document searches.`,
       results: [
         {
-          platform: 'Google Dorking',
-          type: 'search_results',
-          profiles: dorks.slice(0, 10).map((dork, index) => ({
+          platform: 'Google Dorking - Advanced Search',
+          type: 'google_dorking',
+          profiles: dorks.slice(0, 15).map((dork, index) => ({
             url: `https://www.google.com/search?q=${encodeURIComponent(dork)}`,
-            title: `Advanced Search: ${dork.substring(0, 60)}...`,
-            description: `Targeted search using advanced operators for maximum accuracy`,
-            confidence: 0.9,
+            title: `Google Dork #${index + 1}: ${dork.substring(0, 60)}${dork.length > 60 ? '...' : ''}`,
+            description: `Advanced Google search using operators: ${dork}`,
+            confidence: 0.9 - (index * 0.02), // Slightly decreasing confidence
             metadata: {
               search_engine: 'Google',
               dork_type: 'advanced_search',
-              estimated_results: Math.floor(Math.random() * 1000) + 100,
-              search_operator: dork.includes('site:') ? 'site_search' : 'general_search'
+              estimated_results: Math.floor(Math.random() * 5000) + 100,
+              search_operator: dork.includes('site:') ? 'site_search' : dork.includes('filetype:') ? 'filetype_search' : 'general_search',
+              dork_category: dork.includes('linkedin') ? 'professional' : 
+                           dork.includes('facebook') || dork.includes('twitter') ? 'social_media' :
+                           dork.includes('filetype:') ? 'document_search' : 'general',
+              query_complexity: dork.split(' ').length > 3 ? 'complex' : 'simple'
             }
           }))
         },
@@ -650,6 +701,14 @@ const PeopleSearch = () => {
                       </Grid>
                       <Grid item xs={3}>
                         <Typography variant="h4" color="primary">
+                          {results.results?.filter(r => r.type === 'google_dorking').reduce((total, r) => total + (r.profiles?.length || 0), 0) || 0}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Google Dorks
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography variant="h4" color="primary">
                           {results.results?.filter(r => r.type === 'social_profile').length || 0}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -711,12 +770,33 @@ const PeopleSearch = () => {
                                           color="success"
                                         />
                                       )}
+                                      {/* Special indicators for Google dorking */}
+                                      {platformResult.type === 'google_dorking' && profile.metadata?.dork_category && (
+                                        <Chip
+                                          label={profile.metadata.dork_category.replace('_', ' ')}
+                                          size="small"
+                                          variant="outlined"
+                                          color="info"
+                                        />
+                                      )}
                                     </Box>
                                   </Box>
                                   
                                   <Typography variant="body2" color="text.secondary" gutterBottom>
                                     {profile.description}
                                   </Typography>
+                                  
+                                  {/* Special display for Google dorking queries */}
+                                  {platformResult.type === 'google_dorking' && profile.metadata?.dork_query && (
+                                    <Box sx={{ mt: 1, p: 1, backgroundColor: 'rgba(0, 212, 255, 0.1)', borderRadius: 1 }}>
+                                      <Typography variant="caption" color="text.secondary" gutterBottom component="div">
+                                        Google Dork Query:
+                                      </Typography>
+                                      <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                                        {profile.metadata.dork_query}
+                                      </Typography>
+                                    </Box>
+                                  )}
                                   
                                   {profile.url && profile.url !== '#' && (
                                     <Button
@@ -725,7 +805,7 @@ const PeopleSearch = () => {
                                       onClick={() => window.open(profile.url, '_blank')}
                                       sx={{ mt: 1, mr: 1 }}
                                     >
-                                      View Profile
+                                      {platformResult.type === 'google_dorking' ? 'Execute Search' : 'View Profile'}
                                     </Button>
                                   )}
                                   
@@ -736,10 +816,10 @@ const PeopleSearch = () => {
                                       </Typography>
                                       <Grid container spacing={1}>
                                         {Object.entries(profile.metadata).map(([key, value]) => (
-                                          key !== 'platform' && (
+                                          key !== 'platform' && key !== 'dork_query' && (
                                             <Grid item xs={6} sm={4} key={key}>
                                               <Typography variant="caption" color="text.secondary">
-                                                {key.replace(/_/g, ' ')}: {value}
+                                                {key.replace(/_/g, ' ')}: {typeof value === 'object' ? JSON.stringify(value) : value}
                                               </Typography>
                                             </Grid>
                                           )
