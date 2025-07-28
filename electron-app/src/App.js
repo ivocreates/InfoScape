@@ -7,6 +7,12 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import PeopleSearch from './components/PeopleSearch';
+import ReverseSearch from './components/ReverseSearch';
+import SocialIntelligence from './components/SocialIntelligence';
+import DomainIntelligence from './components/DomainIntelligence';
+import Reports from './components/Reports';
+import SearchHistory from './components/SearchHistory';
+import Settings from './components/Settings';
 import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
@@ -42,17 +48,17 @@ const AppContent = () => {
       case 'people-search':
         return <PeopleSearch />;
       case 'reverse-search':
-        return <Box sx={{ p: 3 }}>Reverse Search (Coming Soon)</Box>;
+        return <ReverseSearch />;
       case 'social-intel':
-        return <Box sx={{ p: 3 }}>Social Intelligence (Coming Soon)</Box>;
+        return <SocialIntelligence />;
       case 'domain-intel':
-        return <Box sx={{ p: 3 }}>Domain Intelligence (Coming Soon)</Box>;
+        return <DomainIntelligence />;
       case 'reports':
-        return <Box sx={{ p: 3 }}>Reports (Coming Soon)</Box>;
+        return <Reports />;
       case 'history':
-        return <Box sx={{ p: 3 }}>Search History (Coming Soon)</Box>;
+        return <SearchHistory />;
       case 'settings':
-        return <Box sx={{ p: 3 }}>Settings (Coming Soon)</Box>;
+        return <Settings />;
       default:
         return <Dashboard onViewChange={handleViewChange} />;
     }

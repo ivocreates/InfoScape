@@ -496,6 +496,95 @@ export const AppProvider = ({ children }) => {
     });
   };
 
+  // Additional methods for new components
+  const getSearchHistory = async () => {
+    try {
+      const response = await apiService.getSearchHistory();
+      if (response.success) {
+        return response.data;
+      }
+      return state.searchResults; // Fallback to local state
+    } catch (error) {
+      console.error('Failed to get search history:', error);
+      return state.searchResults; // Fallback to local state
+    }
+  };
+
+  const deleteSearchHistory = async (searchId) => {
+    try {
+      const response = await apiService.deleteSearchHistory(searchId);
+      if (response.success) {
+        // Remove from local state as well
+        const updatedResults = state.searchResults.filter(result => result.id !== searchId);
+        setSearchResults(updatedResults);
+        addNotification({
+          type: 'success',
+          message: 'Search deleted successfully',
+          timestamp: new Date().toISOString(),
+        });
+        return true;
+      }
+      throw new Error(response.error || 'Failed to delete search');
+    } catch (error) {
+      setError(error);
+      throw error;
+    }
+  };
+
+  const getReports = async () => {
+    try {
+      const response = await apiService.getReports();
+      if (response.success) {
+        return response.data;
+      }
+      return []; // Return empty array if failed
+    } catch (error) {
+      console.error('Failed to get reports:', error);
+      return [];
+    }
+  };
+
+  const getSettings = async () => {
+    try {
+      const response = await apiService.getSettings();
+      if (response.success) {
+        return response.data;
+      }
+      return state.userPreferences; // Fallback to local preferences
+    } catch (error) {
+      console.error('Failed to get settings:', error);
+      return state.userPreferences;
+    }
+  };
+
+  const updateSettings = async (settings) => {
+    try {
+      setLoading(true);
+      const response = await apiService.updateSettings(settings);
+      if (response.success) {
+        setUserPreferences(settings);
+        addNotification({
+          type: 'success',
+          message: 'Settings updated successfully',
+          timestamp: new Date().toISOString(),
+        });
+        return response.data;
+      }
+      throw new Error(response.error || 'Failed to update settings');
+    } catch (error) {
+      // Still update local preferences even if API fails
+      setUserPreferences(settings);
+      addNotification({
+        type: 'warning',
+        message: 'Settings updated locally (server unavailable)',
+        timestamp: new Date().toISOString(),
+      });
+      console.error('Settings update error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Context value
   const value = {
     // State
@@ -525,6 +614,11 @@ export const AppProvider = ({ children }) => {
     checkToolsStatus,
     exportSearchHistory,
     clearSearchHistory,
+    getSearchHistory,
+    deleteSearchHistory,
+    getReports,
+    getSettings,
+    updateSettings,
   };
 
   return (
