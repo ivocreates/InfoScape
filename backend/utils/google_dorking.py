@@ -168,6 +168,79 @@ class GoogleDorkingEngine:
             'Barbados': ['site:bb'],
             'Bahamas': ['site:bs'],
             'Belize': ['site:bz'],
+            'Antigua and Barbuda': ['site:ag'],
+            'Saint Lucia': ['site:lc'],
+            'Saint Vincent and the Grenadines': ['site:vc'],
+            'Grenada': ['site:gd'],
+            'Dominica': ['site:dm'],
+            'Saint Kitts and Nevis': ['site:kn'],
+            
+            # Additional African Countries
+            'Angola': ['site:ao'],
+            'Benin': ['site:bj'],
+            'Burkina Faso': ['site:bf'],
+            'Burundi': ['site:bi'],
+            'Cape Verde': ['site:cv'],
+            'Central African Republic': ['site:cf'],
+            'Chad': ['site:td'],
+            'Comoros': ['site:km'],
+            'Democratic Republic of Congo': ['site:cd'],
+            'Republic of Congo': ['site:cg'],
+            'Djibouti': ['site:dj'],
+            'Equatorial Guinea': ['site:gq'],
+            'Eritrea': ['site:er'],
+            'Eswatini': ['site:sz'],
+            'Gambia': ['site:gm'],
+            'Guinea': ['site:gn'],
+            'Guinea-Bissau': ['site:gw'],
+            'Lesotho': ['site:ls'],
+            'Liberia': ['site:lr'],
+            'Madagascar': ['site:mg'],
+            'Malawi': ['site:mw'],
+            'Mali': ['site:ml'],
+            'Mauritania': ['site:mr'],
+            'Mauritius': ['site:mu'],
+            'Mozambique': ['site:mz'],
+            'Niger': ['site:ne'],
+            'São Tomé and Príncipe': ['site:st'],
+            'Seychelles': ['site:sc'],
+            'Sierra Leone': ['site:sl'],
+            'Somalia': ['site:so'],
+            'South Sudan': ['site:ss'],
+            'Sudan': ['site:sd'],
+            'Togo': ['site:tg'],
+            'Tunisia': ['site:tn'],
+            
+            # Additional Asian Countries
+            'Bhutan': ['site:bt'],
+            'Brunei': ['site:bn'],
+            'East Timor': ['site:tl'],
+            'Maldives': ['site:mv'],
+            'North Korea': ['site:kp'],
+            'Oman': ['site:om'],
+            
+            # Additional European Countries
+            'Albania': ['site:al'],
+            'Andorra': ['site:ad'],
+            'Armenia': ['site:am'],
+            'Azerbaijan': ['site:az'],
+            'Bosnia and Herzegovina': ['site:ba'],
+            'Georgia': ['site:ge'],
+            'Liechtenstein': ['site:li'],
+            'Monaco': ['site:mc'],
+            'Montenegro': ['site:me'],
+            'North Macedonia': ['site:mk'],
+            'San Marino': ['site:sm'],
+            'Serbia': ['site:rs'],
+            'Vatican City': ['site:va'],
+            
+            # Additional Pacific Countries
+            'Kiribati': ['site:ki'],
+            'Marshall Islands': ['site:mh'],
+            'Micronesia': ['site:fm'],
+            'Nauru': ['site:nr'],
+            'Palau': ['site:pw'],
+            'Tuvalu': ['site:tv'],
         }
         
         # Enhanced social media platforms with advanced patterns
@@ -775,7 +848,7 @@ class GoogleDorkingEngine:
                         'description': f'Search for {doc_type.replace("_", " ")} documents containing "{name}"',
                         'category': 'documents',
                         'document_type': doc_type,
-                        'priority': 6,
+                        'priority': 8,
                         'confidence': 0.7
                     })
                 except Exception as e:
@@ -1000,7 +1073,7 @@ class GoogleDorkingEngine:
                     'description': f'Search for "{name}" on {location} websites',
                     'category': 'location_specific',
                     'country': location,
-                    'priority': 8,
+                    'priority': 9,
                     'confidence': 0.8
                 },
                 {
@@ -1008,7 +1081,7 @@ class GoogleDorkingEngine:
                     'description': f'Combined location and domain search for "{name}"',
                     'category': 'location_specific',
                     'country': location,
-                    'priority': 7,
+                    'priority': 8,
                     'confidence': 0.75
                 }
             ])
@@ -1058,7 +1131,7 @@ class GoogleDorkingEngine:
                 'description': f'Search for "{name}" connected to "{education}"',
                 'category': 'education',
                 'institution': education,
-                'priority': 7,
+                'priority': 8,
                 'confidence': 0.75
             })
         
