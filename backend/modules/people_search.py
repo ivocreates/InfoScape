@@ -13,6 +13,7 @@ import requests
 import time
 import random
 from urllib.parse import quote, urljoin
+from collections import defaultdict
 # import whois  # Make this optional
 
 # Import utils modules with proper path handling
@@ -554,38 +555,51 @@ class PeopleSearchEngine:
         return results
     
     async def _search_google_dorking(self, search_params: Dict[str, Any]) -> Dict[str, List[Dict]]:
-        """Advanced Google dorking search for comprehensive OSINT"""
+        """Enhanced Google dorking search with worldwide support and better classification"""
         results = {'google_dorking': []}
         
         try:
-            # Generate comprehensive Google dorks
+            # Generate comprehensive Google dorks using enhanced engine
             dorks = self.google_dorking.generate_person_dorks(search_params)
             
-            logger.info(f"Generated {len(dorks)} Google dorks for search")
+            logger.info(f"Generated {len(dorks)} enhanced Google dorks for search")
             
-            # Process top dorks (limit to avoid rate limiting)
-            top_dorks = dorks[:20]  # Process top 20 dorks
+            # Process top dorks with better categorization
+            top_dorks = dorks[:25]  # Process top 25 dorks for quality
             
             for dork_data in top_dorks:
                 try:
                     query = dork_data['query']
                     url = self.google_dorking.generate_dork_url(query)
                     
-                    # Create structured result
+                    # Create enhanced structured result
                     result = {
-                        'source': 'google_dorking',
+                        'source': 'google_dorking_enhanced',
                         'query': query,
                         'url': url,
-                        'found': True,  # Assume found since we generated the dork
+                        'found': True,
                         'confidence': dork_data.get('confidence', 0.7),
+                        'priority': dork_data.get('priority', 5),
                         'data': {
+                            'dork_id': dork_data.get('id'),
                             'dork_query': query,
                             'description': dork_data.get('description', ''),
                             'category': dork_data.get('category', 'general'),
                             'priority': dork_data.get('priority', 5),
                             'search_url': url,
-                            'estimated_results': self.google_dorking.estimate_dork_results(query),
-                            'search_operators': self._extract_search_operators(query)
+                            'estimated_results': dork_data.get('estimated_results', 0),
+                            'search_operators': self._extract_search_operators(query),
+                            'target_platform': dork_data.get('platform', ''),
+                            'disambiguation_type': dork_data.get('disambiguation_type', ''),
+                            'country': dork_data.get('country', ''),
+                            'rank': dork_data.get('rank', 0)
+                        },
+                        'metadata': {
+                            'dork_category': dork_data.get('category', 'general'),
+                            'confidence_level': 'high' if dork_data.get('confidence', 0) >= 0.8 else 'medium',
+                            'search_complexity': 'complex' if len(query.split()) > 4 else 'simple',
+                            'targeting_type': self._determine_targeting_type(dork_data),
+                            'generated_at': dork_data.get('created_at', datetime.now().isoformat())
                         },
                         'timestamp': datetime.now().isoformat()
                     }
@@ -593,16 +607,16 @@ class PeopleSearchEngine:
                     results['google_dorking'].append(result)
                     
                     # Add small delay to be respectful
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.05)
                     
                 except Exception as e:
-                    logger.error(f"Error processing dork '{query}': {str(e)}")
+                    logger.error(f"Error processing enhanced dork '{query}': {str(e)}")
                     continue
             
-            logger.info(f"Google dorking completed: {len(results['google_dorking'])} dorks generated")
+            logger.info(f"Enhanced Google dorking completed: {len(results['google_dorking'])} dorks generated")
             
         except Exception as e:
-            logger.error(f"Google dorking search error: {str(e)}")
+            logger.error(f"Enhanced Google dorking search error: {str(e)}")
         
         return results
     
@@ -1379,12 +1393,85 @@ class PeopleSearchEngine:
             logger.error(f"Error calculating overall confidence: {str(e)}")
             return 0.5
     
+    
+    def _determine_targeting_type(self, dork_data: Dict[str, Any]) -> str:
+        """Determine the type of targeting used in the dork"""
+        category = dork_data.get('category', '')
+        
+        if 'location_specific' in category or 'country' in dork_data:
+            return 'geographic'
+        elif 'professional' in category or 'company' in category:
+            return 'professional'
+        elif 'social_media' in category:
+            return 'social'
+        elif 'disambiguation' in category:
+            return 'disambiguation'
+        elif 'contact' in category:
+            return 'contact_focused'
+        elif 'education' in category:
+            return 'educational'
+        else:
+            return 'general'
+    
+    def _calculate_overall_confidence(self, results: Dict[str, Any]) -> float:
+        """Enhanced confidence calculation with person classification support"""
+        try:
+            all_confidences = []
+            all_weights = []
+            
+            for source_type, results_list in results['sources'].items():
+                for result in results_list:
+                    confidence = result.get('confidence', 0.5)
+                    
+                    # Enhanced weight calculation with new categories
+                    weight = 1.0
+                    if source_type == 'google_dorking':
+                        # Enhanced Google dorking gets higher weight due to improvements
+                        priority = result.get('priority', 5)
+                        weight = 0.9 + (priority / 50)  # Scale priority into weight
+                    elif source_type == 'public_records':
+                        weight = 1.2  # Public records are highly reliable
+                    elif source_type == 'social_media':
+                        weight = 0.9
+                    elif source_type == 'professional_networks':
+                        weight = 1.1
+                    elif source_type == 'additional_sources':
+                        weight = 0.8
+                    
+                    all_confidences.append(confidence)
+                    all_weights.append(weight)
+            
+            if not all_confidences:
+                return 0.0
+            
+            # Calculate weighted average
+            if sum(all_weights) > 0:
+                weighted_confidence = sum(c * w for c, w in zip(all_confidences, all_weights)) / sum(all_weights)
+            else:
+                weighted_confidence = sum(all_confidences) / len(all_confidences)
+            
+            # Enhanced bonus calculation
+            num_sources = len([s for s in results['sources'].values() if s])
+            source_bonus = min(0.15, num_sources * 0.03)  # Increased bonus for multiple sources
+            
+            # Google dorking quality bonus
+            google_dorks = results['sources'].get('google_dorking', [])
+            high_quality_dorks = len([d for d in google_dorks if d.get('priority', 0) >= 8])
+            dork_quality_bonus = min(0.1, high_quality_dorks * 0.02)
+            
+            final_confidence = min(1.0, weighted_confidence + source_bonus + dork_quality_bonus)
+            return round(final_confidence, 2)
+            
+        except Exception as e:
+            logger.error(f"Error calculating enhanced overall confidence: {str(e)}")
+            return 0.5
+    
     def _generate_summary(self, results: Dict[str, Any]):
-        """Generate comprehensive summary statistics"""
+        """Enhanced summary generation with better categorization"""
         try:
             summary = results['summary']
             
-            # Extract unique information from all sources
+            # Enhanced information extraction
             emails = set()
             phones = set()
             addresses = set()
@@ -1393,22 +1480,30 @@ class PeopleSearchEngine:
             documents = []
             images = []
             related_people = []
+            google_dorks_by_category = defaultdict(int)
             
             for source_type, results_list in results['sources'].items():
                 for result in results_list:
                     data = result.get('data', {})
                     
-                    # Extract emails
-                    if 'email' in data and data['email']:
+                    # Enhanced Google dork categorization
+                    if source_type == 'google_dorking':
+                        category = data.get('category', 'general')
+                        google_dorks_by_category[category] += 1
+                    
+                    # Extract emails with validation
+                    if 'email' in data and data['email'] and '@' in data['email']:
                         emails.add(data['email'])
                     if 'emails' in data:
-                        emails.update(data['emails'])
+                        emails.update([e for e in data['emails'] if '@' in e])
                     
-                    # Extract phones
+                    # Extract phones with basic validation
                     if 'phone' in data and data['phone']:
-                        phones.add(data['phone'])
+                        clean_phone = re.sub(r'[^\d+]', '', data['phone'])
+                        if len(clean_phone) >= 10:
+                            phones.add(data['phone'])
                     if 'phones' in data:
-                        phones.update(data['phones'])
+                        phones.update([p for p in data['phones'] if len(re.sub(r'[^\d+]', '', p)) >= 10])
                     
                     # Extract addresses
                     if 'address' in data and data['address']:
@@ -1416,31 +1511,33 @@ class PeopleSearchEngine:
                     if 'addresses' in data:
                         addresses.update(data['addresses'])
                     
-                    # Extract profile URLs
+                    # Enhanced profile URL extraction with metadata
                     if 'url' in result and result['url']:
+                        profile_info = {
+                            'platform': data.get('platform', data.get('target_platform', 'Unknown')),
+                            'url': result['url'],
+                            'confidence': result.get('confidence', 0.5),
+                            'source_type': source_type,
+                            'verified': result.get('verified', False)
+                        }
+                        
                         if source_type == 'social_media':
-                            social_profiles.append({
-                                'platform': data.get('platform', 'Unknown'),
-                                'url': result['url'],
-                                'confidence': result.get('confidence', 0.5)
-                            })
+                            social_profiles.append(profile_info)
                         elif source_type == 'professional_networks':
-                            professional_profiles.append({
-                                'platform': data.get('platform', 'Unknown'),
-                                'url': result['url'],
-                                'confidence': result.get('confidence', 0.5)
-                            })
+                            professional_profiles.append(profile_info)
                     
-                    # Extract documents
-                    if source_type == 'document_search' or 'filetype' in result.get('query', ''):
+                    # Enhanced document extraction
+                    if (source_type == 'document_search' or 'filetype' in result.get('query', '') or 
+                        data.get('category') == 'documents'):
                         documents.append({
                             'type': data.get('document_type', 'Unknown'),
                             'url': result.get('url', ''),
                             'description': data.get('description', ''),
-                            'confidence': result.get('confidence', 0.5)
+                            'confidence': result.get('confidence', 0.5),
+                            'category': data.get('category', 'general')
                         })
             
-            # Update summary with extracted information
+            # Update summary with enhanced extracted information
             summary['email_addresses'] = list(emails)
             summary['phone_numbers'] = list(phones)
             summary['addresses'] = list(addresses)
@@ -1450,8 +1547,21 @@ class PeopleSearchEngine:
             summary['images'] = images
             summary['related_people'] = related_people
             
-            # Update platform counts
+            # Add Google dork category breakdown
+            summary['google_dork_categories'] = dict(google_dorks_by_category)
+            
+            # Enhanced platform tracking
             summary['platforms_found'] = list(set(summary['platforms_found']))
             
+            # Add quality metrics
+            summary['high_confidence_sources'] = len([
+                r for source_list in results['sources'].values() 
+                for r in source_list if r.get('confidence', 0) >= 0.8
+            ])
+            
+            summary['verified_profiles'] = len([
+                p for p in social_profiles + professional_profiles if p.get('verified', False)
+            ])
+            
         except Exception as e:
-            logger.error(f"Error generating summary: {str(e)}")
+            logger.error(f"Error generating enhanced summary: {str(e)}")

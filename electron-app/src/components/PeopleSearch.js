@@ -51,13 +51,17 @@ const PeopleSearch = () => {
   });
   const [advancedFilters, setAdvancedFilters] = useState({
     location: '',
+    country: '',
     ageRange: '',
     occupation: '',
     company: '',
     education: '',
     interests: '',
     language: '',
-    country: '',
+    googleDorkCategory: 'all',
+    enableDisambiguation: true,
+    prioritizeHighConfidence: true,
+    includeInternationalFormats: true,
   });
   const [results, setResults] = useState(null);
   const [searchProgress, setSearchProgress] = useState(0);
@@ -91,8 +95,27 @@ const PeopleSearch = () => {
   ];
 
   const locationOptions = [
-    'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 
-    'Japan', 'India', 'Brazil', 'Mexico', 'Other'
+    'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Armenia', 'Australia', 'Austria',
+    'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium',
+    'Belize', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Bulgaria',
+    'Cambodia', 'Cameroon', 'Canada', 'Chile', 'China', 'Colombia', 'Costa Rica',
+    'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Dominican Republic',
+    'Ecuador', 'Egypt', 'El Salvador', 'Estonia', 'Ethiopia', 'Fiji', 'Finland',
+    'France', 'Gabon', 'Germany', 'Ghana', 'Greece', 'Guatemala', 'Guyana', 'Haiti',
+    'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran',
+    'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan',
+    'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia',
+    'Lebanon', 'Libya', 'Lithuania', 'Luxembourg', 'Malaysia', 'Malta', 'Mexico',
+    'Moldova', 'Mongolia', 'Morocco', 'Myanmar', 'Namibia', 'Nepal', 'Netherlands',
+    'New Zealand', 'Nicaragua', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Panama',
+    'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal',
+    'Qatar', 'Romania', 'Russia', 'Rwanda', 'Samoa', 'Saudi Arabia', 'Senegal',
+    'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'South Africa', 'South Korea',
+    'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan',
+    'Tanzania', 'Thailand', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey',
+    'Turkmenistan', 'UAE', 'Uganda', 'Ukraine', 'United Kingdom', 'United States',
+    'Uruguay', 'Uzbekistan', 'Vanuatu', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia',
+    'Zimbabwe'
   ];
 
   const ageRanges = [
@@ -125,89 +148,214 @@ const PeopleSearch = () => {
     const dorks = [];
     const baseQuery = `"${query}"`;
     
-    // Basic exact match dorks
+    // Get selected country or location for enhanced targeting
+    const targetLocation = filters.country || filters.location;
+    
+    // Enhanced exact match dorks with disambiguation
     dorks.push(baseQuery);
     
-    // Social media dorks with specific patterns
-    const socialPlatforms = [
-      { site: 'linkedin.com', patterns: ['site:linkedin.com/in/', 'site:linkedin.com/pub/'] },
-      { site: 'facebook.com', patterns: ['site:facebook.com'] },
-      { site: 'twitter.com', patterns: ['site:twitter.com', 'site:x.com'] },
-      { site: 'instagram.com', patterns: ['site:instagram.com'] },
-      { site: 'github.com', patterns: ['site:github.com'] },
-      { site: 'youtube.com', patterns: ['site:youtube.com/@', 'site:youtube.com/c/'] },
-      { site: 'tiktok.com', patterns: ['site:tiktok.com/@'] },
-      { site: 'reddit.com', patterns: ['site:reddit.com/user/'] }
-    ];
+    // Country/Location-specific dorks with domain targeting
+    if (targetLocation) {
+      const countryDomainMap = {
+        'United States': ['site:com', 'site:org', 'site:net', 'site:edu', 'site:gov'],
+        'United Kingdom': ['site:co.uk', 'site:org.uk', 'site:ac.uk', 'site:gov.uk'],
+        'Canada': ['site:ca', 'site:gc.ca'],
+        'Australia': ['site:com.au', 'site:gov.au', 'site:edu.au'],
+        'Germany': ['site:de'],
+        'France': ['site:fr', 'site:gouv.fr'],
+        'Japan': ['site:jp', 'site:go.jp'],
+        'China': ['site:cn', 'site:com.cn'],
+        'India': ['site:in', 'site:gov.in'],
+        'Brazil': ['site:br', 'site:gov.br'],
+        'Russia': ['site:ru'],
+        'Spain': ['site:es'],
+        'Italy': ['site:it'],
+        'Netherlands': ['site:nl'],
+        // Add more countries as needed
+      };
+      
+      const domains = countryDomainMap[targetLocation] || [`site:${targetLocation.toLowerCase().replace(/\s+/g, '')}`];
+      domains.forEach(domain => {
+        dorks.push(`${baseQuery} ${domain}`);
+        dorks.push(`${baseQuery} "${targetLocation}" ${domain}`);
+      });
+      
+      // Location-specific contact searches
+      dorks.push(`${baseQuery} "${targetLocation}" address`);
+      dorks.push(`${baseQuery} "${targetLocation}" phone`);
+      dorks.push(`${baseQuery} "${targetLocation}" contact`);
+    }
     
-    socialPlatforms.forEach(platform => {
-      platform.patterns.forEach(pattern => {
-        dorks.push(`${pattern} ${baseQuery}`);
+    // Enhanced social media dorks with platform-specific patterns
+    const socialPlatforms = {
+      'linkedin': [
+        'site:linkedin.com/in/',
+        'site:linkedin.com/pub/',
+        `site:linkedin.com intitle:"${query}"`,
+        `site:linkedin.com "${query}" "${filters.company || ''}"`.trim()
+      ],
+      'facebook': [
+        'site:facebook.com',
+        'site:facebook.com/people/',
+        `site:facebook.com "${query}"`,
+        `site:facebook.com "${query}" "${targetLocation || ''}"`.trim()
+      ],
+      'twitter': [
+        'site:twitter.com',
+        'site:x.com',
+        `site:twitter.com "${query}"`,
+        `site:x.com "${query}"`,
+      ],
+      'instagram': [
+        'site:instagram.com',
+        `site:instagram.com "${query}"`,
+      ],
+      'github': [
+        'site:github.com',
+        `site:github.com "${query}"`,
+      ],
+      'youtube': [
+        'site:youtube.com',
+        'site:youtube.com/c/',
+        'site:youtube.com/@',
+        `site:youtube.com "${query}"`,
+      ],
+      'tiktok': [
+        'site:tiktok.com',
+        `site:tiktok.com "${query}"`,
+      ],
+      'reddit': [
+        'site:reddit.com',
+        'site:reddit.com/user/',
+        `site:reddit.com "${query}"`,
+      ]
+    };
+    
+    Object.entries(socialPlatforms).forEach(([platform, patterns]) => {
+      patterns.forEach(pattern => {
+        if (pattern.trim()) {
+          dorks.push(pattern);
+        }
       });
     });
     
-    // Professional platform dorks
-    const professionalSites = [
+    // Enhanced professional platform dorks
+    const professionalPlatforms = [
       'site:crunchbase.com/person/',
       'site:angel.co/u/',
       'site:behance.net/',
       'site:dribbble.com/',
       'site:stackoverflow.com/users/',
-      'site:medium.com/@'
+      'site:medium.com/@',
+      'site:researchgate.net',
+      'site:academia.edu',
+      'site:scholar.google.com'
     ];
     
-    professionalSites.forEach(site => {
+    professionalPlatforms.forEach(site => {
       dorks.push(`${site} ${baseQuery}`);
     });
     
-    // Document search dorks
+    // Enhanced document search dorks with multiple file types
     const docTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
     docTypes.forEach(type => {
       dorks.push(`${baseQuery} filetype:${type}`);
+      
+      // Professional document searches
+      dorks.push(`${baseQuery} filetype:${type} resume`);
+      dorks.push(`${baseQuery} filetype:${type} cv`);
+      dorks.push(`${baseQuery} filetype:${type} biography`);
     });
     
-    // Location-based dorks if specified
-    if (filters.location) {
-      dorks.push(`${baseQuery} "${filters.location}"`);
-      dorks.push(`${baseQuery} location:"${filters.location}"`);
-      dorks.push(`${baseQuery} "${filters.location}" (address OR contact OR phone)`);
-    }
-    
-    // Company-based dorks if specified
+    // Company-specific enhanced dorks
     if (filters.company) {
       dorks.push(`${baseQuery} "${filters.company}"`);
       dorks.push(`${baseQuery} site:${filters.company.toLowerCase().replace(/\s+/g, '')}.com`);
       dorks.push(`${baseQuery} "${filters.company}" (employee OR work OR job)`);
+      dorks.push(`${baseQuery} "${filters.company}" linkedin`);
+      dorks.push(`${baseQuery} "${filters.company}" (director OR manager OR executive)`);
     }
     
-    // Professional information dorks
+    // Occupation-specific enhanced dorks
     if (filters.occupation) {
       dorks.push(`${baseQuery} "${filters.occupation}"`);
       dorks.push(`${baseQuery} "${filters.occupation}" (resume OR cv OR biography)`);
+      dorks.push(`${baseQuery} "${filters.occupation}" linkedin`);
+      dorks.push(`${baseQuery} "${filters.occupation}" "${targetLocation || ''}"`);
     }
     
-    // Contact information pattern dorks
+    // Education-specific dorks
+    if (filters.education) {
+      dorks.push(`${baseQuery} "${filters.education}"`);
+      dorks.push(`${baseQuery} "${filters.education}" alumni`);
+      dorks.push(`${baseQuery} "${filters.education}" graduate`);
+      dorks.push(`site:linkedin.com "${query}" "${filters.education}"`);
+      dorks.push(`site:academia.edu "${query}" "${filters.education}"`);
+    }
+    
+    // Enhanced contact information pattern dorks
     dorks.push(`${baseQuery} "@" filetype:pdf`);
     dorks.push(`${baseQuery} contact OR email OR phone`);
     dorks.push(`${baseQuery} (phone OR email OR address OR contact)`);
+    dorks.push(`${baseQuery} "contact information"`);
+    dorks.push(`${baseQuery} "email address"`);
+    dorks.push(`${baseQuery} "phone number"`);
     
     // News and media mention dorks
     dorks.push(`${baseQuery} site:news.google.com`);
     dorks.push(`${baseQuery} (news OR article OR interview OR press)`);
     dorks.push(`${baseQuery} (announcement OR press OR media OR news)`);
+    dorks.push(`${baseQuery} site:reuters.com OR site:bbc.com OR site:cnn.com`);
     
     // Academic and research dorks
     dorks.push(`${baseQuery} site:scholar.google.com`);
     dorks.push(`${baseQuery} site:researchgate.net`);
     dorks.push(`${baseQuery} site:academia.edu`);
     dorks.push(`${baseQuery} (author OR researcher OR professor OR PhD)`);
+    dorks.push(`${baseQuery} publication OR research OR paper`);
+    
+    // Public records and legal dorks
+    dorks.push(`${baseQuery} (court OR legal OR lawsuit)`);
+    dorks.push(`${baseQuery} (property OR real estate OR deed)`);
+    dorks.push(`${baseQuery} (business owner OR director OR LLC)`);
+    dorks.push(`${baseQuery} (marriage OR wedding OR spouse)`);
+    
+    // Disambiguation dorks for common names
+    if (filters.enableDisambiguation) {
+      if (filters.ageRange) {
+        dorks.push(`${baseQuery} age "${filters.ageRange}"`);
+        dorks.push(`${baseQuery} "years old"`);
+      }
+      if (targetLocation) {
+        dorks.push(`${baseQuery} "from ${targetLocation}"`);
+        dorks.push(`${baseQuery} "lives in ${targetLocation}"`);
+        dorks.push(`${baseQuery} "based in ${targetLocation}"`);
+      }
+      if (filters.occupation) {
+        dorks.push(`${baseQuery} "works as ${filters.occupation}"`);
+        dorks.push(`${baseQuery} "profession ${filters.occupation}"`);
+      }
+    }
     
     // Advanced combination dorks
     dorks.push(`(${baseQuery} OR "${query.replace(/"/g, '')}@")`); // Name or email pattern
     dorks.push(`${baseQuery} (site:linkedin.com OR site:facebook.com OR site:twitter.com)`);
     
-    // Remove duplicates and limit
-    return [...new Set(dorks)].slice(0, 50);
+    // International format considerations
+    if (filters.includeInternationalFormats) {
+      // Name variations for international formats
+      const nameParts = query.split(' ');
+      if (nameParts.length >= 2) {
+        // Last name, first name format (common internationally)
+        dorks.push(`"${nameParts[nameParts.length - 1]}, ${nameParts.slice(0, -1).join(' ')}"`);
+        // First initial, last name
+        dorks.push(`"${nameParts[0][0]}. ${nameParts[nameParts.length - 1]}"`);
+      }
+    }
+    
+    // Remove duplicates and empty dorks, then limit
+    const uniqueDorks = [...new Set(dorks.filter(dork => dork && dork.trim()))];
+    return uniqueDorks.slice(0, 75); // Increased limit for enhanced coverage
   };
 
   const handleSearch = async () => {
@@ -483,22 +631,22 @@ const PeopleSearch = () => {
 
               {/* Advanced Filters */}
               <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
-                Advanced Filters
+                Advanced Filters & Targeting
               </Typography>
               
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={6}>
                   <FormControl fullWidth size="small">
-                    <InputLabel>Location</InputLabel>
+                    <InputLabel>Country/Region</InputLabel>
                     <Select
-                      value={advancedFilters.location}
-                      onChange={(e) => handleFilterChange('location', e.target.value)}
-                      label="Location"
+                      value={advancedFilters.country}
+                      onChange={(e) => handleFilterChange('country', e.target.value)}
+                      label="Country/Region"
                     >
-                      <MenuItem value="">Any</MenuItem>
-                      {locationOptions.map((location) => (
-                        <MenuItem key={location} value={location}>
-                          {location}
+                      <MenuItem value="">Any Country</MenuItem>
+                      {locationOptions.map((country) => (
+                        <MenuItem key={country} value={country}>
+                          {country}
                         </MenuItem>
                       ))}
                     </Select>
@@ -512,7 +660,7 @@ const PeopleSearch = () => {
                       onChange={(e) => handleFilterChange('ageRange', e.target.value)}
                       label="Age Range"
                     >
-                      <MenuItem value="">Any</MenuItem>
+                      <MenuItem value="">Any Age</MenuItem>
                       {ageRanges.map((range) => (
                         <MenuItem key={range} value={range}>
                           {range}
@@ -528,7 +676,7 @@ const PeopleSearch = () => {
                     label="Company/Organization"
                     value={advancedFilters.company}
                     onChange={(e) => handleFilterChange('company', e.target.value)}
-                    placeholder="e.g., Google, Microsoft"
+                    placeholder="e.g., Google, Microsoft, University"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -538,20 +686,61 @@ const PeopleSearch = () => {
                     label="Occupation/Title"
                     value={advancedFilters.occupation}
                     onChange={(e) => handleFilterChange('occupation', e.target.value)}
-                    placeholder="e.g., Software Engineer, CEO"
+                    placeholder="e.g., Software Engineer, CEO, Professor"
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
                     size="small"
-                    label="Education"
+                    label="Education/Institution"
                     value={advancedFilters.education}
                     onChange={(e) => handleFilterChange('education', e.target.value)}
-                    placeholder="e.g., Harvard, MIT"
+                    placeholder="e.g., Harvard, MIT, Stanford"
                   />
                 </Grid>
               </Grid>
+
+              {/* Google Dorking Options */}
+              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
+                Google Dorking Options
+              </Typography>
+              
+              <FormGroup sx={{ mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={advancedFilters.enableDisambiguation}
+                      onChange={(e) => handleFilterChange('enableDisambiguation', e.target.checked)}
+                      size="small"
+                    />
+                  }
+                  label="Enable Name Disambiguation (helps distinguish between people with same name)"
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={advancedFilters.prioritizeHighConfidence}
+                      onChange={(e) => handleFilterChange('prioritizeHighConfidence', e.target.checked)}
+                      size="small"
+                    />
+                  }
+                  label="Prioritize High-Confidence Dorks"
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={advancedFilters.includeInternationalFormats}
+                      onChange={(e) => handleFilterChange('includeInternationalFormats', e.target.checked)}
+                      size="small"
+                    />
+                  }
+                  label="Include International Name Formats"
+                  sx={{ '& .MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
+                />
+              </FormGroup>
 
               {/* Data Sources */}
               <Typography variant="subtitle2" gutterBottom>
