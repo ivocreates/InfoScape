@@ -26,7 +26,7 @@
   }
   
   .input-field {
-    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
+    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
   }
   
   .card {
@@ -43,6 +43,16 @@
   
   .chip-secondary {
     @apply chip bg-gray-100 text-gray-700 border-gray-200;
+  }
+  
+  /* Dark input fields for auth screen */
+  .input-field-dark {
+    @apply block w-full rounded-lg border border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white placeholder-gray-400 focus:border-white focus:outline-none focus:ring-1 focus:ring-white;
+  }
+  
+  /* Search input with better styling */
+  .search-input {
+    @apply w-full px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-xl shadow-sm placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
   }
 }
 
