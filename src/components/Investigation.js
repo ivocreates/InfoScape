@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { Copy, ExternalLink, RotateCcw, Save, Search, Globe, FileText, Users, Shield } from 'lucide-react';
+import { Copy, ExternalLink, RotateCcw, Save, Search, Globe, FileText, Users, Shield, Chrome, Monitor, Code, Zap } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 
 // Hook for localStorage
@@ -46,7 +46,11 @@ function orClause(prefix, list) {
   return list.length > 1 ? `(${content})` : content;
 }
 
-function buildQuery(values, preset = null) {
+function andClause(terms) {
+  return terms.filter(Boolean).join(" AND ");
+}
+
+function buildQuery(values, preset = null, useAND = false) {
   const terms = [];
 
   // Identity anchors
@@ -77,12 +81,22 @@ function buildQuery(values, preset = null) {
   const intitles = tokenizeCSV(values.intitle);
   if (intitles.length) terms.push(orClause("intitle:", intitles));
 
+  const intexts = tokenizeCSV(values.intext);
+  if (intexts.length) terms.push(orClause("intext:", intexts));
+
   if (values.after) terms.push(`after:${values.after}`);
   if (values.before) terms.push(`before:${values.before}`);
 
-  // Preset modifiers
+  // Advanced preset modifiers with proper dorking techniques
   if (preset === "linkedin") {
-    terms.push(orClause("site:", ["linkedin.com/in", "linkedin.com/pub"]))
+    terms.push(orClause("site:", ["linkedin.com/in", "linkedin.com/pub"]));
+    if (!values.intitle) terms.push(orClause("intitle:", ["profile"]));
+  }
+  if (preset === "social-media") {
+    terms.push(orClause("site:", [
+      "twitter.com", "instagram.com", "facebook.com", 
+      "tiktok.com", "snapchat.com", "youtube.com"
+    ]));
   }
   if (preset === "github") {
     terms.push("site:github.com");
@@ -90,21 +104,35 @@ function buildQuery(values, preset = null) {
   }
   if (preset === "resume") {
     terms.push(orClause("filetype:", ["pdf", "doc", "docx"]));
-    terms.push(orClause("intitle:", ["resume", "cv", "curriculum vitae"]))
+    terms.push(orClause("intitle:", ["resume", "cv", "curriculum vitae"]));
   }
-  if (preset === "email") {
-    terms.push(orClause("intitle:", ["contact", "email"]))
+  if (preset === "contact") {
+    terms.push(orClause("intitle:", ["contact", "about", "email"]));
+    terms.push(orClause("intext:", ["phone", "email", "contact"]));
   }
   if (preset === "leaks") {
     terms.push(orClause("site:", [
-      "pastebin.com",
-      "ghostbin.com", 
-      "rentry.co",
-      "gist.github.com",
+      "pastebin.com", "ghostbin.com", "rentry.co", "gist.github.com",
+      "justpaste.it", "controlc.com", "hastebin.com"
     ]));
   }
+  if (preset === "academic") {
+    terms.push(orClause("site:", [
+      "researchgate.net", "academia.edu", "scholar.google.com",
+      "orcid.org", "pubmed.ncbi.nlm.nih.gov"
+    ]));
+    terms.push(orClause("filetype:", ["pdf"]));
+  }
+  if (preset === "professional") {
+    terms.push(orClause("site:", [
+      "linkedin.com", "indeed.com", "glassdoor.com", 
+      "monster.com", "crunchbase.com"
+    ]));
+    terms.push(orClause("intitle:", ["profile", "resume", "bio"]));
+  }
 
-  return terms.filter(Boolean).join(" ");
+  // Use AND or OR logic based on user preference
+  return useAND ? andClause(terms) : terms.filter(Boolean).join(" ");
 }
 
 // Field component
@@ -157,22 +185,109 @@ function Investigation() {
     filetypes: "",
     inurl: "",
     intitle: "",
+    intext: "",
     after: "",
     before: "",
   });
   
   const [engine, setEngine] = useState("google");
   const [preset, setPreset] = useState(null);
+  const [useAND, setUseAND] = useState(false);
   const [saving, setSaving] = useState(false);
   const [investigationName, setInvestigationName] = useState("");
 
-  const query = useMemo(() => buildQuery(values, preset), [values, preset]);
+  const query = useMemo(() => buildQuery(values, preset, useAND), [values, preset, useAND]);
+
+  // Advanced dorking templates
+  const dorkingTemplates = [
+    {
+      id: 'social-media',
+      name: 'Social Media Hunt',
+      icon: Users,
+      description: 'Find profiles across major social platforms',
+      color: 'bg-blue-500'
+    },
+    {
+      id: 'professional',
+      name: 'Professional Profile',
+      icon: FileText,
+      description: 'LinkedIn, resumes, and career information',
+      color: 'bg-green-500'
+    },
+    {
+      id: 'academic',
+      name: 'Academic Research',
+      icon: Globe,
+      description: 'Research papers, academic profiles',
+      color: 'bg-purple-500'
+    },
+    {
+      id: 'contact',
+      name: 'Contact Information',
+      icon: Search,
+      description: 'Email addresses, phone numbers, contact pages',
+      color: 'bg-amber-500'
+    },
+    {
+      id: 'leaks',
+      name: 'Data Breach Search',
+      icon: Shield,
+      description: 'Pastebin, GitHub gists, leaked information',
+      color: 'bg-red-500'
+    },
+    {
+      id: 'github',
+      name: 'Developer Profile',
+      icon: Code,
+      description: 'GitHub repositories and developer activity',
+      color: 'bg-gray-700'
+    }
+  ];
+
+  // Browser options with icons and descriptions
+  const browserOptions = [
+    {
+      id: 'system-default',
+      name: 'System Default',
+      icon: Monitor,
+      description: 'Open in your default browser',
+      command: null
+    },
+    {
+      id: 'chrome',
+      name: 'Google Chrome',
+      icon: Chrome,
+      description: 'Open in Chrome browser',
+      command: 'chrome'
+    },
+    {
+      id: 'firefox',
+      name: 'Firefox',
+      icon: Globe,
+      description: 'Open in Firefox browser',
+      command: 'firefox'
+    },
+    {
+      id: 'edge',
+      name: 'Microsoft Edge',
+      icon: Monitor,
+      description: 'Open in Edge browser',
+      command: 'msedge'
+    },
+    {
+      id: 'brave',
+      name: 'Brave Browser',
+      icon: Shield,
+      description: 'Open in Brave browser',
+      command: 'brave'
+    }
+  ];
 
   function update(k, v) {
     setValues((s) => ({ ...s, [k]: v }));
   }
 
-  const openEngine = (engineType, searchQuery) => {
+  const openEngine = (engineType, searchQuery, browserType = 'system-default') => {
     const q = encodeURIComponent(searchQuery);
     let url = "";
     
@@ -189,15 +304,46 @@ function Investigation() {
       case "brave":
         url = `https://search.brave.com/search?q=${q}`;
         break;
+      case "yandex":
+        url = `https://yandex.com/search/?text=${q}`;
+        break;
+      case "baidu":
+        url = `https://www.baidu.com/s?wd=${q}`;
+        break;
       default:
         url = `https://www.google.com/search?q=${q}`;
     }
     
     if (window.electronAPI) {
-      window.electronAPI.openBrowser(url);
+      // For Electron, we can try to specify browser
+      if (browserType !== 'system-default') {
+        window.electronAPI.openBrowserWith(url, browserType);
+      } else {
+        window.electronAPI.openBrowser(url);
+      }
     } else {
+      // For web version, always use default browser
       window.open(url, "_blank", "noopener,noreferrer");
     }
+  };
+
+  const generateVariations = () => {
+    if (!values.fullName) return [];
+    
+    const name = values.fullName;
+    const variations = [];
+    
+    // Basic variations
+    variations.push(`"${name}"`);
+    
+    if (name.includes(' ')) {
+      const parts = name.split(' ');
+      variations.push(`"${parts[0]} ${parts[parts.length - 1]}"`); // First + Last
+      variations.push(`"${parts[0][0]}. ${parts[parts.length - 1]}"`); // Initial + Last
+      variations.push(`"${parts[0]} ${parts[parts.length - 1][0]}."`); // First + Initial
+    }
+    
+    return variations.slice(0, 4); // Limit to 4 variations
   };
 
   const copyQuery = async () => {
@@ -223,6 +369,7 @@ function Investigation() {
         query: query,
         preset: preset,
         engine: engine,
+        useAND: useAND,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         status: 'active',
@@ -255,11 +402,23 @@ function Investigation() {
       filetypes: "",
       inurl: "",
       intitle: "",
+      intext: "",
       after: "",
       before: "",
     });
     setPreset(null);
     setInvestigationName("");
+  };
+
+  const quickFillExample = () => {
+    setValues({
+      ...values,
+      fullName: "John Smith",
+      location: "San Francisco",
+      company: "Microsoft",
+      sites: "linkedin.com, github.com, twitter.com",
+      include: "software engineer, developer"
+    });
   };
 
   const chips = [
@@ -276,32 +435,88 @@ function Investigation() {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              OSINT Investigation Builder
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Build precise search queries to find specific individuals online
-            </p>
-          </div>
-          
-          {/* Engine Selection */}
-          <div className="flex items-center gap-2">
-            {[
-              ["google", "Google"],
-              ["duck", "DuckDuckGo"],
-              ["bing", "Bing"],
-              ["brave", "Brave"],
-            ].map(([key, label]) => (
+        <header className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                Advanced OSINT Dorking Engine
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Build precise search queries with advanced Google dorking techniques
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2">
               <button
-                key={key}
-                className={`chip ${engine === key ? "chip-primary" : "chip-secondary"}`}
-                onClick={() => setEngine(key)}
+                onClick={quickFillExample}
+                className="btn-secondary text-sm"
               >
-                {label}
+                <Zap className="w-4 h-4 mr-1" />
+                Quick Fill
               </button>
-            ))}
+            </div>
+          </div>
+
+          {/* Search Engine & Logic Selection */}
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Search Engine:</span>
+              {[
+                ["google", "Google"],
+                ["duck", "DuckDuckGo"], 
+                ["bing", "Bing"],
+                ["brave", "Brave"],
+                ["yandex", "Yandex"],
+                ["baidu", "Baidu"]
+              ].map(([key, label]) => (
+                <button
+                  key={key}
+                  className={`chip text-xs ${engine === key ? "chip-primary" : "chip-secondary"}`}
+                  onClick={() => setEngine(key)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Logic:</span>
+              <button
+                className={`chip text-xs ${!useAND ? "chip-primary" : "chip-secondary"}`}
+                onClick={() => setUseAND(false)}
+              >
+                OR (Default)
+              </button>
+              <button
+                className={`chip text-xs ${useAND ? "chip-primary" : "chip-secondary"}`}
+                onClick={() => setUseAND(true)}
+              >
+                AND (Strict)
+              </button>
+            </div>
+          </div>
+
+          {/* Dorking Templates */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Quick Templates:</h3>
+            <div className="flex flex-wrap gap-2">
+              {dorkingTemplates.map((template) => {
+                const Icon = template.icon;
+                return (
+                  <button
+                    key={template.id}
+                    className={`chip text-xs flex items-center gap-1 ${
+                      preset === template.id ? "chip-primary" : "chip-secondary"
+                    }`}
+                    onClick={() => setPreset(preset === template.id ? null : template.id)}
+                    title={template.description}
+                  >
+                    <Icon className="w-3 h-3" />
+                    {template.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </header>
 
@@ -441,6 +656,14 @@ function Investigation() {
                       onChange={(e) => update("intitle", e.target.value)}
                     />
                   </Field>
+                  <Field labelText="Text Contains (intext:)" hint="phone, email, address, contact">
+                    <input
+                      className="input-field"
+                      placeholder="phone, email, address"
+                      value={values.intext}
+                      onChange={(e) => update("intext", e.target.value)}
+                    />
+                  </Field>
                   <div className="grid grid-cols-2 gap-3">
                     <Field labelText="After Date">
                       <input
@@ -538,7 +761,7 @@ function Investigation() {
                     disabled={!query.trim()}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Open in {engine === "duck" ? "DuckDuckGo" : engine.charAt(0).toUpperCase()+engine.slice(1)}
+                    Search in {engine === "duck" ? "DuckDuckGo" : engine.charAt(0).toUpperCase()+engine.slice(1)}
                   </button>
                   
                   <button
@@ -559,12 +782,35 @@ function Investigation() {
                   </button>
                 </div>
 
-                {/* Additional Engine Options */}
+                {/* Browser Selection */}
+                {query.trim() && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-sm font-medium text-gray-700 mb-3">Choose Browser:</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {browserOptions.map((browser) => {
+                        const Icon = browser.icon;
+                        return (
+                          <button
+                            key={browser.id}
+                            className="flex items-center gap-2 p-2 text-left text-xs bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            onClick={() => openEngine(engine, query, browser.id)}
+                            title={browser.description}
+                          >
+                            <Icon className="w-4 h-4 text-gray-600" />
+                            <span className="text-gray-700">{browser.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Alternative Search Engines */}
                 {query.trim() && (
                   <div className="mt-3 pt-3 border-t border-gray-200">
-                    <p className="text-xs text-gray-500 mb-2">Also search in:</p>
+                    <p className="text-xs text-gray-500 mb-2">Try in other search engines:</p>
                     <div className="flex flex-wrap gap-1">
-                      {["google","duck","bing","brave"].filter(e=>e!==engine).map((e)=> (
+                      {["google","duck","bing","brave","yandex","baidu"].filter(e=>e!==engine).map((e)=> (
                         <button 
                           key={e} 
                           className="text-xs px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 transition-colors" 
@@ -577,6 +823,32 @@ function Investigation() {
                   </div>
                 )}
               </div>
+
+              {/* Name Variations */}
+              {values.fullName && generateVariations().length > 0 && (
+                <div className="card p-6 bg-blue-50 border-blue-200">
+                  <h3 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Name Variations to Try
+                  </h3>
+                  <div className="space-y-2">
+                    {generateVariations().map((variation, index) => (
+                      <div key={index} className="flex items-center justify-between bg-white p-2 rounded border border-blue-200">
+                        <code className="text-xs text-blue-800">{variation}</code>
+                        <button
+                          className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                          onClick={() => {
+                            const variationQuery = buildQuery({...values, fullName: variation.replace(/"/g, '')}, preset, useAND);
+                            openEngine(engine, variationQuery);
+                          }}
+                        >
+                          Search
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Save Investigation */}
               <div className="card p-6">

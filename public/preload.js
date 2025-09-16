@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   openBrowser: (url) => ipcRenderer.invoke('open-browser', url),
+  openBrowserWith: (url, browser) => ipcRenderer.invoke('open-browser-with', url, browser),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   

@@ -181,6 +181,58 @@ ipcMain.handle('open-browser', async (event, url) => {
   createBrowserWindow(url);
 });
 
+ipcMain.handle('open-browser-with', async (event, url, browserType) => {
+  try {
+    const { spawn } = require('child_process');
+    
+    switch (browserType) {
+      case 'chrome':
+        try {
+          spawn('chrome', [url], { detached: true, stdio: 'ignore' });
+        } catch {
+          try {
+            spawn('google-chrome', [url], { detached: true, stdio: 'ignore' });
+          } catch {
+            // Fallback to system default
+            shell.openExternal(url);
+          }
+        }
+        break;
+      case 'firefox':
+        try {
+          spawn('firefox', [url], { detached: true, stdio: 'ignore' });
+        } catch {
+          shell.openExternal(url);
+        }
+        break;
+      case 'msedge':
+      case 'edge':
+        try {
+          spawn('msedge', [url], { detached: true, stdio: 'ignore' });
+        } catch {
+          shell.openExternal(url);
+        }
+        break;
+      case 'brave':
+        try {
+          spawn('brave', [url], { detached: true, stdio: 'ignore' });
+        } catch {
+          try {
+            spawn('brave-browser', [url], { detached: true, stdio: 'ignore' });
+          } catch {
+            shell.openExternal(url);
+          }
+        }
+        break;
+      default:
+        shell.openExternal(url);
+    }
+  } catch (error) {
+    console.error('Error opening browser:', error);
+    shell.openExternal(url);
+  }
+});
+
 ipcMain.handle('open-external', async (event, url) => {
   shell.openExternal(url);
 });
