@@ -9,7 +9,12 @@ function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      if (item) {
+        const parsed = JSON.parse(item);
+        // Merge with initialValue to ensure all fields exist
+        return { ...initialValue, ...parsed };
+      }
+      return initialValue;
     } catch {
       return initialValue;
     }
@@ -26,6 +31,7 @@ function useLocalStorage(key, initialValue) {
 
 // Helper functions
 function tokenizeCSV(s) {
+  if (!s) return [];
   return s
     .split(/[\n,]/)
     .map((x) => x.trim())
@@ -51,6 +57,7 @@ function andClause(terms) {
 }
 
 function buildQuery(values, preset = null, useAND = false) {
+  if (!values || typeof values !== 'object') return '';
   const terms = [];
 
   // Identity anchors
@@ -65,23 +72,23 @@ function buildQuery(values, preset = null, useAND = false) {
   if (values.school) terms.push(wrapQuotes(values.school));
 
   // Keywords
-  for (const k of tokenizeCSV(values.include)) terms.push(wrapQuotes(k));
-  for (const k of tokenizeCSV(values.exclude)) terms.push("-" + wrapQuotes(k));
+  for (const k of tokenizeCSV(values.include || '')) terms.push(wrapQuotes(k));
+  for (const k of tokenizeCSV(values.exclude || '')) terms.push("-" + wrapQuotes(k));
 
   // Operators
-  const sites = tokenizeCSV(values.sites);
+  const sites = tokenizeCSV(values.sites || '');
   if (sites.length) terms.push(orClause("site:", sites));
 
-  const filetypes = tokenizeCSV(values.filetypes);
+  const filetypes = tokenizeCSV(values.filetypes || '');
   if (filetypes.length) terms.push(orClause("filetype:", filetypes));
 
-  const inurls = tokenizeCSV(values.inurl);
+  const inurls = tokenizeCSV(values.inurl || '');
   if (inurls.length) terms.push(orClause("inurl:", inurls));
 
-  const intitles = tokenizeCSV(values.intitle);
+  const intitles = tokenizeCSV(values.intitle || '');
   if (intitles.length) terms.push(orClause("intitle:", intitles));
 
-  const intexts = tokenizeCSV(values.intext);
+  const intexts = tokenizeCSV(values.intext || '');
   if (intexts.length) terms.push(orClause("intext:", intexts));
 
   if (values.after) terms.push(`after:${values.after}`);
@@ -196,7 +203,10 @@ function Investigation() {
   const [saving, setSaving] = useState(false);
   const [investigationName, setInvestigationName] = useState("");
 
-  const query = useMemo(() => buildQuery(values, preset, useAND), [values, preset, useAND]);
+  const query = useMemo(() => {
+    if (!values || typeof values !== 'object') return '';
+    return buildQuery(values, preset, useAND);
+  }, [values, preset, useAND]);
 
   // Advanced dorking templates
   const dorkingTemplates = [
@@ -328,19 +338,23 @@ function Investigation() {
   };
 
   const generateVariations = () => {
-    if (!values.fullName) return [];
+    if (!values || !values.fullName || typeof values.fullName !== 'string') return [];
     
-    const name = values.fullName;
+    const name = values.fullName.trim();
+    if (!name) return [];
+    
     const variations = [];
     
     // Basic variations
     variations.push(`"${name}"`);
     
     if (name.includes(' ')) {
-      const parts = name.split(' ');
-      variations.push(`"${parts[0]} ${parts[parts.length - 1]}"`); // First + Last
-      variations.push(`"${parts[0][0]}. ${parts[parts.length - 1]}"`); // Initial + Last
-      variations.push(`"${parts[0]} ${parts[parts.length - 1][0]}."`); // First + Initial
+      const parts = name.split(' ').filter(p => p.trim());
+      if (parts.length >= 2) {
+        variations.push(`"${parts[0]} ${parts[parts.length - 1]}"`); // First + Last
+        variations.push(`"${parts[0][0]}. ${parts[parts.length - 1]}"`); // Initial + Last
+        variations.push(`"${parts[0]} ${parts[parts.length - 1][0]}."`); // First + Initial
+      }
     }
     
     return variations.slice(0, 4); // Limit to 4 variations
@@ -422,13 +436,13 @@ function Investigation() {
   };
 
   const chips = [
-    values.fullName && `Name: ${values.fullName}`,
-    values.username && `User: ${values.username}`,
-    values.email && `Email: ${values.email}`,
-    values.phone && `Phone: ${values.phone}`,
-    values.location && `Loc: ${values.location}`,
-    values.company && `Org: ${values.company}`,
-    values.school && `School: ${values.school}`,
+    values && values.fullName && `Name: ${values.fullName}`,
+    values && values.username && `User: ${values.username}`,
+    values && values.email && `Email: ${values.email}`,
+    values && values.phone && `Phone: ${values.phone}`,
+    values && values.location && `Loc: ${values.location}`,
+    values && values.company && `Org: ${values.company}`,
+    values && values.school && `School: ${values.school}`,
   ].filter(Boolean);
 
   return (
