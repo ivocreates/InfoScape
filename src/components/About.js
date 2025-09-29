@@ -28,7 +28,7 @@ function About() {
   };
 
   const openDonationLink = () => {
-    window.open('https://razorpay.me/@inovix', '_blank');
+    window.open('https://razorpay.me/@ivocreates', '_blank');
   };
 
   const features = [
@@ -155,6 +155,43 @@ function About() {
                           <Download className="w-5 h-5" />
                           <span className="hidden sm:inline">Download App</span>
                           <span className="sm:hidden">Download</span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Direct Downloads Section */}
+                    <div className="mt-6 pt-6 border-t border-white/20">
+                      <h4 className="font-semibold mb-4 text-center">📦 Direct Downloads</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button
+                          onClick={() => {
+                            // Check if file exists, otherwise redirect to GitHub releases
+                            const link = document.createElement('a');
+                            link.href = '/downloads/InfoScope-OSINT-Setup-1.1.0.exe';
+                            link.download = 'InfoScope-OSINT-Setup-1.1.0.exe';
+                            link.onerror = () => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank');
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Windows
+                        </button>
+                        <button
+                          onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          macOS
+                        </button>
+                        <button
+                          onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Linux
                         </button>
                       </div>
                     </div>
