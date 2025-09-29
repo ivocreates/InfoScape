@@ -2,6 +2,11 @@
   "name": "infoscope-osint",
   "version": "1.1.0",
   "description": "Professional OSINT Investigation Platform - Desktop and Web application for comprehensive intelligence gathering with built-in browser, Google dorking, and 37+ OSINT tools",
+  "author": {
+    "name": "Ivo Pereira",
+    "email": "ivo@ivocreates.gmail.com",
+    "url": "https://ivocreates.site"
+  },
   "main": "public/electron.js",
   "homepage": "https://infoscope-osint.web.app",
   "scripts": {
@@ -26,8 +31,10 @@
   "build": {
     "appId": "com.infoscope.osint",
     "productName": "InfoScope OSINT",
+    "copyright": "Copyright © 2025 Ivo Pereira",
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "assets",
+      "output": "dist"
     },
     "files": [
       "build/**/*",
@@ -35,14 +42,28 @@
       "public/electron.js",
       "public/preload.js"
     ],
+    "extraResources": [
+      {
+        "from": "build",
+        "to": "build",
+        "filter": ["**/*"]
+      }
+    ],
     "mac": {
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "target": "dmg"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/logo192.png"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "dependencies": {
