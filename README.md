@@ -1,13 +1,44 @@
-# InfoScope OSINT - Desktop Application
+# InfoScope OSINT - Professional Investigation Platform
 
-A comprehensive desktop OSINT (Open Source Intelligence) application for person information lookup with built-in browser capabilities and advanced Google dorking techniques.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/ivocreates/InfoScape)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-green.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
-## Features
+A comprehensive OSINT (Open Source Intelligence) investigation platform that combines advanced research tools with privacy-focused browsing capabilities. Available as both desktop application and web app with PWA support. Built for cybersecurity professionals, journalists, researchers, and digital investigators.
 
-- **🔍 Advanced Search Query Builder**: Build precise Google dorks with visual interface
-- **🌐 Built-in Browser**: Integrated browser for seamless investigation workflow  
-- **🔐 Firebase Integration**: Secure cloud storage with Google authentication
-- **📊 Profile Analyzer**: Analyze social media profiles and assess privacy risks
+## 🚀 Key Features
+
+### 🔍 **Advanced OSINT Tools (37+ Integrated)**
+- **People Search**: TruePeopleSearch, BeenVerified, PeopleFinder, Whitepages, FastPeopleSearch
+- **Social Media Intelligence**: Sherlock, Social Searcher, Mention, KnowEm, Namechk
+- **Email Analysis**: Hunter.io, Verify-Email, EmailRep, Have I Been Pwned, VoilaNorbert
+- **Breach Analysis**: BreachDirectory, IntelligenceX, Snusbase, LeakCheck
+- **Search Engines**: Shodan, Censys, Google Dorking, DuckDuckGo, Pipl
+- **Ethical Hacking**: Maltego, SpiderFoot, theHarvester, Recon-ng, OSINT Framework
+
+### 🌐 **Multi-Platform Anonymous Browsing**
+- **Tor Browser Integration** with exit node selection (18+ countries)
+- **Multi-hop Proxy Chaining** for maximum anonymity
+- **Privacy Browsers**: Mullvad, LibreWolf, Epic Privacy Browser, Tails, Whonix  
+- **Anonymous Networks**: I2P, Freenet, Psiphon, Lantern, UltraSurf
+
+### ⚡ **Advanced Google Dorking Engine**
+- Visual query builder with professional techniques
+- Multi-search engine support (Google, Bing, DuckDuckGo)
+- Site-specific and file type targeting
+- Date range filtering and advanced operators
+
+### 👤 **Comprehensive Profile Management**
+- Investigation history with search tracking
+- Data export/import in multiple formats
+- Privacy settings and data retention controls
+- Storage usage monitoring and cleanup tools
+
+### 🖥️ **Multi-Platform Access**
+- **Desktop Application** (Windows, macOS, Linux)
+- **Web Application** (runs in any modern browser)
+- **Progressive Web App** (installable from browser)
+- **Cross-device sync** with Firebase integration
 - **� Link Scanner**: Advanced link detection with accuracy scoring and match probability
 - **🛠️ OSINT Tools Arsenal**: Integrated access to 25+ professional OSINT tools
 - **�📱 Cross-Platform**: Built with Electron for Windows, macOS, and Linux
@@ -158,13 +189,75 @@ infoscope-osint/
 └── package.json           # Dependencies and scripts
 ```
 
+## 🔗 Developer Information
+
+**Created by:** [Ivo Pereira](https://ivocreates.site/)  
+**GitHub:** [@ivocreates](https://github.com/ivocreates)  
+**Website:** [ivocreates.site](https://ivocreates.site/)
+
+### 💖 Support Development
+
+InfoScope OSINT is free and open source. Your support helps maintain the project and add new features:
+
+- **💳 UPI (India):** `ivopereiraix3@oksbi`
+- **🌍 Razorpay (Global):** [razorpay.me/@inovix](https://razorpay.me/@inovix)
+- **⭐ GitHub:** Star the repository to show appreciation
+- **🤝 Contribute:** Submit PRs, report bugs, suggest features
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 16+ and npm
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Optional: Tor Browser for enhanced anonymity
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/ivocreates/InfoScape.git
+cd InfoScape
+
+# Install dependencies
+npm install
+```
+
+## 🖥️ Running the Application
+
+### Desktop Application (Full Features)
+```bash
+npm run electron-dev    # Development mode with hot reload
+npm run electron-pack   # Build for distribution
+```
+
+### Web Application (Browser Access)  
+```bash
+npm start              # React dev server (http://localhost:3000)
+npm run build          # Production build for deployment
+npm run serve          # Serve production build locally
+```
+
+### Progressive Web App (PWA)
+1. Visit the web app in Chrome/Edge/Safari
+2. Click the "Install" icon in the address bar
+3. Or use the "Install App" button in the Profile section
+
+## 📱 Platform Support
+
+| Platform | Desktop App | Web App | PWA Install | Tor Integration |
+|----------|------------|---------|-------------|-----------------|
+| Windows  | ✅ NSIS    | ✅      | ✅          | ✅             |
+| macOS    | ✅ DMG     | ✅      | ✅          | ✅             |
+| Linux    | ✅ AppImage| ✅      | ✅          | ✅             |
+| Android  | ➖         | ✅      | ✅          | ➖             |
+| iOS      | ➖         | ✅      | ✅          | ➖             |
+
 ## Available Scripts
 
-- `npm start` - Start React development server
-- `npm run build` - Build React app for production
-- `npm run electron` - Start Electron app
-- `npm run electron-dev` - Start Electron in development mode
+- `npm start` - React development server (web app)
+- `npm run build` - Build React app for production  
+- `npm run electron-dev` - Electron app with development server
 - `npm run electron-pack` - Package Electron app for distribution
+- `npm run serve` - Serve production build locally
 
 ## Keyboard Shortcuts
 

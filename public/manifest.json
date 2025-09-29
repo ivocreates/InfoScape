@@ -1,15 +1,58 @@
 {
-  "short_name": "InfoScope OSINT",
-  "name": "InfoScope OSINT - Person Finder",
+  "short_name": "InfoScope",
+  "name": "InfoScope OSINT - Professional Investigation Platform",
+  "description": "Comprehensive OSINT tools with anonymous browsing, Tor integration, and advanced investigation capabilities.",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "security", "utilities"],
+  "shortcuts": [
+    {
+      "name": "New Investigation",
+      "short_name": "Investigate",
+      "description": "Start a new OSINT investigation",
+      "url": "/?view=investigation",
+      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "OSINT Tools",
+      "short_name": "Tools", 
+      "description": "Access OSINT tools collection",
+      "url": "/?view=osint-tools",
+      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Anonymous Browser",
+      "short_name": "Browser",
+      "description": "Open anonymous browser session", 
+      "url": "/?action=browser",
+      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url": "https://github.com/ivocreates/InfoScape/releases"
+    }
+  ]
 }

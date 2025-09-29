@@ -25,6 +25,11 @@ function Dashboard({ setCurrentView }) {
 
   const fetchRecentInvestigations = async () => {
     try {
+      if (!auth.currentUser) {
+        console.error('User not authenticated');
+        return;
+      }
+      
       const q = query(
         collection(db, `users/${auth.currentUser.uid}/investigations`),
         orderBy('createdAt', 'desc'),
@@ -44,6 +49,11 @@ function Dashboard({ setCurrentView }) {
 
   const fetchStats = async () => {
     try {
+      if (!auth.currentUser) {
+        console.error('User not authenticated');
+        return;
+      }
+      
       const q = query(collection(db, `users/${auth.currentUser.uid}/investigations`));
       const snapshot = await getDocs(q);
       const investigations = snapshot.docs.map(doc => doc.data());

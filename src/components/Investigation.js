@@ -376,6 +376,12 @@ function Investigation() {
 
     setSaving(true);
     try {
+      if (!auth.currentUser) {
+        alert('You must be logged in to save investigations.');
+        setSaving(false);
+        return;
+      }
+
       const investigationData = {
         name: investigationName,
         targetName: values.fullName,
@@ -424,15 +430,22 @@ function Investigation() {
     setInvestigationName("");
   };
 
-  const quickFillExample = () => {
+  const clearAllFields = () => {
     setValues({
-      ...values,
-      fullName: "John Smith",
-      location: "San Francisco",
-      company: "Microsoft",
-      sites: "linkedin.com, github.com, twitter.com",
-      include: "software engineer, developer"
+      fullName: "",
+      username: "",
+      email: "",
+      phone: "",
+      location: "",
+      company: "",
+      sites: "",
+      exclude: "",
+      include: "",
+      fileTypes: "",
+      dateRange: ""
     });
+    setQuery("");
+    setInvestigationName("");
   };
 
   const chips = [
@@ -462,11 +475,11 @@ function Investigation() {
             
             <div className="flex items-center gap-2">
               <button
-                onClick={quickFillExample}
+                onClick={clearAllFields}
                 className="btn-secondary text-sm"
               >
                 <Zap className="w-4 h-4 mr-1" />
-                Quick Fill
+                Clear All
               </button>
             </div>
           </div>

@@ -5,9 +5,9 @@ import { auth } from './firebase';
 import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
 import Investigation from './components/Investigation';
-import ProfileAnalyzer from './components/ProfileAnalyzer';
-import LinkScanner from './components/LinkScanner';
 import OSINTTools from './components/OSINTTools';
+import Profile from './components/Profile';
+import About from './components/About';
 import Navigation from './components/Navigation';
 import LoadingSpinner from './components/LoadingSpinner';
 
@@ -43,6 +43,18 @@ function App() {
         window.electronAPI.removeAllListeners('save-investigation');
       };
     }
+
+    // Handle PWA deep linking parameters
+    if (window.infoscopeParams) {
+      const { view, action } = window.infoscopeParams;
+      if (view) {
+        setCurrentView(view);
+      }
+      if (action === 'browser') {
+        // Trigger browser selector modal
+        // This could be handled by setting a state that Navigation component reads
+      }
+    }
   }, []);
 
   if (loading) {
@@ -64,9 +76,9 @@ function App() {
       <main className="transition-all duration-200">
         {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
         {currentView === 'investigation' && <Investigation />}
-        {currentView === 'profile-analyzer' && <ProfileAnalyzer />}
-        {currentView === 'link-scanner' && <LinkScanner />}
         {currentView === 'osint-tools' && <OSINTTools />}
+        {currentView === 'profile' && <Profile user={user} />}
+        {currentView === 'about' && <About />}
       </main>
     </div>
   );
