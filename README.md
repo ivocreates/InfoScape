@@ -1,8 +1,18 @@
 # InfoScope OSINT - Professional Investigation Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/ivocreates/InfoScape)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/ivocreates/InfoScope)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-green.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+[![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange.svg)](https://infoscope-osint.web.app)
+
+## 🌐 **Quick Access**
+
+| Platform | Link | Description |
+|----------|------|-------------|
+| **🌐 Web App** | **[infoscope-osint.web.app](https://infoscope-osint.web.app)** | Instant access - no installation required |
+| **📱 PWA Install** | [Install Guide](https://infoscope-osint.web.app) | Add to home screen on mobile/desktop |
+| **💻 Desktop** | [GitHub Releases](https://github.com/ivocreates/InfoScope/releases) | Windows, macOS, Linux packages |
+| **📋 Source** | [GitHub Repository](https://github.com/ivocreates/InfoScope) | Full source code and documentation |
 
 A comprehensive OSINT (Open Source Intelligence) investigation platform that combines advanced research tools with privacy-focused browsing capabilities. Available as both desktop application and web app with PWA support. Built for cybersecurity professionals, journalists, researchers, and digital investigators.
 
@@ -53,6 +63,22 @@ A comprehensive OSINT (Open Source Intelligence) investigation platform that com
 - **Backend**: Firebase (Authentication, Firestore, Storage)
 - **Icons**: Lucide React
 - **Styling**: Tailwind CSS with custom components
+
+## 🚀 **Get Started - Multiple Ways to Access**
+
+### **Option 1: Web App (Recommended)**
+Simply visit **[infoscope-osint.web.app](https://infoscope-osint.web.app)** in any modern browser. No installation required - works instantly with full functionality.
+
+### **Option 2: Install as Progressive Web App (PWA)**
+1. Visit [infoscope-osint.web.app](https://infoscope-osint.web.app)
+2. Look for "Install App" or "Add to Home Screen" option in your browser
+3. Install for offline access and app-like experience
+
+### **Option 3: Desktop Application**
+Download platform-specific packages from [GitHub Releases](https://github.com/ivocreates/InfoScope/releases):
+- **Windows**: InfoScope-OSINT-Setup-1.1.0.exe
+- **macOS**: InfoScope-OSINT-1.1.0.dmg  
+- **Linux**: InfoScope-OSINT-1.1.0.AppImage
 
 ## Installation & Setup
 
@@ -225,21 +251,31 @@ npm install
 
 ### Desktop Application (Full Features)
 ```bash
-npm run electron-dev    # Development mode with hot reload
-npm run electron-pack   # Build for distribution
+npm run electron-dev      # Development mode with hot reload
+npm run electron-pack     # Build for current platform
+npm run electron-pack-win # Build Windows installer
+npm run electron-pack-mac # Build macOS DMG
+npm run electron-pack-linux # Build Linux AppImage
+npm run package           # Build for all platforms
 ```
 
 ### Web Application (Browser Access)  
 ```bash
-npm start              # React dev server (http://localhost:3000)
-npm run build          # Production build for deployment
-npm run serve          # Serve production build locally
+npm start                 # React dev server (http://localhost:3000)
+npm run build            # Production build for deployment
+npm run serve            # Serve production build locally
+npm run deploy           # Deploy to Firebase hosting
 ```
 
+### Live Deployment
+- **Production Web App**: [infoscope-osint.web.app](https://infoscope-osint.web.app)
+- **Firebase Console**: [console.firebase.google.com/project/infoscope-osint](https://console.firebase.google.com/project/infoscope-osint/overview)
+- **GitHub Repository**: [github.com/ivocreates/InfoScope](https://github.com/ivocreates/InfoScope)
+
 ### Progressive Web App (PWA)
-1. Visit the web app in Chrome/Edge/Safari
+1. Visit [infoscope-osint.web.app](https://infoscope-osint.web.app) in Chrome/Edge/Safari
 2. Click the "Install" icon in the address bar
-3. Or use the "Install App" button in the Profile section
+3. Or use the "Install App" button in the About section
 
 ## 📱 Platform Support
 
