@@ -162,7 +162,21 @@ function About() {
                     {/* Direct Downloads Section */}
                     <div className="mt-6 pt-6 border-t border-white/20">
                       <h4 className="font-semibold mb-4 text-center">📦 Direct Downloads</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = '/downloads/InfoScope-OSINT-WebApp-v1.1.0.zip';
+                            link.download = 'InfoScope-OSINT-WebApp-v1.1.0.zip';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-green-500/20 border border-green-400/30 text-green-100 rounded-lg text-sm hover:bg-green-500/30 transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Web App
+                        </button>
                         <button
                           onClick={() => {
                             // Check if file exists, otherwise redirect to GitHub releases
@@ -174,26 +188,29 @@ function About() {
                             link.click();
                             document.body.removeChild(link);
                           }}
-                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
                         >
                           <Download className="w-4 h-4" />
                           Windows
                         </button>
                         <button
                           onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
-                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
                         >
                           <Download className="w-4 h-4" />
                           macOS
                         </button>
                         <button
                           onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
-                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-white/10 border border-white/30 text-white rounded-lg text-sm hover:bg-white/20 transition-colors"
                         >
                           <Download className="w-4 h-4" />
                           Linux
                         </button>
                       </div>
+                      <p className="text-center text-xs text-blue-200 mt-3">
+                        💡 Web App download includes all features and works offline
+                      </p>
                     </div>
                     
                     {/* Platform Instructions */}
