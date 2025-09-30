@@ -11,8 +11,17 @@ import {
   Info,
   ExternalLink,
   X,
-  Chrome
+  Chrome,
+  RefreshCw,
+  CheckCircle,
+  Circle,
+  Wifi,
+  WifiOff,
+  MapPin,
+  Timer,
+  Activity
 } from 'lucide-react';
+import { ProxyManager, freeProxyServers, proxyChains, torExitNodes, securityLevels, browserPresets } from '../utils/proxyManager';
 
 // Browser icon components (simplified versions)
 const BrowserIcons = {
@@ -36,18 +45,26 @@ const BrowserIcons = {
 function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   const [availableBrowsers, setAvailableBrowsers] = useState({});
   const [selectedBrowser, setSelectedBrowser] = useState('builtin');
+  const [securityLevel, setSecurityLevel] = useState('medium');
   const [proxyConfig, setProxyConfig] = useState({
     enabled: false,
     type: 'http',
     host: '',
     port: '',
     username: '',
-    password: ''
+    password: '',
+    selectedProxy: null
   });
   const [torMode, setTorMode] = useState(false);
   const [selectedExitNode, setSelectedExitNode] = useState('auto');
   const [chainMode, setChainMode] = useState(false);
-  const [selectedChain, setSelectedChain] = useState([]);
+  const [selectedChain, setSelectedChain] = useState('chain1');
+  const [customChain, setCustomChain] = useState([]);
+  const [proxyList, setProxyList] = useState(freeProxyServers);
+  const [proxyTestResults, setProxyTestResults] = useState({});
+  const [isTestingProxies, setIsTestingProxies] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState('research');
+  const [advancedMode, setAdvancedMode] = useState(false);
 
   useEffect(() => {
     if (isOpen && window.electronAPI) {
@@ -103,7 +120,46 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
     be: { name: 'Belgium', country: 'be', flag: '🇧🇪', description: 'Exit via Belgian servers' },
     dk: { name: 'Denmark', country: 'dk', flag: '🇩🇰', description: 'Exit via Danish servers' },
     ro: { name: 'Romania', country: 'ro', flag: '🇷🇴', description: 'Exit via Romanian servers' },
-    cz: { name: 'Czech Republic', country: 'cz', flag: '🇨🇿', description: 'Exit via Czech servers' }
+    cz: { name: 'Czech Republic', country: 'cz', flag: '🇨🇿', description: 'Exit via Czech servers' },
+    pl: { name: 'Poland', country: 'pl', flag: '🇵🇱', description: 'Exit via Polish servers' },
+    it: { name: 'Italy', country: 'it', flag: '🇮🇹', description: 'Exit via Italian servers' },
+    es: { name: 'Spain', country: 'es', flag: '🇪🇸', description: 'Exit via Spanish servers' },
+    pt: { name: 'Portugal', country: 'pt', flag: '🇵🇹', description: 'Exit via Portuguese servers' },
+    gr: { name: 'Greece', country: 'gr', flag: '🇬🇷', description: 'Exit via Greek servers' },
+    hu: { name: 'Hungary', country: 'hu', flag: '🇭🇺', description: 'Exit via Hungarian servers' },
+    bg: { name: 'Bulgaria', country: 'bg', flag: '🇧🇬', description: 'Exit via Bulgarian servers' },
+    hr: { name: 'Croatia', country: 'hr', flag: '🇭🇷', description: 'Exit via Croatian servers' },
+    ee: { name: 'Estonia', country: 'ee', flag: '🇪🇪', description: 'Exit via Estonian servers' },
+    lv: { name: 'Latvia', country: 'lv', flag: '🇱🇻', description: 'Exit via Latvian servers' },
+    lt: { name: 'Lithuania', country: 'lt', flag: '🇱🇹', description: 'Exit via Lithuanian servers' },
+    si: { name: 'Slovenia', country: 'si', flag: '🇸🇮', description: 'Exit via Slovenian servers' },
+    sk: { name: 'Slovakia', country: 'sk', flag: '🇸🇰', description: 'Exit via Slovak servers' },
+    ie: { name: 'Ireland', country: 'ie', flag: '🇮🇪', description: 'Exit via Irish servers' },
+    lu: { name: 'Luxembourg', country: 'lu', flag: '🇱🇺', description: 'Exit via Luxembourg servers' },
+    mt: { name: 'Malta', country: 'mt', flag: '🇲🇹', description: 'Exit via Maltese servers' },
+    cy: { name: 'Cyprus', country: 'cy', flag: '🇨🇾', description: 'Exit via Cypriot servers' },
+    kr: { name: 'South Korea', country: 'kr', flag: '🇰🇷', description: 'Exit via Korean servers' },
+    tw: { name: 'Taiwan', country: 'tw', flag: '🇹🇼', description: 'Exit via Taiwanese servers' },
+    hk: { name: 'Hong Kong', country: 'hk', flag: '🇭🇰', description: 'Exit via Hong Kong servers' },
+    my: { name: 'Malaysia', country: 'my', flag: '🇲🇾', description: 'Exit via Malaysian servers' },
+    th: { name: 'Thailand', country: 'th', flag: '🇹🇭', description: 'Exit via Thai servers' },
+    ph: { name: 'Philippines', country: 'ph', flag: '🇵🇭', description: 'Exit via Philippine servers' },
+    id: { name: 'Indonesia', country: 'id', flag: '🇮🇩', description: 'Exit via Indonesian servers' },
+    vn: { name: 'Vietnam', country: 'vn', flag: '🇻🇳', description: 'Exit via Vietnamese servers' },
+    in: { name: 'India', country: 'in', flag: '🇮🇳', description: 'Exit via Indian servers' },
+    br: { name: 'Brazil', country: 'br', flag: '🇧🇷', description: 'Exit via Brazilian servers' },
+    mx: { name: 'Mexico', country: 'mx', flag: '🇲🇽', description: 'Exit via Mexican servers' },
+    ar: { name: 'Argentina', country: 'ar', flag: '🇦🇷', description: 'Exit via Argentine servers' },
+    cl: { name: 'Chile', country: 'cl', flag: '🇨🇱', description: 'Exit via Chilean servers' },
+    co: { name: 'Colombia', country: 'co', flag: '🇨🇴', description: 'Exit via Colombian servers' },
+    za: { name: 'South Africa', country: 'za', flag: '🇿🇦', description: 'Exit via South African servers' },
+    eg: { name: 'Egypt', country: 'eg', flag: '🇪🇬', description: 'Exit via Egyptian servers' },
+    tr: { name: 'Turkey', country: 'tr', flag: '🇹🇷', description: 'Exit via Turkish servers' },
+    il: { name: 'Israel', country: 'il', flag: '🇮🇱', description: 'Exit via Israeli servers' },
+    ae: { name: 'UAE', country: 'ae', flag: '🇦🇪', description: 'Exit via UAE servers' },
+    nz: { name: 'New Zealand', country: 'nz', flag: '🇳🇿', description: 'Exit via New Zealand servers' },
+    ru: { name: 'Russia', country: 'ru', flag: '🇷🇺', description: 'Exit via Russian servers' },
+    ua: { name: 'Ukraine', country: 'ua', flag: '🇺🇦', description: 'Exit via Ukrainian servers' }
   };
 
   const chainProfiles = {
@@ -123,13 +179,113 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
         host: '127.0.0.1',
         port: '9050',
         username: '',
-        password: ''
+        password: '',
+        selectedProxy: null
       });
       setTorMode(true);
     } else if (browserKey === 'mullvad') {
       setTorMode(true); // Mullvad Browser has Tor-like features
     } else {
       setTorMode(false);
+    }
+  };
+
+  // Enhanced proxy management functions
+  const testSelectedProxy = async (proxy) => {
+    setIsTestingProxies(true);
+    try {
+      const result = await ProxyManager.testProxy(proxy);
+      setProxyTestResults(prev => ({
+        ...prev,
+        [proxy.id]: result
+      }));
+    } catch (error) {
+      setProxyTestResults(prev => ({
+        ...prev,
+        [proxy.id]: { success: false, error: error.message }
+      }));
+    } finally {
+      setIsTestingProxies(false);
+    }
+  };
+
+  const refreshProxyList = async () => {
+    setIsTestingProxies(true);
+    try {
+      const freshProxies = await ProxyManager.refreshProxyList();
+      setProxyList(freshProxies);
+      
+      // Test all proxies
+      const testResults = {};
+      for (const proxy of freshProxies.slice(0, 5)) { // Test first 5 for performance
+        try {
+          const result = await ProxyManager.testProxy(proxy);
+          testResults[proxy.id] = result;
+        } catch (error) {
+          testResults[proxy.id] = { success: false, error: error.message };
+        }
+      }
+      setProxyTestResults(testResults);
+    } catch (error) {
+      console.error('Failed to refresh proxy list:', error);
+    } finally {
+      setIsTestingProxies(false);
+    }
+  };
+
+  const selectRandomProxy = (type = null) => {
+    const randomProxy = ProxyManager.getRandomProxy(type);
+    if (randomProxy) {
+      setProxyConfig(prev => ({
+        ...prev,
+        enabled: true,
+        type: randomProxy.type.toLowerCase(),
+        host: randomProxy.host,
+        port: randomProxy.port.toString(),
+        selectedProxy: randomProxy
+      }));
+    }
+  };
+
+  const applySecurityLevel = (level) => {
+    setSecurityLevel(level);
+    const config = securityLevels[level];
+    
+    if (config.proxy) {
+      selectRandomProxy();
+    }
+    
+    if (config.tor) {
+      setTorMode(true);
+      if (selectedBrowser !== 'tor') {
+        setSelectedBrowser('tor');
+      }
+    }
+    
+    if (config.vpn) {
+      // VPN configuration would go here in a real implementation
+      console.log('VPN configuration needed for maximum security');
+    }
+  };
+
+  const applyProxyChain = (chainId) => {
+    const chain = proxyChains.find(c => c.id === chainId);
+    if (chain) {
+      setSelectedChain(chainId);
+      setChainMode(true);
+      
+      // Configure first proxy in chain
+      const firstProxy = proxyList.find(p => p.id === chain.proxies[0]);
+      if (firstProxy) {
+        setProxyConfig(prev => ({
+          ...prev,
+          enabled: true,
+          type: firstProxy.type.toLowerCase(),
+          host: firstProxy.host,
+          port: firstProxy.port.toString(),
+          selectedProxy: firstProxy
+        }));
+      }
     }
   };
 
@@ -208,36 +364,71 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full m-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">OSINT Browser Launcher</h2>
-            <p className="text-sm text-gray-600 mt-1">Choose browser and proxy configuration for investigation</p>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">OSINT Browser Launcher</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Choose browser and proxy configuration for investigation</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Desktop App Message */}
+        {!window.electronAPI && (
+          <div className="mx-6 mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Monitor className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Desktop Application Required</h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                  To use different browsers and advanced proxy features, please install the desktop application. 
+                  The web version uses the built-in browser with limited proxy support.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Download Desktop App
+                  </button>
+                  <button
+                    onClick={() => setAdvancedMode(!advancedMode)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Web Browser Setup Guide
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="p-6">
           {/* URL Display */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
-              <ExternalLink className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Target URL:</span>
+              <ExternalLink className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Target URL:</span>
             </div>
-            <div className="text-sm text-gray-900 font-mono break-all">{url}</div>
+            <div className="text-sm text-gray-900 dark:text-white font-mono break-all">{url}</div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Browser Selection */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Browser</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Select Browser</h3>
               <div className="space-y-3">
                 {Object.entries(availableBrowsers).map(([key, browser]) => {
                   const IconComponent = browserIcons[key] || Globe;
@@ -247,19 +438,19 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                       onClick={() => browser.available && handleBrowserSelect(key)}
                       className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                         selectedBrowser === key
-                          ? 'border-blue-500 bg-blue-50'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400'
                           : browser.available
-                          ? 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                          : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
+                          ? 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
+                          : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-50'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <IconComponent className={`w-6 h-6 ${
-                          selectedBrowser === key ? 'text-blue-600' : 'text-gray-400'
+                          selectedBrowser === key ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
                         }`} />
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900">{browser.name}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="font-medium text-gray-900 dark:text-white">{browser.name}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {browser.available ? 
                               (browser.proxy ? 'Proxy support available' : 'Standard browsing') :
                               'Not installed'
@@ -267,22 +458,212 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                           </div>
                         </div>
                         {selectedBrowser === key && (
-                          <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                          <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                         )}
                       </div>
                     </div>
                   );
                 })}
               </div>
+
+              {/* Browser Installation Section */}
+              {!window.electronAPI && (
+                <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-lg">
+                  <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" />
+                    Browser Installation Guide
+                  </h4>
+                  <p className="text-sm text-amber-700 dark:text-amber-300 mb-3">
+                    For enhanced security and privacy during OSINT investigations:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href="https://www.torproject.org/download/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/50 rounded-lg hover:bg-amber-25 dark:hover:bg-amber-900/20 transition-colors"
+                    >
+                      <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white text-sm">Tor Browser</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Maximum anonymity</div>
+                      </div>
+                    </a>
+                    <a
+                      href="https://brave.com/download/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/50 rounded-lg hover:bg-amber-25 dark:hover:bg-amber-900/20 transition-colors"
+                    >
+                      <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white text-sm">Brave Browser</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Built-in privacy</div>
+                      </div>
+                    </a>
+                    <a
+                      href="https://www.mozilla.org/firefox/download/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/50 rounded-lg hover:bg-amber-25 dark:hover:bg-amber-900/20 transition-colors"
+                    >
+                      <Globe className="w-4 h-4 text-red-600 dark:text-red-400" />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white text-sm">Firefox</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Open source</div>
+                      </div>
+                    </a>
+                    <a
+                      href="https://mullvad.net/browser"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/50 rounded-lg hover:bg-amber-25 dark:hover:bg-amber-900/20 transition-colors"
+                    >
+                      <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <div>
+                        <div className="font-medium text-gray-900 dark:text-white text-sm">Mullvad Browser</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Privacy focused</div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Proxy Configuration */}
+            {/* Enhanced Proxy Configuration */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Proxy Configuration</h3>
-              
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Proxy Configuration</h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={refreshProxyList}
+                    disabled={isTestingProxies}
+                    className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                    title="Refresh proxy list"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isTestingProxies ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button
+                    onClick={() => setAdvancedMode(!advancedMode)}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                      advancedMode 
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' 
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {advancedMode ? 'Simple' : 'Advanced'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Security Level Quick Selection */}
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Security Level</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(securityLevels).map(([level, config]) => (
+                    <button
+                      key={level}
+                      onClick={() => applySecurityLevel(level)}
+                      className={`p-3 text-left border rounded-lg transition-colors ${
+                        securityLevel === level
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900 dark:text-white">{config.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{config.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Free Proxy Servers */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Free Proxy Servers</label>
+                  <button
+                    onClick={() => selectRandomProxy()}
+                    className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                  >
+                    Random Proxy
+                  </button>
+                </div>
+                <div className="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
+                  {proxyList.slice(0, 10).map((proxy) => {
+                    const testResult = proxyTestResults[proxy.id];
+                    const isSelected = proxyConfig.selectedProxy?.id === proxy.id;
+                    
+                    return (
+                      <div
+                        key={proxy.id}
+                        onClick={() => setProxyConfig(prev => ({
+                          ...prev,
+                          enabled: true,
+                          type: proxy.type.toLowerCase(),
+                          host: proxy.host,
+                          port: proxy.port.toString(),
+                          selectedProxy: proxy
+                        }))}
+                        className={`p-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                          isSelected ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700' : ''
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-sm text-gray-900 dark:text-white">{proxy.host}:{proxy.port}</span>
+                              <span className={`px-1.5 py-0.5 text-xs rounded ${
+                                proxy.type === 'HTTPS' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
+                                proxy.type === 'SOCKS5' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' :
+                                'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                              }`}>
+                                {proxy.type}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">{proxy.country}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                proxy.anonymity === 'Elite' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' :
+                                proxy.anonymity === 'Anonymous' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400' :
+                                'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                              }`}>
+                                {proxy.anonymity}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">↑{proxy.uptime}</span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">{proxy.speed}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {testResult ? (
+                              testResult.success ? (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <X className="w-4 h-4 text-red-500" />
+                              )
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  testSelectedProxy(proxy);
+                                }}
+                                className="p-1 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 rounded"
+                                title="Test proxy"
+                              >
+                                <Activity className="w-3 h-3" />
+                              </button>
+                            )}
+                            {isSelected && <Circle className="w-3 h-3 text-blue-500 fill-current" />}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Quick Proxy Profiles */}
               <div className="mb-4">
-                <label className="text-sm font-medium text-gray-700 mb-2 block">Quick Profiles</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Quick Profiles</label>
                 <div className="grid grid-cols-1 gap-2">
                   {Object.entries(proxyProfiles).map(([key, profile]) => (
                     <button
@@ -291,12 +672,12 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                       className={`p-3 text-left border rounded-lg transition-colors ${
                         (key === 'none' && !proxyConfig.enabled) ||
                         (key === 'tor' && proxyConfig.enabled && proxyConfig.host === '127.0.0.1' && proxyConfig.port === '9050')
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                     >
-                      <div className="font-medium text-gray-900">{profile.name}</div>
-                      <div className="text-sm text-gray-500">{profile.description}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{profile.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{profile.description}</div>
                     </button>
                   ))}
                 </div>
@@ -342,7 +723,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                         <select
                           value={proxyConfig.type}
                           onChange={(e) => setProxyConfig(prev => ({ ...prev, type: e.target.value }))}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="select-field"
                         >
                           <option value="http">HTTP</option>
                           <option value="https">HTTPS</option>
@@ -509,15 +890,15 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Info className="w-4 h-4" />
               <span>Configuration will be used for this session only</span>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>

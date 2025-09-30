@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+import { ThemeProvider } from './contexts/ThemeContext';
 import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
 import Investigation from './components/Investigation';
@@ -13,6 +14,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import AIChat from './components/AIChat';
 import WeeklySupportPopup from './components/WeeklySupportPopup';
 import Favorites from './components/Favorites';
+import Onboarding from './components/Onboarding';
+import Feedback from './components/Feedback';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -23,17 +26,27 @@ function App() {
   const [showWeeklySupport, setShowWeeklySupport] = useState(false);
   const [chatInitialMessage, setChatInitialMessage] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
       
-      // Show weekly support popup after user logs in (with a delay)
       if (user && !loading) {
-        setTimeout(() => {
-          setShowWeeklySupport(true);
-        }, 3000); // Show after 3 seconds to let user settle in
+        // Check if user is new (first time login)
+        const hasSeenOnboarding = localStorage.getItem(`onboarding-seen-${user.uid}`);
+        
+        if (!hasSeenOnboarding) {
+          // Show onboarding for new users
+          setShowOnboarding(true);
+        } else {
+          // Show weekly support popup for returning users (with a delay)
+          setTimeout(() => {
+            setShowWeeklySupport(true);
+          }, 3000);
+        }
       }
     });
 
@@ -45,6 +58,28 @@ function App() {
     setChatInitialMessage(message);
     setIsChatOpen(true);
     setIsChatMinimized(false);
+  };
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = (targetView = 'dashboard') => {
+    if (user) {
+      localStorage.setItem(`onboarding-seen-${user.uid}`, 'true');
+    }
+    setShowOnboarding(false);
+    setCurrentView(targetView);
+    
+    // Show weekly support popup after onboarding with delay
+    setTimeout(() => {
+      setShowWeeklySupport(true);
+    }, 2000);
+  };
+
+  // Handle onboarding skip
+  const handleOnboardingSkip = () => {
+    if (user) {
+      localStorage.setItem(`onboarding-seen-${user.uid}`, 'true');
+    }
+    setShowOnboarding(false);
   };
 
   useEffect(() => {
@@ -88,18 +123,24 @@ function App() {
   }
 
   if (!user) {
-    return <AuthScreen />;
+    return (
+      <ThemeProvider>
+        <AuthScreen />
+      </ThemeProvider>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation 
-        currentView={currentView} 
-        setCurrentView={setCurrentView} 
-        user={user}
-        onOpenChat={() => setIsChatOpen(true)}
-        onOpenFavorites={() => setShowFavorites(true)}
-      />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        <Navigation 
+          currentView={currentView} 
+          setCurrentView={setCurrentView} 
+          user={user}
+          onOpenChat={() => setIsChatOpen(true)}
+          onOpenFavorites={() => setShowFavorites(true)}
+          onOpenFeedback={() => setShowFeedback(true)}
+        />
       
       <main className="transition-all duration-200">
         {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
@@ -128,13 +169,28 @@ function App() {
         onClose={() => setShowFavorites(false)}
       />
 
+      {/* Feedback Component */}
+      <Feedback
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+      />
+
       {/* Weekly Support Popup */}
       <WeeklySupportPopup
         isVisible={showWeeklySupport}
         onClose={() => setShowWeeklySupport(false)}
         onOpenChat={handleOpenChatWithMessage}
       />
-    </div>
+
+      {/* Onboarding Component */}
+      {showOnboarding && (
+        <Onboarding
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+      </div>
+    </ThemeProvider>
   );
 }
 

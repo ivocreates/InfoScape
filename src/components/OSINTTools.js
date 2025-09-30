@@ -19,10 +19,15 @@ import {
   Zap,
   BookOpen,
   Star,
-  Settings
+  Settings,
+  Network,
+  Layers,
+  X
 } from 'lucide-react';
 import BrowserSelector from './BrowserSelector';
 import StarButton from './StarButton';
+import DomainLookup from './DomainLookup';
+import { useTheme } from '../contexts/ThemeContext';
 
 function OSINTTools() {
   const [activeCategory, setActiveCategory] = useState('people');
@@ -31,6 +36,8 @@ function OSINTTools() {
   const [pendingUrl, setPendingUrl] = useState('');
   const [browserPreference, setBrowserPreference] = useState('builtin');
   const [user, setUser] = useState(null); // Add user state for favorites
+  const [showDomainLookup, setShowDomainLookup] = useState(false);
+  const { theme } = useTheme();
 
   // Get user from context or props (for now, we'll simulate it)
   React.useEffect(() => {
@@ -107,6 +114,125 @@ function OSINTTools() {
         rating: 5,
         free: false,
         integration: 'external'
+      }
+    ],
+    
+    domains: [
+      {
+        name: 'Domain Lookup Toolkit',
+        description: 'Comprehensive domain analysis with WHOIS, DNS, subdomains, and security checks',
+        url: '/domain-lookup',
+        icon: Network,
+        color: 'bg-purple-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'builtin'
+      },
+      {
+        name: 'WHOIS Lookup',
+        description: 'Domain registration information and ownership details',
+        url: 'https://whois.net',
+        icon: FileText,
+        color: 'bg-blue-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'external',
+        params: { domain: 'search_query' }
+      },
+      {
+        name: 'DNSDumpster',
+        description: 'DNS recon and research, find and lookup DNS records',
+        url: 'https://dnsdumpster.com',
+        icon: Database,
+        color: 'bg-green-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'external'
+      },
+      {
+        name: 'Certificate Search',
+        description: 'Find SSL certificates and discover subdomains via crt.sh',
+        url: 'https://crt.sh',
+        icon: Shield,
+        color: 'bg-orange-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'external',
+        params: { q: 'search_query' }
+      },
+      {
+        name: 'SecurityTrails',
+        description: 'Historical DNS data and domain intelligence',
+        url: 'https://securitytrails.com',
+        icon: Target,
+        color: 'bg-red-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: false,
+        integration: 'external'
+      },
+      {
+        name: 'BuiltWith',
+        description: 'Website technology profiler and competitive analysis',
+        url: 'https://builtwith.com',
+        icon: Layers,
+        color: 'bg-teal-600',
+        category: 'Domain Analysis',
+        rating: 4,
+        free: true,
+        integration: 'external',
+        params: { '/': 'search_query' }
+      },
+      {
+        name: 'Shodan',
+        description: 'Search engine for Internet-connected devices and services',
+        url: 'https://shodan.io',
+        icon: Search,
+        color: 'bg-gray-800',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: false,
+        integration: 'external',
+        params: { search: 'search_query' }
+      },
+      {
+        name: 'Censys',
+        description: 'Internet-wide scanning and analysis platform',
+        url: 'https://search.censys.io',
+        icon: Eye,
+        color: 'bg-blue-800',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: false,
+        integration: 'external'
+      },
+      {
+        name: 'Wayback Machine',
+        description: 'View historical snapshots of websites',
+        url: 'https://web.archive.org',
+        icon: Globe,
+        color: 'bg-indigo-600',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'external',
+        params: { url: 'search_query' }
+      },
+      {
+        name: 'VirusTotal',
+        description: 'URL and file analysis for malware detection',
+        url: 'https://virustotal.com',
+        icon: Shield,
+        color: 'bg-green-700',
+        category: 'Domain Analysis',
+        rating: 5,
+        free: true,
+        integration: 'external',
+        params: { url: 'search_query' }
       }
     ],
     
@@ -488,6 +614,12 @@ function OSINTTools() {
       description: 'Find detailed information about individuals including contact details, address history, and public records'
     },
     { 
+      id: 'domains', 
+      name: 'Domain Analysis', 
+      icon: Network,
+      description: 'Comprehensive domain investigation including WHOIS, DNS, subdomains, and security analysis'
+    },
+    { 
       id: 'breach', 
       name: 'Breach Analysis', 
       icon: Shield,
@@ -561,6 +693,14 @@ function OSINTTools() {
 
   // Open tool in browser or Electron (legacy method)
   const openTool = (tool, query = null) => {
+    // Handle builtin tools
+    if (tool.integration === 'builtin') {
+      if (tool.url === '/domain-lookup') {
+        setShowDomainLookup(true);
+        return;
+      }
+    }
+    
     let url = tool.url;
     
     // Build URL with search parameters if supported
@@ -610,24 +750,24 @@ function OSINTTools() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="mx-auto max-w-7xl px-6 py-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">OSINT Arsenal</h1>
-              <p className="text-gray-600 mt-1">Professional open source intelligence tools for ethical investigations</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">InfoScope OSINT</h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-1">Professional Intelligence Platform</p>
             </div>
             
             <div className="flex items-center gap-4">
               {/* Browser Preference Selector */}
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Quick Launch:</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Launch:</label>
                 <select
                   value={browserPreference}
                   onChange={(e) => setBrowserPreference(e.target.value)}
-                  className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="builtin">Built-in Browser</option>
                   <option value="chrome">Chrome</option>
@@ -639,37 +779,38 @@ function OSINTTools() {
               
               {/* Search Bar */}
               <div className="relative w-96">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search tools or enter target..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* Category Navigation */}
-          <div className="flex space-x-1 overflow-x-auto">
-            {categories.map((category) => {
-              const IconComponent = category.icon;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeCategory === category.id
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  <IconComponent className="w-4 h-4" />
-                  {category.name}
-                </button>
-              );
-            })}
+          <div className="relative">
+            <div className="flex space-x-2 overflow-x-auto scrollbar-hide pb-2" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+              {categories.map((category) => {
+                const IconComponent = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap shadow-sm ${
+                      activeCategory === category.id
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4" />
+                    {category.name}
+                  </button>
+                );
+              })}
           </div>
         </div>
       </div>
@@ -678,42 +819,42 @@ function OSINTTools() {
       <div className="mx-auto max-w-7xl px-6 py-8">
         {/* Category Info */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-2">
               {React.createElement(categories.find(c => c.id === activeCategory)?.icon, { 
-                className: "w-6 h-6 text-blue-600" 
+                className: "w-6 h-6 text-blue-600 dark:text-blue-400" 
               })}
-              <h2 className="text-xl font-semibold text-blue-900">
+              <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-200">
                 {categories.find(c => c.id === activeCategory)?.name}
               </h2>
               {searchQuery.trim() && (
                 <button
                   onClick={runBulkSearch}
-                  className="ml-auto bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="ml-auto bg-blue-600 dark:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center gap-2"
                 >
                   <Search className="w-4 h-4" />
                   Bulk Search
                 </button>
               )}
             </div>
-            <p className="text-blue-700">
+            <p className="text-blue-700 dark:text-blue-300">
               {categories.find(c => c.id === activeCategory)?.description}
             </p>
           </div>
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {filteredTools().map((tool, index) => {
             const IconComponent = tool.icon;
             return (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow group">
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group">
                 {/* Tool Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${tool.color}`}>
-                    <IconComponent className="w-6 h-6 text-white" />
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tool.color} group-hover:scale-110 transition-transform duration-200`}>
+                    <IconComponent className="w-5 h-5 text-white" />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     {/* Star Button for Favorites */}
                     <StarButton
                       item={{
@@ -734,47 +875,47 @@ function OSINTTools() {
                       user={user}
                       size="sm"
                     />
-                    {/* Rating Stars */}
-                    <div className="flex items-center">
+                    {/* Rating Stars - Compact */}
+                    <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`w-3 h-3 ${i < tool.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                          className={`w-2.5 h-2.5 ${i < tool.rating ? 'text-yellow-400 fill-current' : 'text-gray-300 dark:text-gray-600'}`} 
                         />
                       ))}
                     </div>
-                    {/* Free/Paid Badge */}
-                    <span className={`px-2 py-1 text-xs font-medium rounded ${
+                    {/* Free/Paid Badge - Compact */}
+                    <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full ${
                       tool.free 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-orange-100 text-orange-700'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                        : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
                     }`}>
                       {tool.free ? 'Free' : 'Paid'}
                     </span>
                   </div>
                 </div>
 
-                {/* Tool Info */}
-                <div className="mb-4">
-                  <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                {/* Tool Info - Compact */}
+                <div className="mb-3">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1 text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
                     {tool.name}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-2">
+                  <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-2 line-clamp-2">
                     {tool.description}
                   </p>
                   
-                  {/* Warnings and Notes */}
+                  {/* Warnings and Notes - Compact */}
                   {tool.warning && (
-                    <div className="flex items-start gap-2 p-2 bg-amber-50 rounded-lg mb-2">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-amber-700">{tool.warning}</p>
+                    <div className="flex items-start gap-1 p-1.5 bg-amber-50 dark:bg-amber-900/20 rounded mb-1">
+                      <AlertTriangle className="w-3 h-3 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-amber-700 dark:text-amber-300 line-clamp-1">{tool.warning}</p>
                     </div>
                   )}
                   
                   {tool.note && (
-                    <div className="flex items-start gap-2 p-2 bg-blue-50 rounded-lg mb-2">
-                      <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-blue-700">{tool.note}</p>
+                    <div className="flex items-start gap-1 p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded mb-1">
+                      <Info className="w-3 h-3 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-blue-700 dark:text-blue-300 line-clamp-1">{tool.note}</p>
                     </div>
                   )}
                 </div>
@@ -784,14 +925,14 @@ function OSINTTools() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openTool(tool)}
-                      className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 bg-blue-600 dark:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
                     >
                       <ExternalLink className="w-4 h-4" />
                       Quick Launch
                     </button>
                     <button
                       onClick={() => openToolWithBrowserSelector(tool)}
-                      className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                      className="px-3 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                       title="Browser Options"
                     >
                       <Settings className="w-4 h-4" />
@@ -804,7 +945,7 @@ function OSINTTools() {
                       <input
                         type="text"
                         placeholder="Quick search..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter' && e.target.value.trim()) {
                             openTool(tool, e.target.value.trim());
@@ -828,23 +969,23 @@ function OSINTTools() {
         {/* No Results */}
         {filteredTools().length === 0 && (
           <div className="text-center py-16">
-            <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No tools found</h3>
-            <p className="text-gray-600">
+            <Search className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tools found</h3>
+            <p className="text-gray-600 dark:text-gray-300">
               Try adjusting your search query or browse different categories.
             </p>
           </div>
         )}
 
         {/* Safety and Ethics Notice */}
-        <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
+        <div className="mt-12 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700/50 rounded-lg p-6">
           <div className="flex items-start gap-4">
-            <div className="bg-amber-100 p-2 rounded-lg">
-              <Shield className="w-6 h-6 text-amber-600" />
+            <div className="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-lg">
+              <Shield className="w-6 h-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-amber-900 mb-2">Ethical Use Guidelines</h3>
-              <div className="space-y-2 text-sm text-amber-800">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2">Ethical Use Guidelines</h3>
+              <div className="space-y-2 text-sm text-amber-800 dark:text-amber-300">
                 <p>• <strong>Legal Compliance:</strong> Always follow local laws and regulations when conducting investigations.</p>
                 <p>• <strong>Privacy Respect:</strong> Use these tools responsibly and respect individual privacy rights.</p>
                 <p>• <strong>Authorized Research:</strong> Only use breach search tools for legitimate security research with proper authorization.</p>
@@ -861,10 +1002,10 @@ function OSINTTools() {
             const toolCount = osintTools[category.id]?.length || 0;
             const IconComponent = category.icon;
             return (
-              <div key={category.id} className="bg-white rounded-lg border border-gray-200 p-4 text-center">
-                <IconComponent className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">{toolCount}</div>
-                <div className="text-sm text-gray-600">{category.name}</div>
+              <div key={category.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
+                <IconComponent className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{toolCount}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{category.name}</div>
               </div>
             );
           })}
@@ -900,6 +1041,7 @@ function OSINTTools() {
           </div>
         </div>
       </div>
+    </div>
 
       {/* Browser Selector Modal */}
       <BrowserSelector

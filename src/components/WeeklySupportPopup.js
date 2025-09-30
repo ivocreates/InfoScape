@@ -12,7 +12,9 @@ import {
   Lightbulb,
   CheckCircle,
   AlertCircle,
-  Zap
+  Zap,
+  Heart,
+  CreditCard
 } from 'lucide-react';
 
 const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
@@ -239,20 +241,49 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleAction}
-              className={`flex-1 ${colors.button} text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2`}
-            >
-              <MessageCircle className="w-4 h-4" />
-              {currentWeekTip.action}
-            </button>
-            <button
-              onClick={handleClose}
-              className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-            >
-              Maybe Later
-            </button>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleAction}
+                className={`flex-1 ${colors.button} text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2`}
+              >
+                <MessageCircle className="w-4 h-4" />
+                {currentWeekTip.action}
+              </button>
+              <button
+                onClick={handleClose}
+                className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
+            
+            {/* Support Development Section */}
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-4 text-white">
+              <div className="flex items-center gap-3 mb-3">
+                <Heart className="w-5 h-5" />
+                <div>
+                  <h4 className="font-semibold">Support InfoScope Development</h4>
+                  <p className="text-sm opacity-90">Help us add more features & keep the project free</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => window.open('https://razorpay.me/@ivocreates', '_blank')}
+                  className="flex-1 bg-white text-purple-600 px-3 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Donate ₹50
+                </button>
+                <button
+                  onClick={() => window.open('https://github.com/ivocreates/InfoScape', '_blank')}
+                  className="flex-1 bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg font-medium hover:bg-opacity-30 transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  <Star className="w-4 h-4" />
+                  Star on GitHub
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Footer */}

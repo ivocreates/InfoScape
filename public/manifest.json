@@ -1,7 +1,7 @@
 {
   "short_name": "InfoScope",
-  "name": "InfoScope OSINT - Professional Investigation Platform",
-  "description": "Comprehensive OSINT tools with anonymous browsing, Tor integration, and advanced investigation capabilities.",
+  "name": "InfoScope OSINT - Professional Intelligence Platform",
+  "description": "Professional Intelligence Platform. Comprehensive OSINT tools with anonymous browsing, Tor integration, and advanced investigation capabilities.",
   "icons": [
     {
       "src": "favicon.ico",

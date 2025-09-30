@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star } from 'lucide-react';
+import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star, MessageSquare, Moon, Sun } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 import BrowserSelector from './BrowserSelector';
 import BrowserManager from './BrowserManager';
 
-function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites }) {
+function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback }) {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
   const [showBrowserManager, setShowBrowserManager] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const handleSignOut = async () => {
     try {
@@ -46,18 +48,18 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
   ];
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-4 py-3">
+    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 transition-colors">
       <div className="flex items-center justify-between">
         {/* Logo and Title - Clickable to open About page */}
         <button 
           onClick={() => setCurrentView('about')}
-          className="flex items-center gap-3 hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors"
-          title="InfoScope OSINT - Click to view About page"
+          className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 px-2 py-1 rounded-lg transition-colors"
+          title="InfoScope OSINT - Professional Intelligence Platform"
         >
-          <div className="flex items-center justify-center w-8 h-8 bg-black rounded-lg">
-            <Search className="w-4 h-4 text-white" />
+          <div className="flex items-center justify-center w-8 h-8 bg-black dark:bg-white rounded-lg">
+            <Shield className="w-4 h-4 text-white dark:text-black" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors">InfoScope OSINT</h1>
+          <h1 className="text-xl font-bold text-black dark:text-white transition-colors">InfoScope OSINT</h1>
         </button>
 
         {/* Navigation Items */}
@@ -68,8 +70,8 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
               onClick={() => setCurrentView(id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                 currentView === id
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-gray-900 dark:bg-gray-700 text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -80,7 +82,7 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
           {/* Browser Button */}
           <button
             onClick={handleOpenBrowser}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
             title="Open Browser with Options"
           >
             <Globe className="w-4 h-4" />
@@ -90,7 +92,7 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
           {/* Browser Manager Button */}
           <button
             onClick={() => setShowBrowserManager(true)}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
             title="Manage Browser Instances"
           >
             <Monitor className="w-4 h-4" />
@@ -110,11 +112,21 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
           {/* Favorites Button */}
           <button
             onClick={onOpenFavorites}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 border border-yellow-200 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 flex items-center gap-2"
             title="View Favorites"
           >
             <Star className="w-4 h-4" />
             Favorites
+          </button>
+
+          {/* Feedback Button */}
+          <button
+            onClick={onOpenFeedback}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 border border-green-200 dark:border-green-700 flex items-center gap-2"
+            title="Send Feedback"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Feedback
           </button>
         </div>
 
@@ -125,8 +137,8 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
             onClick={() => setCurrentView('profile')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
               currentView === 'profile'
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 hover:bg-gray-200'
+                ? 'bg-gray-900 dark:bg-gray-700 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
             title="View Profile"
           >
@@ -136,16 +148,25 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
               className="w-6 h-6 rounded-full"
             />
             <span className={`text-sm font-medium max-w-[120px] truncate ${
-              currentView === 'profile' ? 'text-white' : 'text-gray-700'
+              currentView === 'profile' ? 'text-white' : 'text-gray-700 dark:text-gray-300'
             }`}>
               {user?.displayName || user?.email || 'User'}
             </span>
             <User className="w-3 h-3 opacity-60" />
           </button>
           
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          
           <button
             onClick={handleSignOut}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             title="Sign Out"
           >
             <LogOut className="w-4 h-4" />

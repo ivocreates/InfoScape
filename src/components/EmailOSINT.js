@@ -330,7 +330,7 @@ function EmailOSINT() {
                   <select
                     value={currentInvestigationId || ''}
                     onChange={(e) => setCurrentInvestigationId(e.target.value || null)}
-                    className="flex-1 input"
+                    className="flex-1 select-field"
                   >
                     <option value="">No Investigation</option>
                     {investigations.map(inv => (

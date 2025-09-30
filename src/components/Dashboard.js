@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { 
-  Search, Plus, Clock, TrendingUp, Users, Globe, FileText, Link, Shield, Eye, 
-  Zap, Target, Compass, Activity, Filter, ArrowRight, Command, Bookmark,
-  ChevronRight, Star, AlertTriangle
+  Search, Plus, Clock, TrendingUp, Users, Globe, Shield, Eye, 
+  Target, Activity, ArrowRight, Command, 
+  ChevronRight, Star, Zap, Compass, Link
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -12,15 +12,8 @@ function Dashboard({ setCurrentView }) {
   const [recentInvestigations, setRecentInvestigations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchHistory, setSearchHistory] = useState([]);
-  const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-  const [searchFilters, setSearchFilters] = useState({
-    tools: true,
-    templates: true,
-    investigations: true,
-    features: true
-  });
+  const [favoriteTools, setFavoriteTools] = useState([]);
   const [stats, setStats] = useState({
     totalInvestigations: 0,
     successfulFinds: 0,
@@ -30,121 +23,64 @@ function Dashboard({ setCurrentView }) {
   useEffect(() => {
     fetchRecentInvestigations();
     fetchStats();
-    loadSearchHistory();
+    loadFavoriteTools();
   }, []);
 
-  // Enhanced search functionality
   useEffect(() => {
-    if (searchQuery.length > 0) {
-      generateSearchSuggestions();
-      setShowSearchDropdown(true);
-    } else {
-      setShowSearchDropdown(false);
-    }
-  }, [searchQuery]);
+    fetchRecentInvestigations();
+    fetchStats();
+    loadFavoriteTools();
+  }, []);
 
-  const loadSearchHistory = () => {
+  const loadFavoriteTools = async () => {
     try {
-      const history = JSON.parse(localStorage.getItem('dashboard-search-history') || '[]');
-      setSearchHistory(history.slice(0, 10)); // Keep last 10 searches
+      // Load favorites from Firebase
+      if (auth.currentUser) {
+        const favoritesQuery = query(
+          collection(db, `users/${auth.currentUser.uid}/favorites`),
+          orderBy('addedAt', 'desc'),
+          limit(6)
+        );
+        const snapshot = await getDocs(favoritesQuery);
+        const favorites = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setFavoriteTools(favorites);
+      }
     } catch (error) {
-      console.error('Error loading search history:', error);
-      setSearchHistory([]);
-    }
-  };
-
-  const saveSearchToHistory = (query) => {
-    if (!query.trim()) return;
-    
-    const newHistory = [
-      query.trim(),
-      ...searchHistory.filter(item => item !== query.trim())
-    ].slice(0, 10);
-    
-    setSearchHistory(newHistory);
-    localStorage.setItem('dashboard-search-history', JSON.stringify(newHistory));
-  };
-
-  const generateSearchSuggestions = () => {
-    const query = searchQuery.toLowerCase();
-    const suggestions = [];
-
-    // Tool suggestions
-    quickAccessTools.forEach(category => {
-      category.tools.forEach(tool => {
-        if (tool.title.toLowerCase().includes(query) || 
-            tool.description.toLowerCase().includes(query) ||
-            category.category.toLowerCase().includes(query)) {
-          suggestions.push({
-            type: 'tool',
-            title: tool.title,
-            description: tool.description,
-            action: () => setCurrentView(tool.id),
-            icon: tool.icon,
-            color: tool.color
-          });
+      console.error('Error loading favorite tools:', error);
+      // Fallback to default favorite tools
+      setFavoriteTools([
+        {
+          id: 'domain-lookup',
+          title: 'Domain Lookup',
+          description: 'Comprehensive domain analysis toolkit',
+          icon: Globe,
+          color: 'bg-purple-500',
+          action: () => setCurrentView('osint-tools')
+        },
+        {
+          id: 'haveibeenpwned',
+          title: 'Have I Been Pwned',
+          description: 'Check for data breaches',
+          icon: Shield,
+          color: 'bg-red-500',
+          action: () => window.open('https://haveibeenpwned.com', '_blank')
+        },
+        {
+          id: 'whois-lookup',
+          title: 'WHOIS Lookup',
+          description: 'Domain registration information',
+          icon: Globe,
+          color: 'bg-blue-500',
+          action: () => window.open('https://whois.net', '_blank')
         }
-      });
-    });
-
-    // Template suggestions
-    investigationTemplates.forEach(template => {
-      if (template.title.toLowerCase().includes(query) || 
-          template.description.toLowerCase().includes(query)) {
-        suggestions.push({
-          type: 'template',
-          title: template.title,
-          description: template.description,
-          action: template.action,
-          icon: template.icon,
-          color: 'bg-blue-500'
-        });
-      }
-    });
-
-    // Feature suggestions based on common search terms
-    const featureSuggestions = [
-      { terms: ['google', 'dork', 'search'], title: 'Google Dorking', action: () => setCurrentView('investigation') },
-      { terms: ['email', 'breach', 'lookup'], title: 'Email Investigation', action: () => setCurrentView('osint-tools') },
-      { terms: ['domain', 'website', 'url'], title: 'Domain Analysis', action: () => setCurrentView('link-scanner') },
-      { terms: ['social', 'profile', 'media'], title: 'Social Media Analysis', action: () => setCurrentView('profile-analyzer') },
-      { terms: ['image', 'reverse', 'photo'], title: 'Image Analysis', action: () => setCurrentView('osint-tools') },
-      { terms: ['phone', 'number', 'mobile'], title: 'Phone Number Lookup', action: () => setCurrentView('osint-tools') },
-      { terms: ['username', 'handle', 'alias'], title: 'Username Search', action: () => setCurrentView('osint-tools') },
-      { terms: ['tor', 'proxy', 'anonymous'], title: 'Anonymous Browsing', action: () => setCurrentView('osint-tools') }
-    ];
-
-    featureSuggestions.forEach(feature => {
-      if (feature.terms.some(term => term.includes(query) || query.includes(term))) {
-        suggestions.push({
-          type: 'feature',
-          title: feature.title,
-          description: `Quick access to ${feature.title.toLowerCase()}`,
-          action: feature.action,
-          icon: Search,
-          color: 'bg-gray-500'
-        });
-      }
-    });
-
-    setSearchSuggestions(suggestions.slice(0, 8));
-  };
-
-  const handleSearchSelect = (suggestion) => {
-    saveSearchToHistory(suggestion.title);
-    setSearchQuery('');
-    setShowSearchDropdown(false);
-    suggestion.action();
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      saveSearchToHistory(searchQuery);
-      // Perform a general search or navigate to search results
-      setCurrentView('osint-tools');
+      ]);
     }
   };
+
+
 
   const fetchRecentInvestigations = async () => {
     try {
@@ -201,100 +137,68 @@ function Dashboard({ setCurrentView }) {
     }
   };
 
-  // Enhanced quick access tools with categories
+  // Simplified quick access tools
   const quickAccessTools = [
     {
-      category: 'General Search',
-      tools: [
-        {
-          id: 'investigation',
-          title: 'Query Builder',
-          description: 'Advanced Google dorking and search operators',
-          icon: Search,
-          color: 'bg-blue-500',
-          shortcut: 'Ctrl+1',
-          popular: true
-        },
-        {
-          id: 'osint-tools',
-          title: 'OSINT Arsenal',
-          description: 'Professional investigation tools collection',
-          icon: Shield,
-          color: 'bg-red-500',
-          shortcut: 'Ctrl+2',
-          popular: true
-        }
-      ]
+      id: 'investigation',
+      title: 'Query Builder',
+      description: 'Advanced Google dorking and search operators',
+      icon: Search,
+      color: 'bg-blue-500',
+      popular: true
     },
     {
-      category: 'People Lookup',
-      tools: [
-        {
-          id: 'profile-analyzer',
-          title: 'Profile Analyzer',
-          description: 'Social media analysis and risk assessment',
-          icon: Eye,
-          color: 'bg-purple-500',
-          shortcut: 'Ctrl+3'
-        },
-        {
-          id: 'link-scanner',
-          title: 'Link Scanner',
-          description: 'Verify links with accuracy scoring',
-          icon: Link,
-          color: 'bg-green-500',
-          shortcut: 'Ctrl+4'
-        }
-      ]
+      id: 'osint-tools',
+      title: 'OSINT Arsenal',
+      description: 'Professional investigation tools collection',
+      icon: Shield,
+      color: 'bg-red-500',
+      popular: true
+    },
+    {
+      id: 'domain-lookup',
+      title: 'Domain Lookup',
+      description: 'Comprehensive domain analysis toolkit',
+      icon: Globe,
+      color: 'bg-purple-500'
+    },
+    {
+      id: 'profile-analyzer',
+      title: 'Profile Analysis',
+      description: 'Social media and profile investigation',
+      icon: Users,
+      color: 'bg-green-500'
     }
   ];
 
-  // Common OSINT scenarios for quick start
+  // Quick start templates for common OSINT scenarios
   const investigationTemplates = [
     {
       title: 'Social Media Investigation',
       description: 'Find social profiles across platforms',
       icon: Users,
-      color: 'border-blue-200 bg-blue-50',
       action: () => setCurrentView('profile-analyzer')
     },
     {
       title: 'Email Investigation',
       description: 'Trace email addresses and breaches',
       icon: Target,
-      color: 'border-green-200 bg-green-50',
       action: () => setCurrentView('osint-tools')
     },
     {
       title: 'Website Analysis',
       description: 'Analyze domains and web presence',
       icon: Globe,
-      color: 'border-purple-200 bg-purple-50',
       action: () => setCurrentView('link-scanner')
     },
     {
       title: 'Advanced Dorking',
       description: 'Custom search operators and filters',
       icon: Compass,
-      color: 'border-amber-200 bg-amber-50',
       action: () => setCurrentView('investigation')
     }
   ];
 
-  // Filter tools based on search query
-  const filteredTools = quickAccessTools.map(category => ({
-    ...category,
-    tools: category.tools.filter(tool =>
-      tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tool.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.category.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  })).filter(category => category.tools.length > 0);
-
-  const filteredTemplates = investigationTemplates.filter(template =>
-    template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   if (loading) {
     return (
@@ -306,128 +210,17 @@ function Dashboard({ setCurrentView }) {
 
   return (
     <div className="p-6 max-w-7xl mx-auto animate-fade-in">
-      {/* Enhanced Header with Search */}
+      {/* Simple Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Welcome back, {auth.currentUser?.displayName?.split(' ')[0] || 'Investigator'}
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
               Ready to dive deep into your next OSINT investigation?
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-              <Command className="w-3 h-3 inline mr-1" />
-              Use keyboard shortcuts
-            </div>
-          </div>
-        </div>
-        
-        {/* Enhanced Global Search */}
-        <div className="relative max-w-lg">
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              className="search-input pl-10 pr-12"
-              placeholder="Search tools, features, investigations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery.length > 0 && setShowSearchDropdown(true)}
-              onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
-            />
-            {searchQuery && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="text-gray-400 hover:text-gray-600 p-1"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-          </form>
-
-          {/* Search Dropdown */}
-          {showSearchDropdown && (searchSuggestions.length > 0 || searchHistory.length > 0) && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
-              {/* Search Suggestions */}
-              {searchSuggestions.length > 0 && (
-                <div className="p-2">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
-                    Suggestions
-                  </div>
-                  {searchSuggestions.map((suggestion, index) => {
-                    const Icon = suggestion.icon;
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => handleSearchSelect(suggestion)}
-                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 rounded text-left transition-colors"
-                      >
-                        <div className={`w-8 h-8 rounded ${suggestion.color} flex items-center justify-center flex-shrink-0`}>
-                          <Icon className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900 truncate">{suggestion.title}</div>
-                          <div className="text-xs text-gray-500 truncate">{suggestion.description}</div>
-                        </div>
-                        <div className="text-xs text-gray-400 capitalize">{suggestion.type}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Search History */}
-              {searchHistory.length > 0 && searchQuery.length === 0 && (
-                <div className="p-2 border-t border-gray-100">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
-                    Recent Searches
-                  </div>
-                  {searchHistory.slice(0, 5).map((query, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setSearchQuery(query);
-                        setShowSearchDropdown(false);
-                      }}
-                      className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 rounded text-left transition-colors"
-                    >
-                      <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm text-gray-700 flex-1 truncate">{query}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Search Filters */}
-              <div className="p-2 border-t border-gray-100">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
-                  Filter Results
-                </div>
-                <div className="grid grid-cols-2 gap-2 px-2">
-                  {Object.entries(searchFilters).map(([key, enabled]) => (
-                    <label key={key} className="flex items-center gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={enabled}
-                        onChange={(e) => setSearchFilters(prev => ({
-                          ...prev,
-                          [key]: e.target.checked
-                        }))}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="capitalize text-gray-700">{key}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -436,12 +229,12 @@ function Dashboard({ setCurrentView }) {
         <div className="card p-6 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Investigations</p>
-              <p className="text-3xl font-bold text-gray-900">{stats.totalInvestigations}</p>
-              <p className="text-xs text-gray-500 mt-1">All time</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Investigations</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalInvestigations}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
             </div>
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <Search className="w-6 h-6 text-gray-600" />
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
+              <Search className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </div>
           </div>
         </div>
@@ -449,11 +242,11 @@ function Dashboard({ setCurrentView }) {
         <div className="card p-6 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Successful Finds</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Successful Finds</p>
               <p className="text-3xl font-bold text-green-600">{stats.successfulFinds}</p>
-              <p className="text-xs text-gray-500 mt-1">Completed cases</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Completed cases</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-green-600" />
             </div>
           </div>
@@ -462,90 +255,73 @@ function Dashboard({ setCurrentView }) {
         <div className="card p-6 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Platforms Covered</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Platforms Covered</p>
               <p className="text-3xl font-bold text-blue-600">{stats.platformsCovered}</p>
-              <p className="text-xs text-gray-500 mt-1">Data sources</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Data sources</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
               <Globe className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Access Tools by Category */}
-      {(searchQuery === '' || filteredTools.length > 0) && (
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">Quick Access Tools</h3>
-          {filteredTools.map((category) => (
-            <div key={category.category} className="mb-6">
-              <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
-                {category.category}
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {category.tools.map((tool) => {
-                  const Icon = tool.icon;
-                  return (
-                    <button
-                      key={tool.id}
-                      onClick={() => setCurrentView(tool.id)}
-                      className="card p-6 text-left hover:shadow-lg hover:scale-[1.02] transition-all duration-200 group relative"
-                    >
-                      {tool.popular && (
-                        <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
-                          <Star className="w-3 h-3 inline" />
-                        </div>
-                      )}
-                      
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-xl ${tool.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
-                      </div>
-                      
-                      <h4 className="font-semibold text-gray-900 mb-2">{tool.title}</h4>
-                      <p className="text-sm text-gray-600 mb-3">{tool.description}</p>
-                      
-                      {tool.shortcut && (
-                        <div className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md inline-block">
-                          {tool.shortcut}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+      {/* Quick Access Tools */}
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Quick Access Tools</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickAccessTools.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <button
+                key={tool.id}
+                onClick={() => setCurrentView(tool.id)}
+                className="card p-6 text-left hover:shadow-lg hover:scale-[1.02] transition-all duration-200 group relative"
+              >
+                {tool.popular && (
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
+                    <Star className="w-3 h-3 inline" />
+                  </div>
+                )}
+                
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 rounded-xl ${tool.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
+                </div>
+                
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{tool.title}</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{tool.description}</p>
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Investigation Templates */}
-      {(searchQuery === '' || filteredTemplates.length > 0) && (
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Quick Start Templates</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {filteredTemplates.map((template) => {
-              const Icon = template.icon;
-              return (
-                <button
-                  key={template.title}
-                  onClick={template.action}
-                  className={`card p-4 text-left hover:shadow-md transition-all duration-200 group ${template.color}`}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <Icon className="w-6 h-6 text-gray-600" />
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <h4 className="font-medium text-gray-900 mb-1">{template.title}</h4>
-                  <p className="text-xs text-gray-600">{template.description}</p>
-                </button>
-              );
-            })}
-          </div>
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Start Templates</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {investigationTemplates.map((template) => {
+            const Icon = template.icon;
+            return (
+              <button
+                key={template.title}
+                onClick={template.action}
+                className="card p-4 text-left hover:shadow-md transition-all duration-200 group bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <Icon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                </div>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-1">{template.title}</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-300">{template.description}</p>
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -632,70 +408,6 @@ function Dashboard({ setCurrentView }) {
               <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-400">
                 <h4 className="font-medium text-purple-900 text-sm mb-1">Exclude Noise</h4>
                 <p className="text-xs text-purple-700">Remove irrelevant: "John" -football</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="card p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-5 h-5 text-green-500" />
-              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-            </div>
-            <div className="space-y-3">
-              <button 
-                onClick={() => setCurrentView('osint-tools')}
-                className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Shield className="w-4 h-4 text-red-500" />
-                  <span className="text-sm font-medium text-gray-700">Run OSINT Tools</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
-              </button>
-              
-              <button 
-                onClick={() => setCurrentView('link-scanner')}
-                className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Link className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-medium text-gray-700">Scan Links</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
-              </button>
-              
-              <button 
-                onClick={() => setCurrentView('profile-analyzer')}
-                className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Eye className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm font-medium text-gray-700">Analyze Profile</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
-              </button>
-            </div>
-          </div>
-
-          {/* System Status */}
-          <div className="card p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-5 h-5 text-amber-500" />
-              <h3 className="text-lg font-semibold text-gray-900">System Status</h3>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">OSINT Tools</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Link Scanner</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Browser Engine</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Ready</span>
               </div>
             </div>
           </div>

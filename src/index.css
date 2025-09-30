@@ -26,25 +26,42 @@
   }
   
   .input-field {
-    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
+    @apply block w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-sm font-medium text-gray-900 placeholder-gray-400 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200;
+  }
+  
+  .input-field:hover {
+    @apply border-gray-400;
+  }
+  
+  .input-field:focus {
+    @apply border-blue-500 ring-2 ring-blue-500 ring-opacity-20;
   }
   
   /* Enhanced select styling for better visibility */
   .select-field {
-    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
+    @apply block w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 px-4 py-3 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20 transition-all duration-200;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 1rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
+    padding-right: 3rem;
+  }
+  
+  .dark .select-field {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  }
+  
+  .select-field:hover {
+    @apply border-gray-400 dark:border-gray-500;
   }
   
   .select-field:focus {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    @apply border-blue-500 ring-2 ring-blue-500 ring-opacity-20;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
   }
   
   .card {
-    @apply rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-200;
+    @apply rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow duration-200;
   }
   
   .chip {
@@ -66,12 +83,12 @@
   
   /* Search input with better styling */
   .search-input {
-    @apply w-full px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-xl shadow-sm placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
+    @apply w-full px-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
   }
   
   /* Z-index utilities for dropdown visibility */
   .dropdown-menu {
-    @apply absolute bg-white border border-gray-200 rounded-lg shadow-lg;
+    @apply absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg;
     z-index: 50;
   }
   
@@ -112,9 +129,161 @@
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Flip Card Animation Styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.flip-card-inner:hover {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  border-radius: 50%;
+}
+
+/* Gradient border for avatar */
+.border-gradient-to-br {
+  border: 4px solid;
+  border-image: linear-gradient(to bottom right, #3B82F6, #8B5CF6) 1;
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
   }
+}
+
+/* Line clamp utilities for text truncation */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Hide scrollbars for better UX */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom attractive scrollbars */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Dark mode scrollbar */
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.8);
+}
+
+/* Popup specific scrollbar */
+.popup-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(147, 51, 234, 0.3) transparent;
+}
+
+.popup-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.popup-scrollbar::-webkit-scrollbar-track {
+  background: rgba(243, 244, 246, 0.5);
+  border-radius: 4px;
+  margin: 4px;
+}
+
+.popup-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.4), rgba(168, 85, 247, 0.4));
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.popup-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.6), rgba(168, 85, 247, 0.6));
+  transform: scale(1.1);
+}
+
+/* Dark mode popup scrollbar */
+.dark .popup-scrollbar {
+  scrollbar-color: rgba(147, 51, 234, 0.4) transparent;
+}
+
+.dark .popup-scrollbar::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+.dark .popup-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.5), rgba(168, 85, 247, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .popup-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.7), rgba(168, 85, 247, 0.7));
 }

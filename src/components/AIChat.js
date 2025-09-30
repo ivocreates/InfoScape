@@ -17,7 +17,8 @@ import {
   Settings,
   HelpCircle,
   Wifi,
-  WifiOff
+  WifiOff,
+  RotateCcw
 } from 'lucide-react';
 import googleAIService from '../services/googleAI';
 
@@ -169,6 +170,23 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
     inputRef.current?.focus();
   };
 
+  const handleClearChat = () => {
+    setMessages([
+      {
+        id: '1',
+        type: 'bot',
+        content: 'Hello! I\'m your OSINT AI assistant. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
+        timestamp: new Date(),
+        suggestions: [
+          'How do I start an OSINT investigation?',
+          'What are the best Google dorking techniques?',
+          'How can I verify social media profiles?',
+          'What legal considerations should I keep in mind?'
+        ]
+      }
+    ]);
+  };
+
   const getStatusIcon = () => {
     switch (connectionStatus) {
       case 'connected':
@@ -216,35 +234,42 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-96 h-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 flex flex-col z-40 transform transition-all duration-300">
+    <div className="fixed bottom-4 right-4 w-96 h-[600px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col z-40 transform transition-all duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 rounded-t-xl">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <Bot className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">OSINT AI Assistant</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">OSINT AI Assistant</h3>
             <div className="flex items-center gap-2">
               {getStatusIcon()}
-              <span className="text-xs text-gray-600">{getStatusText()}</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400">{getStatusText()}</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-1">
           <button
+            onClick={handleClearChat}
+            className="p-1.5 hover:bg-white hover:bg-opacity-50 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            title="Clear Chat"
+          >
+            <RotateCcw className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          </button>
+          <button
             onClick={() => onMinimize(true)}
-            className="p-1.5 hover:bg-white hover:bg-opacity-50 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-white hover:bg-opacity-50 dark:hover:bg-gray-600 rounded-lg transition-colors"
             title="Minimize"
           >
-            <Minimize2 className="w-4 h-4 text-gray-600" />
+            <Minimize2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-white hover:bg-opacity-50 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-white hover:bg-opacity-50 dark:hover:bg-gray-600 rounded-lg transition-colors"
             title="Close"
           >
-            <X className="w-4 h-4 text-gray-600" />
+            <X className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
       </div>
@@ -260,18 +285,18 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
               <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
                 message.type === 'user' 
                   ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-100 text-gray-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
               }`}>
                 {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
               <div className={`rounded-xl p-3 ${
                 message.type === 'user'
                   ? 'bg-blue-600 text-white rounded-tr-none'
-                  : 'bg-gray-100 text-gray-900 rounded-tl-none'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-none'
               }`}>
                 <div className="text-sm whitespace-pre-wrap">{message.content}</div>
                 <div className={`text-xs mt-2 opacity-70 ${
-                  message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -283,12 +308,12 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
         {/* Suggestions */}
         {messages.length > 0 && messages[messages.length - 1].suggestions && (
           <div className="space-y-2">
-            <p className="text-xs text-gray-500 px-2">Suggested questions:</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 px-2">Suggested questions:</p>
             {messages[messages.length - 1].suggestions.map((suggestion, index) => (
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="w-full text-left p-2 text-sm bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+                className="w-full text-left p-2 text-sm bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
               >
                 {suggestion}
               </button>
@@ -300,13 +325,13 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-center gap-2 max-w-[80%]">
-              <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
-                <Bot className="w-4 h-4 text-gray-600" />
+              <div className="w-7 h-7 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <Bot className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </div>
-              <div className="bg-gray-100 rounded-xl rounded-tl-none p-3">
+              <div className="bg-gray-100 dark:bg-gray-700 rounded-xl rounded-tl-none p-3">
                 <div className="flex items-center gap-2">
-                  <Loader className="w-4 h-4 animate-spin text-gray-500" />
-                  <span className="text-sm text-gray-600">Thinking...</span>
+                  <Loader className="w-4 h-4 animate-spin text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Thinking...</span>
                 </div>
               </div>
             </div>
@@ -317,7 +342,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
           <div className="flex-1 relative">
             <input
@@ -327,10 +352,10 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Ask about OSINT techniques, tools, or best practices..."
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full p-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               disabled={isLoading}
             />
-            <HelpCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <HelpCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           </div>
           <button
             onClick={handleSendMessage}
@@ -343,7 +368,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
         
         {/* Quick actions */}
         <div className="flex items-center gap-2 mt-3">
-          <span className="text-xs text-gray-500">Quick topics:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">Quick topics:</span>
           <div className="flex items-center gap-1 flex-wrap">
             {[
               { icon: Search, text: 'Search Tips', query: 'What are the best search techniques?' },
@@ -354,7 +379,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(topic.query)}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors text-gray-700 dark:text-gray-300"
                 title={topic.query}
               >
                 <topic.icon className="w-3 h-3" />
