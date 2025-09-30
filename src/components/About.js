@@ -269,7 +269,7 @@ function About() {
                     {technologies.map((tech, index) => (
                       <span 
                         key={index}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
+                        className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium"
                       >
                         {tech}
                       </span>
@@ -278,8 +278,8 @@ function About() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Privacy & Security</h3>
-                  <div className="space-y-3 text-gray-700">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Privacy & Security</h3>
+                  <div className="space-y-3 text-gray-700 dark:text-gray-300">
                     <p>• All investigations are stored locally and encrypted</p>
                     <p>• Tor integration ensures anonymous browsing capabilities</p>
                     <p>• No tracking or data collection beyond what you explicitly save</p>
@@ -288,16 +288,16 @@ function About() {
                   </div>
                 </div>
 
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <h3 className="font-semibold text-green-900 mb-3">🌟 Use Cases</h3>
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-6">
+                  <h3 className="font-semibold text-green-900 dark:text-green-300 mb-3">🌟 Use Cases</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    <div className="space-y-2 text-green-800">
+                    <div className="space-y-2 text-green-800 dark:text-green-400">
                       <p>• Corporate due diligence</p>
                       <p>• Cybersecurity threat intelligence</p>
                       <p>• Digital forensics investigations</p>
                       <p>• Social media intelligence</p>
                     </div>
-                    <div className="space-y-2 text-green-800">
+                    <div className="space-y-2 text-green-800 dark:text-green-400">
                       <p>• Background verification</p>
                       <p>• Data breach analysis</p>
                       <p>• Fraud investigation</p>
@@ -367,9 +367,9 @@ function About() {
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                       <Users className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">About the Developer</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">About the Developer</h3>
                   </div>
-                  <div className="space-y-4 text-gray-700 leading-relaxed">
+                  <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
                     <p className="text-lg">
                       InfoScope OSINT was born from a passion for cybersecurity and open source intelligence. 
                       As a full-stack developer with years of experience in building secure applications, 
@@ -398,9 +398,9 @@ function About() {
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                         <Zap className="w-4 h-4 text-blue-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900">Technical Expertise</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Technical Expertise</h4>
                     </div>
-                    <div className="space-y-2 text-sm text-gray-700">
+                    <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         <span>React.js & Modern JavaScript</span>
@@ -429,9 +429,9 @@ function About() {
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                         <Shield className="w-4 h-4 text-green-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900">OSINT Specialization</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">OSINT Specialization</h4>
                     </div>
-                    <div className="space-y-2 text-sm text-gray-700">
+                    <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         <span>Digital Footprint Analysis</span>
@@ -460,7 +460,7 @@ function About() {
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                         <Star className="w-4 h-4 text-purple-600" />
                       </div>
-                      <h4 className="font-semibold text-gray-900">Project Stats</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Project Stats</h4>
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
@@ -530,7 +530,7 @@ function About() {
               <div className="space-y-8">
                 <div className="text-center">
                   <Heart className="w-16 h-16 text-red-500 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Support InfoScope Development</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Support InfoScope Development</h2>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                     InfoScope OSINT is free and open source. Your support helps maintain and improve the platform, 
                     add new features, and keep the project sustainable for the OSINT community.
@@ -552,7 +552,7 @@ function About() {
                     
                     <div className="bg-white rounded-lg p-4 mb-4">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-sm text-gray-700">ivopereiraix3@oksbi</span>
+                        <span className="font-mono text-sm text-gray-700 dark:text-gray-300">ivopereiraix3@oksbi</span>
                         <button
                           onClick={copyUPI}
                           className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors"
@@ -629,9 +629,9 @@ function About() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">💡 Other Ways to Support</h3>
-                  <div className="space-y-3 text-gray-700">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">💡 Other Ways to Support</h3>
+                  <div className="space-y-3 text-gray-700 dark:text-gray-300">
                     <div className="flex items-start gap-2">
                       <Star className="w-4 h-4 text-yellow-500 mt-0.5" />
                       <span className="text-sm">Star the project on GitHub to show your appreciation</span>
@@ -665,7 +665,7 @@ function About() {
               <div className="space-y-8">
                 <div className="text-center">
                   <Scale className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Legal Information</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Legal Information</h2>
                   <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                     InfoScope operates under a comprehensive legal framework ensuring compliance, 
                     privacy protection, and ethical OSINT practices.

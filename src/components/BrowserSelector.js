@@ -365,7 +365,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto popup-scrollbar shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div>
@@ -588,7 +588,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                     Random Proxy
                   </button>
                 </div>
-                <div className="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div className="max-h-40 overflow-y-auto popup-scrollbar border border-gray-200 dark:border-gray-600 rounded-lg">
                   {proxyList.slice(0, 10).map((proxy) => {
                     const testResult = proxyTestResults[proxy.id];
                     const isSelected = proxyConfig.selectedProxy?.id === proxy.id;
@@ -768,7 +768,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                 {/* Exit Node Selection */}
                 <div className="mb-6">
                   <label className="text-sm font-medium text-gray-700 mb-3 block">Select Exit Node Location</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto popup-scrollbar border border-gray-200 rounded-lg p-3">
                     {Object.entries(torExitNodes).map(([key, node]) => (
                       <button
                         key={key}
@@ -848,7 +848,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                       {/* Add to Chain */}
                       <div>
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Add to Chain:</label>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto popup-scrollbar">
                           {Object.entries(torExitNodes).map(([key, node]) => {
                             if (key === 'auto' || selectedChain.includes(key) || selectedChain.length >= 3) return null;
                             return (

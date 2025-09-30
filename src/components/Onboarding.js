@@ -38,21 +38,21 @@ const Onboarding = ({ onComplete, onSkip }) => {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg">
-              <Search className="w-6 h-6 text-blue-600 mb-2" />
-              <span className="font-medium">37+ Tools</span>
+            <div className="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <Search className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
+              <span className="font-medium text-gray-900 dark:text-white">37+ Tools</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-green-50 rounded-lg">
-              <Globe className="w-6 h-6 text-green-600 mb-2" />
-              <span className="font-medium">Anonymous</span>
+            <div className="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+              <Globe className="w-6 h-6 text-green-600 dark:text-green-400 mb-2" />
+              <span className="font-medium text-gray-900 dark:text-white">Anonymous</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-purple-50 rounded-lg">
-              <Zap className="w-6 h-6 text-purple-600 mb-2" />
-              <span className="font-medium">Fast</span>
+            <div className="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+              <Zap className="w-6 h-6 text-purple-600 dark:text-purple-400 mb-2" />
+              <span className="font-medium text-gray-900 dark:text-white">Fast</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-yellow-50 rounded-lg">
-              <Shield className="w-6 h-6 text-yellow-600 mb-2" />
-              <span className="font-medium">Secure</span>
+            <div className="flex flex-col items-center p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+              <Shield className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mb-2" />
+              <span className="font-medium text-gray-900 dark:text-white">Secure</span>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ const Onboarding = ({ onComplete, onSkip }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Progress Bar */}
         <div className="h-1 bg-gray-200">
           <div 
@@ -283,7 +283,7 @@ const Onboarding = ({ onComplete, onSkip }) => {
         </div>
         
         {/* Content */}
-        <div className="p-8 overflow-y-auto max-h-[60vh]">
+  <div className="p-8 overflow-y-auto max-h-[60vh] popup-scrollbar">
           {steps[currentStep].content}
         </div>
         

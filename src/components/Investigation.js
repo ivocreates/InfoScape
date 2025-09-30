@@ -602,13 +602,13 @@ function Investigation() {
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="mx-auto max-w-7xl">
         {/* Enhanced Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                 Advanced OSINT Investigation Engine
               </h1>
               <p className="text-gray-600 mt-1">
@@ -658,7 +658,7 @@ function Investigation() {
           )}
 
           {/* Search Engine & Logic Selection */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Search Engine:</span>
               <div className="flex flex-wrap gap-2">
@@ -715,7 +715,7 @@ function Investigation() {
 
           {/* Enhanced Dorking Templates */}
           <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Investigation Templates:</h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Investigation Templates:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {advancedTemplates.map((template) => {
                 const Icon = template.icon;
@@ -726,14 +726,14 @@ function Investigation() {
                     className={`p-4 rounded-lg border text-left transition-all duration-200 relative group ${
                       isSelected 
                         ? "bg-black text-white border-black shadow-lg transform scale-105" 
-                        : "bg-white border-gray-200 hover:border-gray-400 hover:shadow-md text-gray-900 hover:bg-gray-50"
+                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                     onClick={() => setPreset(preset === template.id ? null : template.id)}
                     title={template.description}
                   >
                     <div className="flex items-center gap-3 mb-2">
                       <Icon className={`w-5 h-5 flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-700'}`} />
-                      <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+                      <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {template.name}
                       </span>
                     </div>
@@ -788,7 +788,7 @@ function Investigation() {
           <section className="xl:col-span-4">
             <div className="card p-6 space-y-6">
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
                   <Target className="w-5 h-5" />
                   Target Information
                 </h2>
@@ -829,7 +829,7 @@ function Investigation() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-900">Context Information</h2>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Context Information</h2>
                 <div className="space-y-4">
                   <EnhancedField labelText="Location" hint="City, state, country - be specific">
                     <input
@@ -860,7 +860,7 @@ function Investigation() {
 
               {/* Display identity chips */}
               {chips.length > 0 && (
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
                   <h3 className="text-sm font-medium text-gray-700 mb-2">Active Search Terms:</h3>
                   <div className="flex flex-wrap gap-2">
                     {chips.map((chip, index) => (
@@ -896,7 +896,7 @@ function Investigation() {
           <section className="xl:col-span-4">
             <div className="card p-6 space-y-6">
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900">
+                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
                   <Layers className="w-5 h-5" />
                   Search Operators
                 </h2>
@@ -980,7 +980,7 @@ function Investigation() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-900">Keywords</h2>
+                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Keywords</h2>
                 <div className="space-y-4">
                   <EnhancedField labelText="Include Keywords" hint="Comma or newline separated">
                     <textarea
@@ -1053,7 +1053,7 @@ function Investigation() {
                   </h3>
                   <div className="space-y-2">
                     {getVariations().map((variation, index) => (
-                      <div key={index} className="flex items-center justify-between bg-white p-2 rounded border border-blue-200">
+                      <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-800 p-2 rounded border border-blue-200 dark:border-blue-600">
                         <code className="text-xs text-blue-800">{variation}</code>
                         <button
                           className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
@@ -1079,7 +1079,7 @@ function Investigation() {
                   </h3>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {searchHistory.slice(0, 10).map((search) => (
-                      <div key={search.id} className="bg-gray-50 p-2 rounded text-xs">
+                      <div key={search.id} className="bg-gray-50 dark:bg-gray-700 p-2 rounded text-xs">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-medium text-gray-700">{search.engine}</span>
                           <div className="flex items-center gap-2">
@@ -1103,7 +1103,7 @@ function Investigation() {
 
               {/* Save Investigation */}
               <div className="card p-6">
-                <h3 className="font-semibold mb-3 text-gray-900">Save Investigation</h3>
+                <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Save Investigation</h3>
                 <EnhancedField labelText="Investigation Name" required>
                   <input
                     className="input-field"

@@ -329,7 +329,7 @@ function Dashboard({ setCurrentView }) {
         <div className="lg:col-span-2">
           <div className="card p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Recent Investigations</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Investigations</h3>
               <button
                 onClick={() => setCurrentView('investigation')}
                 className="btn-primary"
@@ -341,11 +341,11 @@ function Dashboard({ setCurrentView }) {
 
             {recentInvestigations.length === 0 ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                 </div>
-                <p className="text-gray-500 mb-2">No investigations yet</p>
-                <p className="text-sm text-gray-400 mb-4">Start your first OSINT investigation to see it here</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-2">No investigations yet</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">Start your first OSINT investigation to see it here</p>
                 <button
                   onClick={() => setCurrentView('investigation')}
                   className="btn-primary"
@@ -356,22 +356,22 @@ function Dashboard({ setCurrentView }) {
             ) : (
               <div className="space-y-4">
                 {recentInvestigations.map((investigation) => (
-                  <div key={investigation.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div key={investigation.id} className="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                         <Search className="w-5 h-5 text-white" />
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 truncate">
+                      <h4 className="font-medium text-gray-900 dark:text-white truncate">
                         {investigation.targetName || 'Untitled Investigation'}
                       </h4>
-                      <p className="text-sm text-gray-600 truncate">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                         {investigation.description || 'No description provided'}
                       </p>
                     </div>
                     <div className="flex-shrink-0">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                         <Clock className="w-4 h-4" />
                         {investigation.createdAt ? 
                           investigation.createdAt.toLocaleDateString() : 
@@ -392,22 +392,22 @@ function Dashboard({ setCurrentView }) {
           <div className="card p-6">
             <div className="flex items-center gap-2 mb-4">
               <Zap className="w-5 h-5 text-yellow-500" />
-              <h3 className="text-lg font-semibold text-gray-900">Pro Tips</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Pro Tips</h3>
             </div>
             <div className="space-y-4">
-              <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                <h4 className="font-medium text-blue-900 text-sm mb-1">Exact Name Matching</h4>
-                <p className="text-xs text-blue-700">Use quotes around names: "John Smith"</p>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border-l-4 border-blue-400">
+                <h4 className="font-medium text-blue-900 dark:text-blue-300 text-sm mb-1">Exact Name Matching</h4>
+                <p className="text-xs text-blue-700 dark:text-blue-400">Use quotes around names: "John Smith"</p>
               </div>
               
-              <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
-                <h4 className="font-medium text-green-900 text-sm mb-1">Add Context</h4>
-                <p className="text-xs text-green-700">Combine with location: "John" "Seattle"</p>
+              <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border-l-4 border-green-400">
+                <h4 className="font-medium text-green-900 dark:text-green-300 text-sm mb-1">Add Context</h4>
+                <p className="text-xs text-green-700 dark:text-green-400">Combine with location: "John" "Seattle"</p>
               </div>
               
-              <div className="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-400">
-                <h4 className="font-medium text-purple-900 text-sm mb-1">Exclude Noise</h4>
-                <p className="text-xs text-purple-700">Remove irrelevant: "John" -football</p>
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg border-l-4 border-purple-400">
+                <h4 className="font-medium text-purple-900 dark:text-purple-300 text-sm mb-1">Exclude Noise</h4>
+                <p className="text-xs text-purple-700 dark:text-purple-400">Remove irrelevant: "John" -football</p>
               </div>
             </div>
           </div>

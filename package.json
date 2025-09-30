@@ -42,25 +42,26 @@
       "public/electron.js",
       "public/preload.js"
     ],
-    "extraResources": [
-      {
-        "from": "build",
-        "to": "build",
-        "filter": ["**/*"]
-      }
-    ],
-    "mac": {
-      "category": "public.app-category.productivity",
-      "target": "dmg"
-    },
     "win": {
-      "target": "nsis",
-      "icon": "public/favicon.ico"
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.productivity"
     },
     "linux": {
       "target": "AppImage",
       "category": "Utility"
     },
+    "extraResources": [
+      {
+        "from": "build",
+        "to": "build",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
@@ -81,7 +82,7 @@
     "autoprefixer": "^10.4.16",
     "concurrently": "^7.6.0",
     "electron": "^28.1.0",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^24.13.3",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.1",
     "wait-on": "^7.2.0"
