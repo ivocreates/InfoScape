@@ -4,15 +4,17 @@ import {
   GoogleAuthProvider, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
-  updateProfile 
+  updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Shield, Eye, Globe, Mail, Lock, User } from 'lucide-react';
+import { Search, Shield, Eye, Globe, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 
 function AuthScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [authMode, setAuthMode] = useState('signin'); // 'signin', 'signup', 'google'
+  const [successMessage, setSuccessMessage] = useState('');
+  const [authMode, setAuthMode] = useState('signin'); // 'signin', 'signup', 'forgot-password'
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,6 +53,53 @@ function AuthScreen() {
     return true;
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!formData.email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      await sendPasswordResetEmail(auth, formData.email, {
+        url: window.location.origin, // Return URL after password reset
+        handleCodeInApp: false
+      });
+      
+      setSuccessMessage(
+        `Password reset email sent to ${formData.email}. Please check your inbox and spam folder.`
+      );
+      
+      // Clear form and switch back to sign in after successful reset
+      setTimeout(() => {
+        setAuthMode('signin');
+        setSuccessMessage('');
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Password reset error:', error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+          setError('No account found with this email address.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many password reset attempts. Please try again later.');
+          break;
+        default:
+          setError('Failed to send password reset email. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -80,7 +129,17 @@ function AuthScreen() {
           setError('No account found with this email address');
           break;
         case 'auth/wrong-password':
-          setError('Incorrect password');
+          setError(
+            <div>
+              <p>Incorrect password.</p>
+              <button
+                onClick={() => setAuthMode('forgot-password')}
+                className="text-blue-400 hover:text-blue-300 underline text-sm mt-1"
+              >
+                Forgot your password?
+              </button>
+            </div>
+          );
           break;
         case 'auth/email-already-in-use':
           setError('An account with this email already exists');
@@ -167,7 +226,11 @@ function AuthScreen() {
         <div className="card bg-gray-800 border-gray-700 p-6">
           <div className="flex items-center justify-center gap-2 mb-6">
             <button
-              onClick={() => setAuthMode('signin')}
+              onClick={() => {
+                setAuthMode('signin');
+                setError('');
+                setSuccessMessage('');
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 authMode === 'signin' 
                   ? 'bg-white text-gray-900' 
@@ -177,7 +240,11 @@ function AuthScreen() {
               Sign In
             </button>
             <button
-              onClick={() => setAuthMode('signup')}
+              onClick={() => {
+                setAuthMode('signup');
+                setError('');
+                setSuccessMessage('');
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 authMode === 'signup' 
                   ? 'bg-white text-gray-900' 
@@ -186,16 +253,84 @@ function AuthScreen() {
             >
               Sign Up
             </button>
+            {authMode === 'forgot-password' && (
+              <button
+                onClick={() => {
+                  setAuthMode('signin');
+                  setError('');
+                  setSuccessMessage('');
+                }}
+                className="text-gray-400 hover:text-white text-sm underline"
+              >
+                ← Back to Sign In
+              </button>
+            )}
           </div>
 
           {error && (
             <div className="bg-red-900/50 border border-red-700 text-red-300 rounded-lg p-3 mb-4 text-sm">
-              {error}
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  {typeof error === 'string' ? error : error}
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Email/Password Form */}
-          <form onSubmit={handleEmailAuth} className="space-y-4 mb-4">
+          {successMessage && (
+            <div className="bg-green-900/50 border border-green-700 text-green-300 rounded-lg p-3 mb-4 text-sm">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">{successMessage}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Forgot Password Form */}
+          {authMode === 'forgot-password' ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4 mb-4">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-medium text-white mb-2">Reset Your Password</h3>
+                <p className="text-sm text-gray-400">
+                  Enter your email address and we'll send you a link to reset your password.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full btn-primary bg-white text-gray-900 hover:bg-gray-100 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Mail className="w-4 h-4" />
+                )}
+                {isLoading ? 'Sending Reset Email...' : 'Send Reset Email'}
+              </button>
+            </form>
+          ) : (
+            /* Email/Password Form */
+            <form onSubmit={handleEmailAuth} className="space-y-4 mb-4">
             {authMode === 'signup' && (
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -288,31 +423,53 @@ function AuthScreen() {
               }
             </button>
           </form>
+          )}
 
-          {/* Divider */}
-          <div className="flex items-center my-4">
-            <div className="flex-1 border-t border-gray-600"></div>
-            <span className="px-3 text-sm text-gray-400">or</span>
-            <div className="flex-1 border-t border-gray-600"></div>
-          </div>
+          {/* Only show Google sign-in and forgot password options if not in forgot-password mode */}
+          {authMode !== 'forgot-password' && (
+            <>
+              {/* Forgot Password Link for Sign In Mode */}
+              {authMode === 'signin' && (
+                <div className="text-center mb-4">
+                  <button
+                    onClick={() => {
+                      setAuthMode('forgot-password');
+                      setError('');
+                      setSuccessMessage('');
+                    }}
+                    className="text-blue-400 hover:text-blue-300 underline text-sm"
+                  >
+                    Forgot your password?
+                  </button>
+                </div>
+              )}
 
-          {/* Google Sign In */}
-          <button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full btn-primary bg-white text-gray-900 hover:bg-gray-100 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <img 
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTTE3LjY0IDkuMjA0NTVjMC0uNjM5MzItLjA1NzI3LTEuMjUzNjgtLjE2MzY0LTEuODQwOUg5djMuNDgxODJoNC44NDM2M2MtLjIwOTA5IDEuMTI1LS44NDU0NSAxLjczNTIzLTEuODA5MDkgMi4zODE4MnYyLjA0NTQ1aDIuOTI3MjdjMS42ODQwOS0xLjU1IDIuNzE1OTEtMy44MjUgMi43MTU5MS02LjQwOTA5eiIgZmlsbD0iIzQyODVGNCIvPgogICAgPHBhdGggZD0iTTkgMThjMS4zNjM2NCAwIDIuNTA5MDktLjQzNjM2IDMuMzQwOTEtMS4yMTM2NGwtMi42NzcyNy0yLjA0NTQ1Yy0uNzYzNjQtLjUzMTgyLTEuNzEzNjQtLjc5MDkxLTIuNjYzNjQtLjc5MDkxeiIgZmlsbD0iIzM0QTg1MyIvPgogICAgPHBhdGggZD0iTTkgMThjLTEuMzYzNjQgMC0yLjUwOTA5LS40MzYzNi0zLjM0MDkxLTEuMjEzNjRsLTIuNjc3MjcgMi4wNDU0NUMzLjU3NzI3IDE5LjQzNjM2IDUuOTkwOTEgMjEgOSAyMWM0Ljk2IDAgOS00IDktOSAwLS42MzkzMi0uMDU3MjctMS4yNTM2OC0uMTYzNjQtMS44NDA5SDE4VjlIOS4xODAwOVoiIGZpbGw9IiNGRkJBRDAiLz4KICA8L2c+Cjwvc3ZnPgo=" 
-                alt="Google" 
-                className="w-5 h-5"
-              />
-            )}
-            {isLoading ? 'Signing in...' : 'Continue with Google'}
-          </button>
+              {/* Divider */}
+              <div className="flex items-center my-4">
+                <div className="flex-1 border-t border-gray-600"></div>
+                <span className="px-3 text-sm text-gray-400">or</span>
+                <div className="flex-1 border-t border-gray-600"></div>
+              </div>
+
+              {/* Google Sign In */}
+              <button
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full btn-primary bg-white text-gray-900 hover:bg-gray-100 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <img 
+                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTTE3LjY0IDkuMjA0NTVjMC0uNjM5MzItLjA1NzI3LTEuMjUzNjgtLjE2MzY0LTEuODQwOUg5djMuNDgxODJoNC44NDM2M2MtLjIwOTA5IDEuMTI1LS44NDU0NSAxLjczNTIzLTEuODA5MDkgMi4zODE4MnYyLjA0NTQ1aDIuOTI3MjdjMS42ODQwOS0xLjU1IDIuNzE1OTEtMy44MjUgMi43MTU5MS02LjQwOTA5eiIgZmlsbD0iIzQyODVGNCIvPgogICAgPHBhdGggZD0iTTkgMThjMS4zNjM2NCAwIDIuNTA5MDktLjQzNjM2IDMuMzQwOTEtMS4yMTM2NGwtMi42NzcyNy0yLjA0NTQ1Yy0uNzYzNjQtLjUzMTgyLTEuNzEzNjQtLjc5MDkxLTIuNjYzNjQtLjc5MDkxeiIgZmlsbD0iIzM0QTg1MyIvPgogICAgPHBhdGggZD0iTTkgMThjLTEuMzYzNjQgMC0yLjUwOTA5LS40MzYzNi0zLjM0MDkxLTEuMjEzNjRsLTIuNjc3MjcgMi4wNDU0NUMzLjU3NzI3IDE5LjQzNjM2IDUuOTkwOTEgMjEgOSAyMWM0Ljk2IDAgOS00IDktOSAwLS42MzkzMi0uMDU3MjctMS4yNTM2OC0uMTYzNjQtMS44NDA5SDE4VjlIOS4xODAwOVoiIGZpbGw9IiNGRkJBRDAiLz4KICA8L2c+Cjwvc3ZnPgo=" 
+                    alt="Google" 
+                    className="w-5 h-5"
+                  />
+                )}
+                {isLoading ? 'Signing in...' : 'Continue with Google'}
+              </button>
+            </>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">

@@ -4,23 +4,45 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFirebaseConfig, isDevelopment, getLoggingConfig } from "./utils/apiConfig";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC7LfMgmB9Vo7tAw8D_z366zgqPB__oScs",
-  authDomain: "infoscope-osint.firebaseapp.com",
-  projectId: "infoscope-osint",
-  storageBucket: "infoscope-osint.firebasestorage.app",
-  messagingSenderId: "633111783755",
-  appId: "1:633111783755:web:11fe05339ded011d68a0ce",
-  measurementId: "G-17HQVKCKJ2"
-};
+// Get Firebase configuration securely
+const firebaseConfig = getFirebaseConfig();
+const loggingConfig = getLoggingConfig();
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Initialize analytics only in production and if measurement ID is provided
+let analytics = null;
+if (firebaseConfig.measurementId && !isDevelopment()) {
+  try {
+    analytics = getAnalytics(app);
+    if (loggingConfig.enableConsole) {
+      console.log('Firebase Analytics initialized');
+    }
+  } catch (error) {
+    console.error('Failed to initialize Firebase Analytics:', error);
+  }
+}
+
+// Initialize services
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Configure auth settings
+auth.useDeviceLanguage();
+
+// Log initialization in development
+if (loggingConfig.enableConsole) {
+  console.log('Firebase services initialized:', {
+    auth: !!auth,
+    firestore: !!db,
+    storage: !!storage,
+    analytics: !!analytics,
+    projectId: firebaseConfig.projectId
+  });
+}
 
 export { auth, db, storage, analytics };

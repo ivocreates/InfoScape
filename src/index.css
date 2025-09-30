@@ -29,6 +29,20 @@
     @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
   }
   
+  /* Enhanced select styling for better visibility */
+  .select-field {
+    @apply block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:border-black focus:outline-none focus:ring-1 focus:ring-black;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+  
+  .select-field:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23000000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  }
+  
   .card {
     @apply rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow duration-200;
   }
@@ -53,6 +67,29 @@
   /* Search input with better styling */
   .search-input {
     @apply w-full px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-xl shadow-sm placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50;
+  }
+  
+  /* Z-index utilities for dropdown visibility */
+  .dropdown-menu {
+    @apply absolute bg-white border border-gray-200 rounded-lg shadow-lg;
+    z-index: 50;
+  }
+  
+  .modal-overlay {
+    z-index: 40;
+  }
+  
+  .tooltip {
+    z-index: 60;
+  }
+  
+  /* Enhanced button states for better visibility */
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  .btn:focus-visible {
+    @apply ring-2 ring-offset-2;
   }
 }
 

@@ -14,12 +14,15 @@ import {
   Copy,
   Check,
   CreditCard,
-  Smartphone
+  Smartphone,
+  Scale
 } from 'lucide-react';
+import LegalDocumentation from './LegalDocumentation';
 
 function About() {
   const [copiedUPI, setCopiedUPI] = useState(false);
   const [activeTab, setActiveTab] = useState('about');
+  const [showLegalDocs, setShowLegalDocs] = useState(false);
 
   const copyUPI = () => {
     navigator.clipboard.writeText('ivopereiraix3@oksbi');
@@ -85,7 +88,8 @@ function About() {
             {[
               { id: 'about', label: 'About', icon: Info },
               { id: 'developer', label: 'Developer', icon: Github },
-              { id: 'support', label: 'Support Development', icon: Heart }
+              { id: 'support', label: 'Support Development', icon: Heart },
+              { id: 'legal', label: 'Legal', icon: Scale }
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -537,8 +541,130 @@ function About() {
                 </div>
               </div>
             )}
+
+            {/* Legal Tab */}
+            {activeTab === 'legal' && (
+              <div className="space-y-8">
+                <div className="text-center">
+                  <Scale className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Legal Information</h2>
+                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    InfoScope operates under a comprehensive legal framework ensuring compliance, 
+                    privacy protection, and ethical OSINT practices.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-green-900">Open Source License</h3>
+                    </div>
+                    <p className="text-green-700 mb-4">
+                      Licensed under Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)
+                    </p>
+                    <ul className="space-y-2 text-sm text-green-600">
+                      <li>• Free to use, modify, and distribute</li>
+                      <li>• Attribution required</li>
+                      <li>• Derivatives must use same license</li>
+                      <li>• Commercial use permitted</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-purple-900">Privacy Protection</h3>
+                    </div>
+                    <p className="text-purple-700 mb-4">
+                      Privacy-by-design with minimal data collection and strong user control
+                    </p>
+                    <ul className="space-y-2 text-sm text-purple-600">
+                      <li>• GDPR compliant</li>
+                      <li>• Local data storage priority</li>
+                      <li>• No tracking or analytics by default</li>
+                      <li>• User data ownership</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <Scale className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-blue-900">Terms of Service</h3>
+                    </div>
+                    <p className="text-blue-700 mb-4">
+                      Clear guidelines for ethical and legal OSINT practices
+                    </p>
+                    <ul className="space-y-2 text-sm text-blue-600">
+                      <li>• Ethical use requirements</li>
+                      <li>• Legal compliance guidelines</li>
+                      <li>• User responsibilities</li>
+                      <li>• Service limitations</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
+                        <ExternalLink className="w-4 h-4 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-orange-900">Compliance</h3>
+                    </div>
+                    <p className="text-orange-700 mb-4">
+                      Adherence to international standards and regulations
+                    </p>
+                    <ul className="space-y-2 text-sm text-orange-600">
+                      <li>• GDPR compliance framework</li>
+                      <li>• Security best practices</li>
+                      <li>• Legal framework adherence</li>
+                      <li>• Industry standards</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={() => setShowLegalDocs(true)}
+                    className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    <Scale className="w-4 h-4" />
+                    View Complete Legal Documentation
+                  </button>
+                  <p className="text-sm text-gray-500 mt-3">
+                    Access comprehensive legal documentation including privacy policy, terms of service, 
+                    compliance framework, and licensing details.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                  <div className="flex items-start gap-3">
+                    <ExternalLink className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-yellow-900 mb-2">Important Notice</h3>
+                      <p className="text-yellow-800 text-sm">
+                        While InfoScope provides tools for OSINT investigations, users are solely responsible 
+                        for ensuring their activities comply with applicable laws and regulations. Always 
+                        consult with legal counsel when conducting sensitive investigations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Legal Documentation Modal */}
+        <LegalDocumentation
+          isOpen={showLegalDocs}
+          onClose={() => setShowLegalDocs(false)}
+        />
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ import {
   Settings
 } from 'lucide-react';
 import BrowserSelector from './BrowserSelector';
+import StarButton from './StarButton';
 
 function OSINTTools() {
   const [activeCategory, setActiveCategory] = useState('people');
@@ -29,6 +30,14 @@ function OSINTTools() {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
   const [pendingUrl, setPendingUrl] = useState('');
   const [browserPreference, setBrowserPreference] = useState('builtin');
+  const [user, setUser] = useState(null); // Add user state for favorites
+
+  // Get user from context or props (for now, we'll simulate it)
+  React.useEffect(() => {
+    // In a real app, this would come from auth context
+    // For now, we'll use a placeholder
+    setUser({ uid: 'demo-user' });
+  }, []);
 
   // Comprehensive OSINT Tools Database
   const osintTools = {
@@ -705,6 +714,26 @@ function OSINTTools() {
                     <IconComponent className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex items-center gap-2">
+                    {/* Star Button for Favorites */}
+                    <StarButton
+                      item={{
+                        id: `osint-tool-${tool.name.toLowerCase().replace(/\s+/g, '-')}`,
+                        type: 'tool',
+                        name: tool.name,
+                        description: tool.description,
+                        category: tool.category,
+                        url: tool.url,
+                        icon: tool.icon === Users ? '👥' : 
+                              tool.icon === Shield ? '🛡️' : 
+                              tool.icon === Mail ? '📧' : 
+                              tool.icon === Globe ? '🌐' : 
+                              tool.icon === Eye ? '👁️' : 
+                              tool.icon === Search ? '🔍' : 
+                              tool.icon === BookOpen ? '📚' : '⭐'
+                      }}
+                      user={user}
+                      size="sm"
+                    />
                     {/* Rating Stars */}
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (

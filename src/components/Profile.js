@@ -13,9 +13,11 @@ import {
   CheckCircle,
   Clock,
   Database,
-  Eye,
-  EyeOff
+  Search
 } from 'lucide-react';
+import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import LoadingSpinner from './LoadingSpinner';
 
 function Profile({ user }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -40,35 +42,45 @@ function Profile({ user }) {
     calculateStorageUsage();
   }, []);
 
-  const loadInvestigationHistory = () => {
-    // In a real app, this would fetch from Firebase
-    const mockHistory = [
-      {
-        id: 1,
-        name: "Corporate Background Check",
-        date: "2025-09-29",
-        queries: 15,
-        targets: ["John Smith", "Acme Corp"],
-        status: "completed"
-      },
-      {
-        id: 2,
-        name: "Social Media Investigation",
-        date: "2025-09-28",
-        queries: 8,
-        targets: ["@username123"],
-        status: "active"
-      },
-      {
-        id: 3,
-        name: "Domain Research",
-        date: "2025-09-27",
-        queries: 12,
-        targets: ["example.com"],
-        status: "completed"
-      }
-    ];
-    setInvestigationHistory(mockHistory);
+  const loadInvestigationHistory = async () => {
+    if (!auth.currentUser) return;
+    
+    try {
+      const investigationsQuery = query(
+        collection(db, `users/${auth.currentUser.uid}/investigations`),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const querySnapshot = await getDocs(investigationsQuery);
+      const investigations = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        investigations.push({
+          id: doc.id,
+          ...data,
+          date: data.createdAt?.toDate?.()?.toLocaleDateString() || new Date().toLocaleDateString()
+        });
+      });
+      
+      setInvestigationHistory(investigations);
+    } catch (error) {
+      console.error('Error loading investigation history:', error);
+      // Fallback to mock data for demo
+      const mockHistory = [
+        {
+          id: 'demo-1',
+          name: "Corporate Background Check",
+          date: new Date().toLocaleDateString(),
+          targetName: "John Smith",
+          searchParameters: { fullName: "John Smith", company: "Acme Corp" },
+          query: '"John Smith" site:linkedin.com OR site:github.com',
+          status: "completed",
+          engine: "google"
+        }
+      ];
+      setInvestigationHistory(mockHistory);
+    }
   };
 
   const loadUserSettings = () => {
@@ -97,9 +109,17 @@ function Profile({ user }) {
     }
   };
 
-  const deleteInvestigation = (id) => {
-    if (window.confirm('Delete this investigation?')) {
+  const deleteInvestigation = async (id) => {
+    if (!window.confirm('Delete this investigation?')) return;
+    
+    try {
+      if (auth.currentUser && id.startsWith('demo-') === false) {
+        await deleteDoc(doc(db, `users/${auth.currentUser.uid}/investigations`, id));
+      }
       setInvestigationHistory(prev => prev.filter(inv => inv.id !== id));
+    } catch (error) {
+      console.error('Error deleting investigation:', error);
+      alert('Failed to delete investigation. Please try again.');
     }
   };
 
@@ -327,16 +347,21 @@ function Profile({ user }) {
                             <h4 className="font-medium text-gray-900">{investigation.name}</h4>
                             <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
                               <span>{investigation.date}</span>
-                              <span>{investigation.queries} queries</span>
-                              <span>Targets: {investigation.targets.join(', ')}</span>
+                              <span>Target: {investigation.targetName || 'Unknown'}</span>
+                              <span>Engine: {investigation.engine || 'google'}</span>
                               <span className={`px-2 py-1 rounded text-xs ${
                                 investigation.status === 'completed' 
                                   ? 'bg-green-100 text-green-800' 
                                   : 'bg-yellow-100 text-yellow-800'
                               }`}>
-                                {investigation.status}
+                                {investigation.status || 'active'}
                               </span>
                             </div>
+                            {investigation.query && (
+                              <div className="mt-2 p-2 bg-gray-100 rounded text-xs font-mono text-gray-700">
+                                {investigation.query}
+                              </div>
+                            )}
                           </div>
                           <button
                             onClick={() => deleteInvestigation(investigation.id)}

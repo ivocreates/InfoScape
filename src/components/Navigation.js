@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor } from 'lucide-react';
+import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star } from 'lucide-react';
 import BrowserSelector from './BrowserSelector';
 import BrowserManager from './BrowserManager';
 
-function Navigation({ currentView, setCurrentView, user }) {
+function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites }) {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
   const [showBrowserManager, setShowBrowserManager] = useState(false);
 
@@ -77,20 +77,6 @@ function Navigation({ currentView, setCurrentView, user }) {
             </button>
           ))}
 
-          {/* Quick Search Button */}
-          <button
-            onClick={() => setCurrentView('investigation')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-              currentView === 'investigation'
-                ? 'bg-blue-600 text-white'
-                : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50 border border-blue-200'
-            }`}
-            title="Quick Search - Go to Investigation"
-          >
-            <Search className="w-4 h-4" />
-            Search
-          </button>
-
           {/* Browser Button */}
           <button
             onClick={handleOpenBrowser}
@@ -109,6 +95,26 @@ function Navigation({ currentView, setCurrentView, user }) {
           >
             <Monitor className="w-4 h-4" />
             Manager
+          </button>
+
+          {/* AI Chat Button */}
+          <button
+            onClick={onOpenChat}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 border border-purple-200 flex items-center gap-2"
+            title="Open AI Assistant"
+          >
+            <MessageCircle className="w-4 h-4" />
+            AI Help
+          </button>
+
+          {/* Favorites Button */}
+          <button
+            onClick={onOpenFavorites}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 border border-yellow-200 flex items-center gap-2"
+            title="View Favorites"
+          >
+            <Star className="w-4 h-4" />
+            Favorites
           </button>
         </div>
 

@@ -12,6 +12,15 @@ function Dashboard({ setCurrentView }) {
   const [recentInvestigations, setRecentInvestigations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [searchFilters, setSearchFilters] = useState({
+    tools: true,
+    templates: true,
+    investigations: true,
+    features: true
+  });
   const [stats, setStats] = useState({
     totalInvestigations: 0,
     successfulFinds: 0,
@@ -21,7 +30,121 @@ function Dashboard({ setCurrentView }) {
   useEffect(() => {
     fetchRecentInvestigations();
     fetchStats();
+    loadSearchHistory();
   }, []);
+
+  // Enhanced search functionality
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      generateSearchSuggestions();
+      setShowSearchDropdown(true);
+    } else {
+      setShowSearchDropdown(false);
+    }
+  }, [searchQuery]);
+
+  const loadSearchHistory = () => {
+    try {
+      const history = JSON.parse(localStorage.getItem('dashboard-search-history') || '[]');
+      setSearchHistory(history.slice(0, 10)); // Keep last 10 searches
+    } catch (error) {
+      console.error('Error loading search history:', error);
+      setSearchHistory([]);
+    }
+  };
+
+  const saveSearchToHistory = (query) => {
+    if (!query.trim()) return;
+    
+    const newHistory = [
+      query.trim(),
+      ...searchHistory.filter(item => item !== query.trim())
+    ].slice(0, 10);
+    
+    setSearchHistory(newHistory);
+    localStorage.setItem('dashboard-search-history', JSON.stringify(newHistory));
+  };
+
+  const generateSearchSuggestions = () => {
+    const query = searchQuery.toLowerCase();
+    const suggestions = [];
+
+    // Tool suggestions
+    quickAccessTools.forEach(category => {
+      category.tools.forEach(tool => {
+        if (tool.title.toLowerCase().includes(query) || 
+            tool.description.toLowerCase().includes(query) ||
+            category.category.toLowerCase().includes(query)) {
+          suggestions.push({
+            type: 'tool',
+            title: tool.title,
+            description: tool.description,
+            action: () => setCurrentView(tool.id),
+            icon: tool.icon,
+            color: tool.color
+          });
+        }
+      });
+    });
+
+    // Template suggestions
+    investigationTemplates.forEach(template => {
+      if (template.title.toLowerCase().includes(query) || 
+          template.description.toLowerCase().includes(query)) {
+        suggestions.push({
+          type: 'template',
+          title: template.title,
+          description: template.description,
+          action: template.action,
+          icon: template.icon,
+          color: 'bg-blue-500'
+        });
+      }
+    });
+
+    // Feature suggestions based on common search terms
+    const featureSuggestions = [
+      { terms: ['google', 'dork', 'search'], title: 'Google Dorking', action: () => setCurrentView('investigation') },
+      { terms: ['email', 'breach', 'lookup'], title: 'Email Investigation', action: () => setCurrentView('osint-tools') },
+      { terms: ['domain', 'website', 'url'], title: 'Domain Analysis', action: () => setCurrentView('link-scanner') },
+      { terms: ['social', 'profile', 'media'], title: 'Social Media Analysis', action: () => setCurrentView('profile-analyzer') },
+      { terms: ['image', 'reverse', 'photo'], title: 'Image Analysis', action: () => setCurrentView('osint-tools') },
+      { terms: ['phone', 'number', 'mobile'], title: 'Phone Number Lookup', action: () => setCurrentView('osint-tools') },
+      { terms: ['username', 'handle', 'alias'], title: 'Username Search', action: () => setCurrentView('osint-tools') },
+      { terms: ['tor', 'proxy', 'anonymous'], title: 'Anonymous Browsing', action: () => setCurrentView('osint-tools') }
+    ];
+
+    featureSuggestions.forEach(feature => {
+      if (feature.terms.some(term => term.includes(query) || query.includes(term))) {
+        suggestions.push({
+          type: 'feature',
+          title: feature.title,
+          description: `Quick access to ${feature.title.toLowerCase()}`,
+          action: feature.action,
+          icon: Search,
+          color: 'bg-gray-500'
+        });
+      }
+    });
+
+    setSearchSuggestions(suggestions.slice(0, 8));
+  };
+
+  const handleSearchSelect = (suggestion) => {
+    saveSearchToHistory(suggestion.title);
+    setSearchQuery('');
+    setShowSearchDropdown(false);
+    suggestion.action();
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      saveSearchToHistory(searchQuery);
+      // Perform a general search or navigate to search results
+      setCurrentView('osint-tools');
+    }
+  };
 
   const fetchRecentInvestigations = async () => {
     try {
@@ -202,24 +325,107 @@ function Dashboard({ setCurrentView }) {
           </div>
         </div>
         
-        {/* Global Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            className="search-input pl-10"
-            placeholder="Search tools, features, or templates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <button
-                onClick={() => setSearchQuery('')}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
+        {/* Enhanced Global Search */}
+        <div className="relative max-w-lg">
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              className="search-input pl-10 pr-12"
+              placeholder="Search tools, features, investigations..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => searchQuery.length > 0 && setShowSearchDropdown(true)}
+              onBlur={() => setTimeout(() => setShowSearchDropdown(false), 200)}
+            />
+            {searchQuery && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </form>
+
+          {/* Search Dropdown */}
+          {showSearchDropdown && (searchSuggestions.length > 0 || searchHistory.length > 0) && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+              {/* Search Suggestions */}
+              {searchSuggestions.length > 0 && (
+                <div className="p-2">
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+                    Suggestions
+                  </div>
+                  {searchSuggestions.map((suggestion, index) => {
+                    const Icon = suggestion.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleSearchSelect(suggestion)}
+                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 rounded text-left transition-colors"
+                      >
+                        <div className={`w-8 h-8 rounded ${suggestion.color} flex items-center justify-center flex-shrink-0`}>
+                          <Icon className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-900 truncate">{suggestion.title}</div>
+                          <div className="text-xs text-gray-500 truncate">{suggestion.description}</div>
+                        </div>
+                        <div className="text-xs text-gray-400 capitalize">{suggestion.type}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Search History */}
+              {searchHistory.length > 0 && searchQuery.length === 0 && (
+                <div className="p-2 border-t border-gray-100">
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+                    Recent Searches
+                  </div>
+                  {searchHistory.slice(0, 5).map((query, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setSearchQuery(query);
+                        setShowSearchDropdown(false);
+                      }}
+                      className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 rounded text-left transition-colors"
+                    >
+                      <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-sm text-gray-700 flex-1 truncate">{query}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Search Filters */}
+              <div className="p-2 border-t border-gray-100">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+                  Filter Results
+                </div>
+                <div className="grid grid-cols-2 gap-2 px-2">
+                  {Object.entries(searchFilters).map(([key, enabled]) => (
+                    <label key={key} className="flex items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={enabled}
+                        onChange={(e) => setSearchFilters(prev => ({
+                          ...prev,
+                          [key]: e.target.checked
+                        }))}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="capitalize text-gray-700">{key}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>

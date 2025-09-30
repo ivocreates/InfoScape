@@ -1,0 +1,738 @@
+import React, { useState } from 'react';
+import {
+  Shield,
+  FileText,
+  Scale,
+  Users,
+  Lock,
+  Eye,
+  Download,
+  ExternalLink,
+  AlertTriangle,
+  CheckCircle,
+  X,
+  Info
+} from 'lucide-react';
+
+const LegalDocumentation = ({ isOpen, onClose }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const tabs = [
+    { id: 'overview', label: 'Legal Overview', icon: Shield },
+    { id: 'license', label: 'License', icon: FileText },
+    { id: 'privacy', label: 'Privacy Policy', icon: Lock },
+    { id: 'terms', label: 'Terms of Service', icon: Scale },
+    { id: 'compliance', label: 'Compliance', icon: CheckCircle },
+    { id: 'disclaimer', label: 'Disclaimer', icon: AlertTriangle }
+  ];
+
+  if (!isOpen) return null;
+
+  const renderOverview = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Info className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-blue-900 mb-2">InfoScope Legal Framework</h3>
+            <p className="text-blue-800 mb-4">
+              InfoScope is committed to providing a legally compliant, ethical, and transparent OSINT platform. 
+              This documentation outlines our legal framework, user responsibilities, and compliance requirements.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center gap-2 text-blue-700">
+                <CheckCircle className="w-4 h-4" />
+                <span>Open Source License (CC BY-SA 4.0)</span>
+              </div>
+              <div className="flex items-center gap-2 text-blue-700">
+                <CheckCircle className="w-4 h-4" />
+                <span>Privacy-First Design</span>
+              </div>
+              <div className="flex items-center gap-2 text-blue-700">
+                <CheckCircle className="w-4 h-4" />
+                <span>GDPR Compliant</span>
+              </div>
+              <div className="flex items-center gap-2 text-blue-700">
+                <CheckCircle className="w-4 h-4" />
+                <span>Ethical OSINT Guidelines</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FileText className="w-6 h-6 text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Open Source License</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            InfoScope is licensed under Creative Commons Attribution-ShareAlike 4.0 International License, 
+            promoting transparency and community collaboration.
+          </p>
+          <button
+            onClick={() => setActiveTab('license')}
+            className="text-green-600 hover:text-green-700 font-medium flex items-center gap-2"
+          >
+            View License Details <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Lock className="w-6 h-6 text-purple-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Privacy Protection</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            We implement privacy-by-design principles, minimal data collection, and strong user control 
+            over personal information.
+          </p>
+          <button
+            onClick={() => setActiveTab('privacy')}
+            className="text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2"
+          >
+            View Privacy Policy <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Scale className="w-6 h-6 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Terms of Service</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            Clear guidelines for acceptable use, user responsibilities, and service limitations 
+            to ensure ethical OSINT practices.
+          </p>
+          <button
+            onClick={() => setActiveTab('terms')}
+            className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+          >
+            View Terms <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertTriangle className="w-6 h-6 text-orange-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Legal Disclaimer</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            Important disclaimers regarding tool usage, liability limitations, and user responsibilities 
+            in OSINT investigations.
+          </p>
+          <button
+            onClick={() => setActiveTab('disclaimer')}
+            className="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-2"
+          >
+            View Disclaimer <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Principles</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="text-center p-4">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Eye className="w-6 h-6 text-green-600" />
+            </div>
+            <h4 className="font-medium text-gray-900 mb-2">Transparency</h4>
+            <p className="text-sm text-gray-600">Open source, auditable code and clear documentation</p>
+          </div>
+          <div className="text-center p-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Shield className="w-6 h-6 text-blue-600" />
+            </div>
+            <h4 className="font-medium text-gray-900 mb-2">Ethics</h4>
+            <p className="text-sm text-gray-600">Responsible OSINT practices and user guidelines</p>
+          </div>
+          <div className="text-center p-4">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+            <h4 className="font-medium text-gray-900 mb-2">Community</h4>
+            <p className="text-sm text-gray-600">Collaborative development and shared knowledge</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderLicense = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+            <FileText className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-green-900">Creative Commons License</h3>
+            <p className="text-green-700">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4 mb-4">
+          <a
+            href="https://creativecommons.org/licenses/by-sa/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View Official License
+          </a>
+          <button className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-green-600 border border-green-200 px-4 py-2 rounded-lg font-medium transition-colors">
+            <Download className="w-4 h-4" />
+            Download License
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">License Summary</h3>
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900">Share</h4>
+              <p className="text-gray-600">Copy and redistribute the material in any medium or format</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900">Adapt</h4>
+              <p className="text-gray-600">Remix, transform, and build upon the material for any purpose</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900">Attribution Required</h4>
+              <p className="text-gray-600">You must give appropriate credit and indicate if changes were made</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900">ShareAlike</h4>
+              <p className="text-gray-600">If you remix or transform the material, you must distribute under the same license</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Attribution Guidelines</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-gray-900 mb-2">How to Attribute InfoScope:</h4>
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <code className="text-sm text-gray-800">
+                InfoScope OSINT Platform by InfoScope Team, licensed under CC BY-SA 4.0.<br/>
+                Source: https://github.com/infoscope/infoscope<br/>
+                License: https://creativecommons.org/licenses/by-sa/4.0/
+              </code>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-900 mb-2">Required Elements:</h4>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Title of the work: "InfoScope OSINT Platform"</li>
+              <li>• Creator: "InfoScope Team"</li>
+              <li>• Source URL: Link to the original repository</li>
+              <li>• License: "CC BY-SA 4.0" with link to license</li>
+              <li>• Changes: Indicate if you modified the original work</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPrivacy = () => (
+    <div className="space-y-6">
+      <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+            <Lock className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-purple-900">Privacy Policy</h3>
+            <p className="text-purple-700">Last updated: {new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+        <p className="text-purple-800">
+          InfoScope is committed to protecting your privacy and implementing privacy-by-design principles 
+          throughout our platform.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Collection</h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Information We Collect:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• <strong>Account Information:</strong> Email address, display name (when you create an account)</li>
+                <li>• <strong>Investigation Data:</strong> Saved investigations and search queries (stored locally and optionally in Firebase)</li>
+                <li>• <strong>Usage Analytics:</strong> Anonymous usage statistics to improve the platform (optional)</li>
+                <li>• <strong>Browser Information:</strong> Browser type and version for compatibility (not personally identifiable)</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Information We Do NOT Collect:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Personal browsing history outside InfoScope</li>
+                <li>• Content of your OSINT investigations</li>
+                <li>• Passwords (we use Firebase Authentication)</li>
+                <li>• Location data or device identifiers</li>
+                <li>• Third-party service credentials</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Usage & Storage</h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">How We Use Your Data:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Provide and maintain InfoScope services</li>
+                <li>• Sync your investigations across devices (if enabled)</li>
+                <li>• Improve platform functionality and user experience</li>
+                <li>• Provide customer support and respond to inquiries</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Data Storage:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• <strong>Local Storage:</strong> Most data is stored locally on your device</li>
+                <li>• <strong>Firebase:</strong> Account data and optionally investigation syncing</li>
+                <li>• <strong>Encryption:</strong> All data transmission is encrypted via HTTPS</li>
+                <li>• <strong>Retention:</strong> Data is retained only as long as necessary</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Rights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Access</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Rectification</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Erasure</span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Portability</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Objection</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span className="font-medium">Restriction</span>
+              </div>
+            </div>
+          </div>
+          <p className="text-gray-600 mt-4">
+            To exercise your rights, contact us at privacy@infoscope.com or use the data export/deletion 
+            features in your account settings.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTerms = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Scale className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-blue-900">Terms of Service</h3>
+            <p className="text-blue-700">Last updated: {new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+        <p className="text-blue-800">
+          By using InfoScope, you agree to these terms and commit to ethical and legal OSINT practices.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Acceptable Use</h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2 text-green-700">✓ Permitted Uses:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Legal research and investigation using publicly available information</li>
+                <li>• Academic research and educational purposes</li>
+                <li>• Cybersecurity research and threat analysis</li>
+                <li>• Journalism and fact-checking activities</li>
+                <li>• Due diligence and background verification</li>
+                <li>• Personal research and genealogy</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2 text-red-700">✗ Prohibited Uses:</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li>• Stalking, harassment, or intimidation of individuals</li>
+                <li>• Accessing private or password-protected information</li>
+                <li>• Violating terms of service of third-party websites</li>
+                <li>• Commercial spamming or unauthorized data scraping</li>
+                <li>• Activities that violate local, national, or international laws</li>
+                <li>• Doxxing or publishing private information without consent</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">User Responsibilities</h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Legal Compliance</h4>
+                <p className="text-gray-600">Ensure all activities comply with applicable laws and regulations in your jurisdiction.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Eye className="w-5 h-5 text-green-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Ethical Standards</h4>
+                <p className="text-gray-600">Maintain high ethical standards and respect for privacy and human rights.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <FileText className="w-5 h-5 text-purple-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Documentation</h4>
+                <p className="text-gray-600">Maintain proper documentation of your research methodology and sources.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Users className="w-5 h-5 text-orange-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Respect for Others</h4>
+                <p className="text-gray-600">Respect the privacy and dignity of individuals in your research.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Limitations</h3>
+          <div className="space-y-3 text-gray-600">
+            <p>• InfoScope is provided "as is" without warranties of any kind</p>
+            <p>• We do not guarantee the accuracy or completeness of any information</p>
+            <p>• Service availability may be subject to maintenance and updates</p>
+            <p>• We reserve the right to modify or discontinue features with notice</p>
+            <p>• Rate limiting may apply to prevent abuse</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCompliance = () => (
+    <div className="space-y-6">
+      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+            <CheckCircle className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-green-900">Compliance Framework</h3>
+            <p className="text-green-700">InfoScope adheres to international standards and regulations</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Shield className="w-6 h-6 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">GDPR Compliance</h3>
+          </div>
+          <ul className="space-y-2 text-gray-600">
+            <li>• Privacy by design and by default</li>
+            <li>• Lawful basis for data processing</li>
+            <li>• Data subject rights implementation</li>
+            <li>• Data minimization principles</li>
+            <li>• Cross-border data transfer protections</li>
+            <li>• Data breach notification procedures</li>
+          </ul>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Lock className="w-6 h-6 text-purple-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Security Standards</h3>
+          </div>
+          <ul className="space-y-2 text-gray-600">
+            <li>• End-to-end encryption for data transmission</li>
+            <li>• Secure authentication via Firebase</li>
+            <li>• Regular security audits and updates</li>
+            <li>• Minimal data collection practices</li>
+            <li>• Secure development lifecycle</li>
+            <li>• Vulnerability disclosure program</li>
+          </ul>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Scale className="w-6 h-6 text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Legal Framework</h3>
+          </div>
+          <ul className="space-y-2 text-gray-600">
+            <li>• International human rights standards</li>
+            <li>• National data protection laws</li>
+            <li>• Computer fraud and abuse prevention</li>
+            <li>• Terms of service compliance</li>
+            <li>• Copyright and intellectual property respect</li>
+            <li>• Cross-jurisdictional legal considerations</li>
+          </ul>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FileText className="w-6 h-6 text-orange-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Industry Standards</h3>
+          </div>
+          <ul className="space-y-2 text-gray-600">
+            <li>• OSINT ethical guidelines</li>
+            <li>• Information security best practices</li>
+            <li>• Open source development standards</li>
+            <li>• Accessibility compliance (WCAG)</li>
+            <li>• Quality assurance processes</li>
+            <li>• Community contribution guidelines</li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+          <div>
+            <h3 className="font-semibold text-yellow-900 mb-2">Important Notice</h3>
+            <p className="text-yellow-800">
+              While InfoScope implements comprehensive compliance measures, users remain responsible for 
+              ensuring their specific use cases comply with applicable local, national, and international laws. 
+              When in doubt, consult with legal counsel before proceeding with sensitive investigations.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDisclaimer = () => (
+    <div className="space-y-6">
+      <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-orange-900">Legal Disclaimer</h3>
+            <p className="text-orange-700">Important limitations and user responsibilities</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Disclaimer</h3>
+          <div className="space-y-4 text-gray-600">
+            <p>
+              <strong>No Warranty:</strong> InfoScope is provided "as is" and "as available" without any warranties, 
+              express or implied, including but not limited to warranties of merchantability, fitness for a particular 
+              purpose, or non-infringement.
+            </p>
+            <p>
+              <strong>Information Accuracy:</strong> We make no representations or warranties about the accuracy, 
+              completeness, or reliability of any information obtained through InfoScope. Users must verify all 
+              information independently.
+            </p>
+            <p>
+              <strong>Third-Party Services:</strong> InfoScope integrates with various third-party services and 
+              websites. We are not responsible for the availability, content, or policies of these external services.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Limitation of Liability</h3>
+          <div className="space-y-4 text-gray-600">
+            <p>
+              <strong>No Consequential Damages:</strong> In no event shall InfoScope, its developers, or contributors 
+              be liable for any indirect, incidental, special, consequential, or punitive damages arising from your 
+              use of the service.
+            </p>
+            <p>
+              <strong>Maximum Liability:</strong> Our total liability for any claims related to InfoScope shall not 
+              exceed the amount you paid for the service (which is currently $0 as InfoScope is free and open source).
+            </p>
+            <p>
+              <strong>Legal Consequences:</strong> Users are solely responsible for any legal consequences arising 
+              from their use of InfoScope, including but not limited to violations of privacy laws, terms of service 
+              of third-party websites, or other applicable regulations.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">User Responsibilities</h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Legal Compliance</h4>
+                <p className="text-gray-600">
+                  You are solely responsible for ensuring your use of InfoScope complies with all applicable laws, 
+                  regulations, and third-party terms of service.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Ethical Use</h4>
+                <p className="text-gray-600">
+                  You must use InfoScope ethically and responsibly, respecting privacy rights and avoiding harm 
+                  to individuals or organizations.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-gray-900">Information Verification</h4>
+                <p className="text-gray-600">
+                  You must independently verify any information obtained through InfoScope before taking action 
+                  based on such information.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-red-900 mb-2">Critical Warning</h3>
+              <p className="text-red-800 mb-4">
+                OSINT activities can have serious legal, ethical, and safety implications. Always:
+              </p>
+              <ul className="space-y-2 text-red-700">
+                <li>• Consult with legal counsel when in doubt</li>
+                <li>• Respect privacy and human rights</li>
+                <li>• Follow your organization's policies</li>
+                <li>• Consider the potential impact of your research</li>
+                <li>• Maintain detailed documentation of your methodology</li>
+                <li>• Operate within legal and ethical boundaries at all times</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return renderOverview();
+      case 'license':
+        return renderLicense();
+      case 'privacy':
+        return renderPrivacy();
+      case 'terms':
+        return renderTerms();
+      case 'compliance':
+        return renderCompliance();
+      case 'disclaimer':
+        return renderDisclaimer();
+      default:
+        return renderOverview();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Legal Documentation</h2>
+              <p className="text-sm text-gray-600">InfoScope compliance and legal framework</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex h-[calc(90vh-88px)]">
+          {/* Sidebar */}
+          <div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
+            <div className="space-y-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span className="text-sm font-medium">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {renderContent()}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LegalDocumentation;

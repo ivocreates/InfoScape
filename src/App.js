@@ -10,20 +10,42 @@ import Profile from './components/Profile';
 import About from './components/About';
 import Navigation from './components/Navigation';
 import LoadingSpinner from './components/LoadingSpinner';
+import AIChat from './components/AIChat';
+import WeeklySupportPopup from './components/WeeklySupportPopup';
+import Favorites from './components/Favorites';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatMinimized, setIsChatMinimized] = useState(false);
+  const [showWeeklySupport, setShowWeeklySupport] = useState(false);
+  const [chatInitialMessage, setChatInitialMessage] = useState(null);
+  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      
+      // Show weekly support popup after user logs in (with a delay)
+      if (user && !loading) {
+        setTimeout(() => {
+          setShowWeeklySupport(true);
+        }, 3000); // Show after 3 seconds to let user settle in
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [loading]);
+
+  // Handle opening chat with predefined message
+  const handleOpenChatWithMessage = (message) => {
+    setChatInitialMessage(message);
+    setIsChatOpen(true);
+    setIsChatMinimized(false);
+  };
 
   useEffect(() => {
     // Listen to Electron menu events
@@ -71,7 +93,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation currentView={currentView} setCurrentView={setCurrentView} user={user} />
+      <Navigation 
+        currentView={currentView} 
+        setCurrentView={setCurrentView} 
+        user={user}
+        onOpenChat={() => setIsChatOpen(true)}
+        onOpenFavorites={() => setShowFavorites(true)}
+      />
       
       <main className="transition-all duration-200">
         {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
@@ -80,6 +108,32 @@ function App() {
         {currentView === 'profile' && <Profile user={user} />}
         {currentView === 'about' && <About />}
       </main>
+
+      {/* AI Chat Component */}
+      <AIChat
+        isOpen={isChatOpen}
+        onClose={() => {
+          setIsChatOpen(false);
+          setChatInitialMessage(null);
+        }}
+        onMinimize={setIsChatMinimized}
+        isMinimized={isChatMinimized}
+        initialMessage={chatInitialMessage}
+      />
+
+      {/* Favorites Component */}
+      <Favorites
+        user={user}
+        isOpen={showFavorites}
+        onClose={() => setShowFavorites(false)}
+      />
+
+      {/* Weekly Support Popup */}
+      <WeeklySupportPopup
+        isVisible={showWeeklySupport}
+        onClose={() => setShowWeeklySupport(false)}
+        onOpenChat={handleOpenChatWithMessage}
+      />
     </div>
   );
 }
