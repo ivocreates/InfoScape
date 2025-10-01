@@ -169,7 +169,7 @@ function BrowserManager({ isOpen, onClose }) {
           </div>
 
           {/* Enhanced Browser List */}
-          <div className="space-y-3 max-h-[500px] overflow-y-auto">
+          <div className="space-y-3 max-h-[500px] overflow-y-auto popup-scrollbar">
             {launchedBrowsers.length === 0 ? (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mx-auto mb-4">

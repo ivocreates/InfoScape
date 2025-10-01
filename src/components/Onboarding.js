@@ -259,7 +259,7 @@ const Onboarding = ({ onComplete, onSkip }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl custom-scrollbar">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl popup-scrollbar">
         {/* Progress Bar */}
         <div className="h-1 bg-gray-200 dark:bg-gray-700 sticky top-0 z-10">
           <div 

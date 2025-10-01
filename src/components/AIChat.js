@@ -285,7 +285,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 popup-scrollbar">
         {messages.map((message) => (
           <div
             key={message.id}

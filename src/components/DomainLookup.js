@@ -607,7 +607,7 @@ function DomainLookup() {
                       {toolKey === 'subdomains' && (
                         <div className="text-sm">
                           <span className="font-medium">Found {result.data.length} subdomains</span>
-                          <div className="mt-1 max-h-20 overflow-y-auto">
+                          <div className="mt-1 max-h-20 overflow-y-auto popup-scrollbar">
                             {result.data.slice(0, 5).map((sub, idx) => (
                               <div key={idx} className="text-xs text-gray-600">{sub}</div>
                             ))}

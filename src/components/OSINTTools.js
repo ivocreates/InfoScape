@@ -913,17 +913,16 @@ function OSINTTools() {
         tags: ['background', 'people', 'check', 'paid']
       },
       {
-        name: 'Pipl',
-        description: 'Deep web people search aggregating public records',
-        url: 'https://pipl.com',
+        name: 'TruePeopleSearch',
+        description: 'Free people search engine with contact information',
+        url: 'https://www.truepeoplesearch.com',
         icon: Users,
         color: 'bg-indigo-600',
         category: 'People Search',
-        rating: 4.8,
-        free: false,
-        price: '$$$$',
+        rating: 4.5,
+        free: true,
         integration: 'external',
-        tags: ['deep-web', 'people', 'records', 'premium']
+        tags: ['people', 'search', 'contact', 'free']
       }
     ],
 
@@ -1074,7 +1073,7 @@ function OSINTTools() {
       {
         name: 'Breach Directory',
         description: 'Free breach data search engine',
-        url: 'https://breachdirectory.tk',
+        url: 'https://breachdirectory.org',
         icon: Database,
         color: 'bg-orange-600',
         category: 'Breach Analysis',
@@ -1903,14 +1902,14 @@ function OSINTTools() {
         integration: 'external'
       },
       {
-        name: 'Pipl',
-        description: 'Deep web people search aggregating public records',
-        url: 'https://pipl.com',
+        name: 'TruePeopleSearch',
+        description: 'Free people search engine with contact information',
+        url: 'https://www.truepeoplesearch.com',
         icon: Database,
         color: 'bg-indigo-600',
         category: 'People Search',
-        rating: 5,
-        free: false,
+        rating: 4.5,
+        free: true,
         integration: 'external'
       }
     ],
@@ -3678,7 +3677,7 @@ function OSINTTools() {
                         onClick={(e) => {
                           e.stopPropagation();
                           // Quick launch in new tab
-                          if (window.electronAPI) {
+                          if (window.electronAPI && typeof window.electronAPI.openExternal === 'function') {
                             window.electronAPI.openExternal(tool.url);
                           } else {
                             window.open(tool.url, '_blank', 'noopener,noreferrer');

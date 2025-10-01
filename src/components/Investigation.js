@@ -1227,7 +1227,7 @@ function Investigation() {
                       Recent Searches ({searchHistory.length})
                     </h3>
                   </div>
-                  <div className="space-y-3 max-h-72 overflow-y-auto custom-scrollbar">
+                  <div className="space-y-3 max-h-72 overflow-y-auto popup-scrollbar">
                     {searchHistory.slice(0, 10).map((search) => (
                       <div key={search.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                         <div className="flex items-center justify-between mb-2">

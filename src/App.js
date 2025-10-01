@@ -17,6 +17,7 @@ import OSINTTools from './components/OSINTTools';
 import Investigation from './components/Investigation';
 import Profile from './components/Profile';
 import About from './components/About';
+import DesktopAppPromotion from './components/DesktopAppPromotion';
 
 // Performance utilities only
 import { 
@@ -265,6 +266,9 @@ function App() {
           onSkip={handleOnboardingSkip}
         />
       )}
+
+      {/* Desktop App Promotion - Only show in web version */}
+      <DesktopAppPromotion />
       </div>
     </ThemeProvider>
   );

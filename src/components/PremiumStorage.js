@@ -219,7 +219,7 @@ const PremiumStorage = ({ user, currentUsage, isOpen, onClose }) => {
           </div>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[70vh]">
+        <div className="p-6 overflow-y-auto max-h-[70vh] popup-scrollbar">
           {/* Current Usage */}
           <div className="bg-gray-50 rounded-xl p-6 mb-8">
             <div className="flex items-center justify-between mb-4">

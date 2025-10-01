@@ -770,7 +770,7 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 popup-scrollbar">
             {renderContent()}
           </div>
         </div>

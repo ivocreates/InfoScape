@@ -19,9 +19,13 @@ import {
   WifiOff,
   MapPin,
   Timer,
-  Activity
+  Activity,
+  Download,
+  Plus
 } from 'lucide-react';
 import { ProxyManager, freeProxyServers, proxyChains, torExitNodes, securityLevels, browserPresets } from '../utils/proxyManager';
+import BrowserInstaller from './BrowserInstaller';
+import SimpleBrowser from './SimpleBrowser';
 
 // Browser icon components (simplified versions)
 const BrowserIcons = {
@@ -65,22 +69,98 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   const [isTestingProxies, setIsTestingProxies] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState('research');
   const [advancedMode, setAdvancedMode] = useState(false);
+  const [showBrowserInstaller, setShowBrowserInstaller] = useState(false);
+  const [showSimpleBrowser, setShowSimpleBrowser] = useState(false);
 
   useEffect(() => {
-    if (isOpen && window.electronAPI) {
+    if (isOpen && window.electronAPI && typeof window.electronAPI.getAvailableBrowsers === 'function') {
       window.electronAPI.getAvailableBrowsers().then(browsers => {
-        setAvailableBrowsers(browsers);
+        // Transform browser array to object format and add built-in options
+        const browserMap = {};
+        
+        // Add built-in simple browser
+        browserMap.simple = {
+          name: 'Simple Browser',
+          available: true,
+          proxy: true,
+          icon: Globe,
+          description: 'Built-in secure browser with privacy features'
+        };
+        
+        // Add detected browsers
+        browsers.forEach(browser => {
+          const key = browser.name.toLowerCase().replace(/\s+/g, '');
+          browserMap[key] = {
+            name: browser.name,
+            path: browser.path,
+            available: true,
+            proxy: true
+          };
+        });
+        
+        // Add install options for missing browsers
+        const commonBrowsers = [
+          { key: 'chrome', name: 'Google Chrome', available: false },
+          { key: 'firefox', name: 'Mozilla Firefox', available: false },
+          { key: 'tor', name: 'Tor Browser', available: false },
+          { key: 'brave', name: 'Brave Browser', available: false }
+        ];
+        
+        commonBrowsers.forEach(browser => {
+          if (!browserMap[browser.key]) {
+            browserMap[browser.key] = {
+              name: browser.name,
+              available: false,
+              needsInstall: true
+            };
+          }
+        });
+        
+        setAvailableBrowsers(browserMap);
+      }).catch(error => {
+        console.warn('Failed to get available browsers:', error);
+        // Fallback browsers
+        setAvailableBrowsers({
+          simple: {
+            name: 'Simple Browser',
+            available: true,
+            proxy: true,
+            description: 'Built-in secure browser'
+          },
+          default: {
+            name: 'Default Browser',
+            available: true,
+            proxy: false
+          }
+        });
+      });
+    } else {
+      // Web version fallback
+      setAvailableBrowsers({
+        simple: {
+          name: 'Simple Browser',
+          available: true,
+          proxy: true,
+          description: 'Built-in secure browser (limited in web mode)'
+        },
+        default: {
+          name: 'Default Browser',
+          available: true,
+          proxy: false
+        }
       });
     }
   }, [isOpen]);
 
   const browserIcons = {
+    simple: Globe,
     builtin: Globe,
     chrome: BrowserIcons.Chrome,
     firefox: BrowserIcons.Firefox,
     edge: BrowserIcons.Edge,
     brave: Shield,
-    tor: Lock
+    tor: Lock,
+    default: Globe
   };
 
   const proxyProfiles = {
@@ -347,6 +427,13 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
     }
 
     // Launch the browser with enhanced configuration
+    if (selectedBrowser === 'simple') {
+      // Open the built-in simple browser
+      setShowSimpleBrowser(true);
+      onClose();
+      return;
+    }
+    
     if (window.electronAPI) {
       if (selectedBrowser === 'tor' || torMode || proxyConfig.enabled) {
         // Use enhanced proxy launching for Tor and privacy browsers
@@ -464,6 +551,23 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Browser Installation Button */}
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowBrowserInstaller(true)}
+                  className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group"
+                >
+                  <Plus className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
+                  <span className="text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium">
+                    Install Additional Browsers
+                  </span>
+                </button>
+                
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                  Install specialized browsers for enhanced OSINT capabilities
+                </p>
               </div>
 
               {/* Browser Installation Section */}
@@ -914,6 +1018,49 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
           </div>
         </div>
       </div>
+
+      {/* Browser Installer Modal */}
+      <BrowserInstaller
+        isOpen={showBrowserInstaller}
+        onClose={() => setShowBrowserInstaller(false)}
+        onInstallComplete={() => {
+          setShowBrowserInstaller(false);
+          // Refresh available browsers after installation
+          if (window.electronAPI && typeof window.electronAPI.getAvailableBrowsers === 'function') {
+            window.electronAPI.getAvailableBrowsers().then(browsers => {
+              const browserMap = {};
+              
+              browserMap.simple = {
+                name: 'Simple Browser',
+                available: true,
+                proxy: true,
+                description: 'Built-in secure browser with privacy features'
+              };
+              
+              browsers.forEach(browser => {
+                const key = browser.name.toLowerCase().replace(/\s+/g, '');
+                browserMap[key] = {
+                  name: browser.name,
+                  path: browser.path,
+                  available: true,
+                  proxy: true
+                };
+              });
+              
+              setAvailableBrowsers(browserMap);
+            });
+          }
+        }}
+      />
+
+      {/* Simple Browser Modal */}
+      <SimpleBrowser
+        isOpen={showSimpleBrowser}
+        onClose={() => setShowSimpleBrowser(false)}
+        initialUrl={url}
+        enableProxy={proxyConfig.enabled}
+        proxyConfig={proxyConfig.enabled ? proxyConfig : null}
+      />
     </div>
   );
 }

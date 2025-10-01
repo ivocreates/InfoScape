@@ -70,7 +70,8 @@ function createWindow() {
       webSecurity: true,
       allowRunningInsecureContent: false,
       experimentalFeatures: false,
-      preload: path.join(__dirname, 'preload.js')
+      webviewTag: true, // Enable webview support for simple browser
+      preload: path.join(__dirname, 'public', 'preload.js')
     },
     titleBarStyle: 'default',
     show: false,
@@ -359,6 +360,140 @@ app.on('ready', () => {
 // IPC handlers for renderer communication
 ipcMain.handle('app-version', () => {
   return app.getVersion();
+});
+
+// Add missing IPC handlers
+ipcMain.handle('get-available-browsers', () => {
+  const browsers = [];
+  const os = require('os');
+  const path = require('path');
+  const fs = require('fs');
+
+  if (os.platform() === 'win32') {
+    // Windows browsers
+    const browserPaths = [
+      { name: 'Google Chrome', path: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' },
+      { name: 'Google Chrome (x86)', path: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' },
+      { name: 'Microsoft Edge', path: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe' },
+      { name: 'Firefox', path: 'C:\\Program Files\\Mozilla Firefox\\firefox.exe' },
+      { name: 'Firefox (x86)', path: 'C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe' },
+      { name: 'Opera', path: 'C:\\Users\\' + os.userInfo().username + '\\AppData\\Local\\Programs\\Opera\\opera.exe' },
+      { name: 'Brave', path: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe' }
+    ];
+
+    browserPaths.forEach(browser => {
+      if (fs.existsSync(browser.path)) {
+        browsers.push(browser);
+      }
+    });
+  }
+
+  // Add default system browser
+  browsers.unshift({ name: 'Default Browser', path: 'default' });
+  
+  return browsers;
+});
+
+ipcMain.handle('open-external', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});
+
+// Browser management handlers
+let launchedBrowsers = [];
+
+ipcMain.handle('open-browser', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('open-browser-with', async (event, url, browserPath) => {
+  try {
+    const { spawn } = require('child_process');
+    
+    if (browserPath === 'default') {
+      await shell.openExternal(url);
+      return { success: true };
+    }
+    
+    const process = spawn(browserPath, [url], { detached: true });
+    launchedBrowsers.push({ id: process.pid, path: browserPath, url, process });
+    
+    return { success: true, processId: process.pid };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('open-browser-with-proxy', async (event, url, config) => {
+  try {
+    const { spawn } = require('child_process');
+    const args = [url];
+    
+    if (config.proxy) {
+      args.push(`--proxy-server=${config.proxy}`);
+    }
+    
+    if (config.userAgent) {
+      args.push(`--user-agent=${config.userAgent}`);
+    }
+    
+    const browserPath = config.browserPath || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+    const process = spawn(browserPath, args, { detached: true });
+    launchedBrowsers.push({ id: process.pid, path: browserPath, url, process, config });
+    
+    return { success: true, processId: process.pid };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-launched-browsers', () => {
+  return launchedBrowsers.map(browser => ({
+    id: browser.id,
+    path: browser.path,
+    url: browser.url,
+    config: browser.config
+  }));
+});
+
+ipcMain.handle('close-browser-process', (event, processId) => {
+  try {
+    const browserIndex = launchedBrowsers.findIndex(b => b.id === processId);
+    if (browserIndex !== -1) {
+      const browser = launchedBrowsers[browserIndex];
+      browser.process.kill();
+      launchedBrowsers.splice(browserIndex, 1);
+      return { success: true };
+    }
+    return { success: false, error: 'Process not found' };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('close-all-browsers', () => {
+  try {
+    launchedBrowsers.forEach(browser => {
+      browser.process.kill();
+    });
+    launchedBrowsers = [];
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
 });
 
 ipcMain.handle('is-dev', () => {
