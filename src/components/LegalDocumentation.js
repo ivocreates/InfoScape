@@ -174,8 +174,8 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
             <FileText className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-green-900 dark:text-green-100">Creative Commons License</h3>
-            <p className="text-green-700 dark:text-green-300">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
+            <h3 className="text-xl font-bold text-green-900 dark:text-green-100">Open Source License</h3>
+            <p className="text-green-700 dark:text-green-300">Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
           </div>
         </div>
         
@@ -189,213 +189,431 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
             <ExternalLink className="w-4 h-4" />
             View Official License
           </a>
-          <button className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-green-600 border border-green-200 px-4 py-2 rounded-lg font-medium transition-colors">
+          <button className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-700 px-4 py-2 rounded-lg font-medium transition-colors">
             <Download className="w-4 h-4" />
-            Download License
+            Download License Text
           </button>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">License Summary</h3>
-        <div className="space-y-4">
-          <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-gray-900">Share</h4>
-              <p className="text-gray-600">Copy and redistribute the material in any medium or format</p>
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">License Overview</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          InfoScope is licensed under Creative Commons Attribution-ShareAlike 4.0 International License. 
+          This means you are free to use, modify, and distribute the software under specific conditions.
+        </p>
+        
+        <div className="space-y-6">
+          <div>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-green-600">✓ You Are Free To:</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">Share</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Copy and redistribute the material in any medium or format</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">Adapt</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Remix, transform, and build upon the material</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">Commercial Use</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Use the material for any purpose, including commercial</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">No Additional Restrictions</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Cannot apply legal terms or technological measures</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-gray-900">Adapt</h4>
-              <p className="text-gray-600">Remix, transform, and build upon the material for any purpose</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-gray-900">Attribution Required</h4>
-              <p className="text-gray-600">You must give appropriate credit and indicate if changes were made</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-gray-900">ShareAlike</h4>
-              <p className="text-gray-600">If you remix or transform the material, you must distribute under the same license</p>
+
+          <div>
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-orange-600">⚠️ Under These Conditions:</h4>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">Attribution</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
+                    You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+                    You may do so in any reasonable manner, but not in a way that suggests the licensor endorses you or your use.
+                  </p>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-mono">
+                      "InfoScope OSINT Platform" by @ivocreates is licensed under CC BY-SA 4.0<br/>
+                      Source: https://github.com/ivocreates/InfoScope<br/>
+                      License: https://creativecommons.org/licenses/by-sa/4.0/
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+                <div>
+                  <h5 className="font-medium text-gray-900 dark:text-white">ShareAlike</h5>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    If you remix, transform, or build upon the material, you must distribute your contributions 
+                    under the same license as the original.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Attribution Guidelines</h3>
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">Commercial Use Guidelines</h3>
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">How to Attribute InfoScope:</h4>
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <code className="text-sm text-gray-800">
-                InfoScope OSINT Platform by @ivocreates, licensed under CC BY-SA 4.0.<br/>
-                Source: https://github.com/ivocreates/InfoScape<br/>
-                License: https://creativecommons.org/licenses/by-sa/4.0/
-              </code>
-            </div>
+            <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Permitted Commercial Uses:</h4>
+            <ul className="space-y-1 text-sm text-blue-700 dark:text-blue-300 ml-4">
+              <li>• Use InfoScope in commercial investigations and security assessments</li>
+              <li>• Integrate InfoScope into commercial OSINT platforms (with attribution)</li>
+              <li>• Provide InfoScope-based services to clients</li>
+              <li>• Customize and rebrand for enterprise use (following ShareAlike terms)</li>
+            </ul>
           </div>
           <div>
-            <h4 className="font-medium text-gray-900 mb-2">Required Elements:</h4>
-            <ul className="space-y-2 text-gray-600">
-              <li>• Title of the work: "InfoScope OSINT Platform"</li>
-              <li>• Creator: "@ivocreates"</li>
-              <li>• Source URL: https://github.com/ivocreates/InfoScape</li>
-              <li>• License: "CC BY-SA 4.0" with link to license</li>
-              <li>• Changes: Indicate if you modified the original work</li>
+            <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Attribution Requirements for Commercial Use:</h4>
+            <ul className="space-y-1 text-sm text-blue-700 dark:text-blue-300 ml-4">
+              <li>• Include attribution in product documentation</li>
+              <li>• Mention InfoScope in software about/credits section</li>
+              <li>• Provide license information in legal notices</li>
+              <li>• Share derivative works under the same license</li>
             </ul>
           </div>
         </div>
       </div>
-      
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-blue-900 mb-4">Contribution Guidelines</h3>
-        <div className="space-y-4">
+
+      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Third-Party Components</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          InfoScope incorporates various open-source libraries and components, each with their own licenses:
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <h4 className="font-medium text-blue-900 mb-2">🚫 What You CANNOT Do:</h4>
-            <ul className="space-y-2 text-red-700">
-              <li>• ❌ Claim this software as your own creation</li>
-              <li>• ❌ Remove attribution or copyright notices</li>
-              <li>• ❌ Sell or commercially license without proper attribution</li>
-              <li>• ❌ Copy the strategy or codebase without giving credit</li>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Core Dependencies:</h4>
+            <ul className="space-y-1 text-gray-600 dark:text-gray-400">
+              <li>• React (MIT License)</li>
+              <li>• Firebase (Google Terms)</li>
+              <li>• Tailwind CSS (MIT License)</li>
+              <li>• Lucide React (ISC License)</li>
             </ul>
           </div>
           <div>
-            <h4 className="font-medium text-blue-900 mb-2">✅ How You CAN Contribute:</h4>
-            <ul className="space-y-2 text-green-700">
-              <li>• 🍴 Fork the repository on GitHub</li>
-              <li>• 📧 Submit feature requests via email: ivocreates@proton.me</li>
-              <li>• 💬 Participate in discussions for feedback and issues</li>
-              <li>• 🔄 Submit pull requests with improvements</li>
-              <li>• 🐛 Report bugs and security issues responsibly</li>
-              <li>• 📚 Contribute to documentation and translations</li>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">OSINT Libraries:</h4>
+            <ul className="space-y-1 text-gray-600 dark:text-gray-400">
+              <li>• Various OSINT APIs (respective terms)</li>
+              <li>• Network analysis tools (MIT/Apache)</li>
+              <li>• Data visualization (D3.js - BSD)</li>
+              <li>• Browser automation (various licenses)</li>
             </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-blue-900 mb-2">📞 Contact Information:</h4>
-            <div className="bg-white border border-blue-200 rounded-lg p-3">
-              <p className="text-blue-800">Email: <strong>ivocreates@proton.me</strong></p>
-              <p className="text-blue-800">GitHub: <strong>@ivocreates</strong></p>
-              <p className="text-blue-800">Repository: <strong>github.com/ivocreates/InfoScape</strong></p>
-            </div>
           </div>
         </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+          All third-party components retain their original licenses. Full license information available in the source code.
+        </p>
       </div>
     </div>
   );
 
   const renderPrivacy = () => (
     <div className="space-y-6">
-      <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
+      <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-purple-600 dark:bg-purple-700 rounded-lg flex items-center justify-center">
             <Lock className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-purple-900">Privacy Policy</h3>
-            <p className="text-purple-700">Last updated: {new Date().toLocaleDateString()}</p>
+            <h3 className="text-xl font-bold text-purple-900 dark:text-purple-100">Privacy Policy</h3>
+            <p className="text-purple-700 dark:text-purple-300">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
         </div>
-        <p className="text-purple-800">
+        <p className="text-purple-800 dark:text-purple-200">
           InfoScope is committed to protecting your privacy and implementing privacy-by-design principles 
-          throughout our platform.
+          throughout our platform. This policy explains how we collect, use, and protect your information.
         </p>
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Collection</h3>
-          <div className="space-y-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Collection & Processing</h3>
+          <div className="space-y-6">
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Information We Collect:</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li>• <strong>Account Information:</strong> Email address, display name (when you create an account)</li>
-                <li>• <strong>Investigation Data:</strong> Saved investigations and search queries (stored locally and optionally in Firebase)</li>
-                <li>• <strong>Usage Analytics:</strong> Anonymous usage statistics to improve the platform (optional)</li>
-                <li>• <strong>Browser Information:</strong> Browser type and version for compatibility (not personally identifiable)</li>
-              </ul>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                Information We Collect:
+              </h4>
+              <div className="space-y-3 ml-6">
+                <div>
+                  <h5 className="font-medium text-gray-800 dark:text-gray-200">Account Information</h5>
+                  <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                    <li>• Email address (for authentication and communication)</li>
+                    <li>• Display name or username (optional)</li>
+                    <li>• Account preferences and settings</li>
+                    <li>• Profile picture (if provided via OAuth)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-medium text-gray-800 dark:text-gray-200">Investigation Data</h5>
+                  <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                    <li>• Saved investigations and search queries (stored locally by default)</li>
+                    <li>• Favorited tools and bookmarks</li>
+                    <li>• Investigation notes and annotations</li>
+                    <li>• Export preferences and formats</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 className="font-medium text-gray-800 dark:text-gray-200">Technical Information</h5>
+                  <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                    <li>• Browser type and version (for compatibility)</li>
+                    <li>• Device type and screen resolution (for responsive design)</li>
+                    <li>• Usage analytics (anonymous and aggregated)</li>
+                    <li>• Error logs and crash reports (anonymized)</li>
+                  </ul>
+                </div>
+              </div>
             </div>
+            
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Information We Do NOT Collect:</h4>
-              <ul className="space-y-2 text-gray-600">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-500" />
+                Information We Do NOT Collect:
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 ml-6">
                 <li>• Personal browsing history outside InfoScope</li>
-                <li>• Content of your OSINT investigations</li>
-                <li>• Passwords (we use Firebase Authentication)</li>
-                <li>• Location data or device identifiers</li>
-                <li>• Third-party service credentials</li>
+                <li>• Content of your OSINT investigations or research</li>
+                <li>• Passwords (we use secure OAuth and Firebase Authentication)</li>
+                <li>• Location data, GPS coordinates, or device identifiers</li>
+                <li>• Third-party service credentials or API keys</li>
+                <li>• Biometric data or personally identifiable information from investigations</li>
+                <li>• Financial information or payment details</li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Usage & Storage</h3>
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data Usage & Storage</h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3">How We Use Your Data:</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <Shield className="w-4 h-4 text-blue-500 mt-0.5" />
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">Service Provision</h5>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Provide and maintain InfoScope services</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Users className="w-4 h-4 text-green-500 mt-0.5" />
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">User Support</h5>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Provide customer support and respond to inquiries</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <Eye className="w-4 h-4 text-purple-500 mt-0.5" />
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">Platform Improvement</h5>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Improve functionality and user experience</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <FileText className="w-4 h-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">Data Synchronization</h5>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Sync investigations across devices (optional)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3">Data Storage & Security:</h4>
+              <div className="space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                  <h5 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">🔒 Local Storage Priority</h5>
+                  <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+                    Most data is stored locally on your device using browser storage mechanisms:
+                  </p>
+                  <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                    <li>• localStorage for user preferences and settings</li>
+                    <li>• IndexedDB for large investigation datasets</li>
+                    <li>• sessionStorage for temporary data during sessions</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                  <h5 className="font-semibold text-green-900 dark:text-green-100 mb-2">☁️ Cloud Storage (Optional)</h5>
+                  <p className="text-sm text-green-800 dark:text-green-200 mb-2">
+                    Firebase is used only for authentication and optional data syncing:
+                  </p>
+                  <ul className="text-xs text-green-700 dark:text-green-300 space-y-1">
+                    <li>• Account authentication and user management</li>
+                    <li>• Cross-device investigation synchronization (opt-in)</li>
+                    <li>• Backup and restore functionality (user-controlled)</li>
+                  </ul>
+                </div>
+                
+                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-4">
+                  <h5 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">🛡️ Security Measures</h5>
+                  <ul className="text-xs text-purple-700 dark:text-purple-300 space-y-1">
+                    <li>• All data transmission encrypted via HTTPS/TLS</li>
+                    <li>• Firebase security rules for access control</li>
+                    <li>• No plain-text storage of sensitive information</li>
+                    <li>• Regular security audits and updates</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Privacy Rights (GDPR Compliant)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Access</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Request a copy of all personal data we hold about you
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Rectification</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Correct inaccurate or incomplete personal data
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Erasure</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Request deletion of your personal data ("Right to be Forgotten")
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Portability</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Export your data in a structured, machine-readable format
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Objection</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Object to processing of your personal data
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-gray-900 dark:text-white">Right to Restriction</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Limit how we process your personal data
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">How to Exercise Your Rights:</h4>
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <p>• Email us at: <strong className="text-purple-600 dark:text-purple-400">privacy@infoscope.com</strong></p>
+              <p>• Use the data export/deletion features in your account settings</p>
+              <p>• Contact us via GitHub: <strong className="text-blue-600 dark:text-blue-400">@ivocreates</strong></p>
+              <p>• Response time: We will respond within 30 days of your request</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-4 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5" />
+            Data Retention & Deletion
+          </h3>
           <div className="space-y-4">
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">How We Use Your Data:</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li>• Provide and maintain InfoScope services</li>
-                <li>• Sync your investigations across devices (if enabled)</li>
-                <li>• Improve platform functionality and user experience</li>
-                <li>• Provide customer support and respond to inquiries</li>
+              <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Retention Periods:</h4>
+              <ul className="space-y-1 text-sm text-yellow-700 dark:text-yellow-300">
+                <li>• Account data: Retained while account is active + 90 days after deletion request</li>
+                <li>• Investigation data: Stored locally indefinitely unless manually deleted</li>
+                <li>• Analytics data: Aggregated and anonymized, retained for 2 years maximum</li>
+                <li>• Support communications: Retained for 3 years for quality and legal purposes</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">Data Storage:</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li>• <strong>Local Storage:</strong> Most data is stored locally on your device</li>
-                <li>• <strong>Firebase:</strong> Account data and optionally investigation syncing</li>
-                <li>• <strong>Encryption:</strong> All data transmission is encrypted via HTTPS</li>
-                <li>• <strong>Retention:</strong> Data is retained only as long as necessary</li>
+              <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Automatic Deletion:</h4>
+              <ul className="space-y-1 text-sm text-yellow-700 dark:text-yellow-300">
+                <li>• Inactive accounts: Notified after 2 years, deleted after 3 years of inactivity</li>
+                <li>• Temporary session data: Cleared automatically after session ends</li>
+                <li>• Error logs: Automatically purged after 90 days</li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Rights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Access</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Rectification</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Erasure</span>
-              </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5" />
+            Third-Party Services & Data Sharing
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">We Do NOT Share Personal Data With:</h4>
+              <ul className="space-y-1 text-sm text-red-700 dark:text-red-300">
+                <li>• Advertisers or marketing companies</li>
+                <li>• Data brokers or analytics companies</li>
+                <li>• Social media platforms (beyond OAuth authentication)</li>
+                <li>• Government agencies (unless legally required)</li>
+              </ul>
             </div>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Portability</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Objection</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="font-medium">Restriction</span>
-              </div>
+            <div>
+              <h4 className="font-medium text-red-800 dark:text-red-200 mb-2">Third-Party Services We Use:</h4>
+              <ul className="space-y-1 text-sm text-red-700 dark:text-red-300">
+                <li>• <strong>Firebase (Google):</strong> Authentication and optional data sync</li>
+                <li>• <strong>GitHub OAuth:</strong> Optional authentication method</li>
+                <li>• <strong>OSINT APIs:</strong> Various public information sources (no personal data shared)</li>
+              </ul>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+                All third-party services are GDPR compliant and bound by their own privacy policies.
+              </p>
             </div>
           </div>
-          <p className="text-gray-600 mt-4">
-            To exercise your rights, contact us at privacy@infoscope.com or use the data export/deletion 
-            features in your account settings.
-          </p>
         </div>
       </div>
     </div>

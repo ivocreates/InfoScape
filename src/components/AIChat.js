@@ -88,7 +88,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
 
   // Handle initial message from weekly support popup
   useEffect(() => {
-    if (initialMessage && initialMessage.trim()) {
+    if (initialMessage && typeof initialMessage === 'string' && initialMessage.trim()) {
       setInputMessage(initialMessage);
       // Auto-send the message after a brief delay
       setTimeout(() => {

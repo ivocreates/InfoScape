@@ -7,7 +7,7 @@ import {
   ChevronRight, Star, Zap, Compass, Link
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
-import LegalDocumentation from './LegalDocumentation';
+// Removed LegalDocumentation import - legal docs only via About page
 import statisticsService from '../services/statisticsService';
 
 function Dashboard({ setCurrentView }) {
@@ -16,8 +16,7 @@ function Dashboard({ setCurrentView }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [favoriteTools, setFavoriteTools] = useState([]);
-  const [showLegalDocs, setShowLegalDocs] = useState(false);
-  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
+  // Removed showLegalDocs and hasAcceptedTerms - legal docs only via About page
   const [stats, setStats] = useState({
     totalInvestigations: 0,
     successfulFinds: 0,
@@ -45,7 +44,7 @@ function Dashboard({ setCurrentView }) {
     fetchRecentInvestigations();
     fetchStats();
     loadFavoriteTools();
-    checkTermsAcceptance();
+    // Removed automatic terms acceptance check - legal docs only shown via About page
   }, []);
 
   useEffect(() => {
@@ -54,20 +53,7 @@ function Dashboard({ setCurrentView }) {
     loadFavoriteTools();
   }, []);
 
-  const checkTermsAcceptance = () => {
-    const termsAccepted = localStorage.getItem(`terms_accepted_${auth.currentUser?.uid}`);
-    if (!termsAccepted) {
-      setShowLegalDocs(true);
-    } else {
-      setHasAcceptedTerms(true);
-    }
-  };
-
-  const handleAcceptTerms = () => {
-    localStorage.setItem(`terms_accepted_${auth.currentUser?.uid}`, 'true');
-    setHasAcceptedTerms(true);
-    setShowLegalDocs(false);
-  };
+  // Removed checkTermsAcceptance and handleAcceptTerms functions - legal docs only via About page
 
   const loadFavoriteTools = async () => {
     try {
@@ -595,11 +581,7 @@ function Dashboard({ setCurrentView }) {
         </div>
       </div>
       
-      {/* Legal Documentation Modal */}
-      <LegalDocumentation 
-        isOpen={showLegalDocs} 
-        onClose={handleAcceptTerms}
-      />
+      {/* Removed Legal Documentation Modal - legal docs only via About page */}
     </div>
   );
 }

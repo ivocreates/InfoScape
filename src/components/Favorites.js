@@ -336,26 +336,71 @@ const Favorites = ({ user, isOpen, onClose }) => {
             </div>
           ) : filteredFavorites.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="w-10 h-10 text-purple-600 dark:text-purple-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                {searchQuery || selectedType !== 'all' ? 'No matches found' : 'No favorites yet'}
+                {searchQuery || selectedType !== 'all' ? 'No matching favorites found' : 'No favorites yet'}
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
                 {searchQuery || selectedType !== 'all' 
-                  ? 'Try adjusting your search or filters'
-                  : 'Start adding tools and templates to your favorites for quick access'
+                  ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
+                  : 'Start building your favorite tools collection! Click the star (⭐) button on any OSINT tool to add it to your favorites.'
                 }
               </p>
               {!searchQuery && selectedType === 'all' && (
-                <button
-                  onClick={() => {/* Navigate to tools */}}
-                  className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  Browse OSINT Tools
-                </button>
+                <div className="space-y-4">
+                  <button
+                    onClick={() => {
+                      onClose();
+                      // Navigate to tools
+                      if (window.setCurrentView) {
+                        window.setCurrentView('osint-tools');
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                  >
+                    <Zap className="w-4 h-4" />
+                    Browse OSINT Tools
+                  </button>
+                  
+                  {/* Quick Guide */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 max-w-md mx-auto mb-6">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      How to add favorites
+                    </h4>
+                    <ol className="text-sm text-blue-700 dark:text-blue-300 space-y-1 text-left">
+                      <li>1. Go to OSINT Tools section</li>
+                      <li>2. Find tools you use frequently</li>
+                      <li>3. Click the star (⭐) button on any tool</li>
+                      <li>4. Return here to access them quickly</li>
+                    </ol>
+                  </div>
+
+                  {/* Popular Tools Suggestions */}
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 max-w-lg mx-auto">
+                    <h4 className="font-medium text-green-800 dark:text-green-200 mb-3 flex items-center gap-2">
+                      <Star className="w-4 h-4" />
+                      Popular tools to favorite
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      {[
+                        { name: 'WhatsMyName', category: 'Username Search' },
+                        { name: 'Sherlock', category: 'Social Media' },
+                        { name: 'Have I Been Pwned', category: 'Data Breaches' },
+                        { name: 'Shodan', category: 'IoT Search' },
+                        { name: 'TinEye', category: 'Reverse Image' },
+                        { name: 'Wayback Machine', category: 'Web Archive' }
+                      ].map((tool, idx) => (
+                        <div key={idx} className="bg-white dark:bg-gray-700 rounded p-2 border border-green-200 dark:border-green-700">
+                          <div className="font-medium text-gray-900 dark:text-white text-xs">{tool.name}</div>
+                          <div className="text-green-600 dark:text-green-400 text-xs">{tool.category}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           ) : (

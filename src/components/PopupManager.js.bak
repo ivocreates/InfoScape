@@ -1,0 +1,482 @@
+import React, { useState, useEffect } from 'react';
+
+const PopupManager = ({ user, onOpenChat }) => {
+  const [activePopup, setActivePopup] = useState(null);
+  const [popupQueue, setPopupQueue] = useState([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const userId = user.uid;
+    const now = Date.now();
+    const oneMonth = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+    const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+    // Check if user is new (first time)
+    const hasSeenOnboarding = localStorage.getItem(`onboarding-seen-${userId}`);
+    const lastGetStarted = localStorage.getItem(`get-started-shown-${userId}`);
+    const lastLegalities = localStorage.getItem(`legalities-shown-${userId}`);
+    const lastDownloadPromo = localStorage.getItem(`download-promo-shown-${userId}`);
+    const lastWeeklyTips = localStorage.getItem(`weekly-tips-shown-${userId}`);
+
+    // Initialize popup queue based on user state
+    const queue = [];
+
+    // Show onboarding for new users
+    if (!hasSeenOnboarding) {
+      queue.push('onboarding');
+    }
+
+    // Show get-started if not seen recently (1 week cooldown)
+    if (!lastGetStarted || (now - parseInt(lastGetStarted)) > oneWeek) {
+      queue.push('get-started');
+    }
+
+    // Show legalities if not seen recently (1 month cooldown)
+    if (!lastLegalities || (now - parseInt(lastLegalities)) > oneMonth) {
+      queue.push('legalities');
+    }
+
+    // Show weekly tips if not seen recently (1 week cooldown)
+    if (!lastWeeklyTips || (now - parseInt(lastWeeklyTips)) > oneWeek) {
+      queue.push('weekly-tips');
+    }
+
+    // Show download promo occasionally (1 month cooldown)
+    if (!lastDownloadPromo || (now - parseInt(lastDownloadPromo)) > oneMonth) {
+      queue.push('download-promo');
+    }
+
+    if (queue.length > 0) {
+      setPopupQueue(queue);
+      setActivePopup(queue[0]);
+    }
+  }, [user]);
+
+  const handlePopupComplete = (popupType) => {
+    const userId = user.uid;
+    const now = Date.now();
+    
+    // Mark popup as seen
+    localStorage.setItem(`${popupType}-shown-${userId}`, now.toString());
+    
+    if (popupType === 'onboarding') {
+      localStorage.setItem(`onboarding-seen-${userId}`, 'true');
+    }
+
+    // Move to next popup in queue
+    const currentIndex = popupQueue.indexOf(popupType);
+    const nextPopup = popupQueue[currentIndex + 1];
+    
+    if (nextPopup) {
+      setActivePopup(nextPopup);
+    } else {
+      setActivePopup(null);
+      setPopupQueue([]);
+    }
+  };
+
+  const handlePopupSkip = (popupType) => {
+    handlePopupComplete(popupType);
+  };
+
+  const handlePopupClose = () => {
+    setActivePopup(null);
+    setPopupQueue([]);
+  };
+
+  if (!activePopup) return null;
+
+  return (
+    <>
+      {activePopup === 'onboarding' && (
+        <OnboardingPopup 
+          onComplete={() => handlePopupComplete('onboarding')}
+          onSkip={() => handlePopupSkip('onboarding')}
+        />
+      )}
+      {activePopup === 'get-started' && (
+        <GetStartedPopup 
+          onComplete={() => handlePopupComplete('get-started')}
+          onSkip={() => handlePopupSkip('get-started')}
+        />
+      )}
+      {activePopup === 'legalities' && (
+        <LegalitiesPopup 
+          onComplete={() => handlePopupComplete('legalities')}
+          onSkip={() => handlePopupSkip('legalities')}
+        />
+      )}
+      {activePopup === 'weekly-tips' && (
+        <WeeklyTipsPopup 
+          onComplete={() => handlePopupComplete('weekly-tips')}
+          onSkip={() => handlePopupSkip('weekly-tips')}
+          onOpenChat={onOpenChat}
+        />
+      )}
+      {activePopup === 'download-promo' && (
+        <DownloadPromoPopup 
+          onComplete={() => handlePopupComplete('download-promo')}
+          onSkip={() => handlePopupSkip('download-promo')}
+        />
+      )}
+    </>
+  );
+};
+
+// Onboarding Popup Component
+const OnboardingPopup = ({ onComplete, onSkip }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full p-6 shadow-2xl">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">⚖️</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+            Important Legal Notice
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Please read and understand these important guidelines before using InfoScope.
+          </p>
+          
+          <div className="text-left space-y-3 text-gray-600 dark:text-gray-300 mb-6">
+            <p>• <strong>Legal Compliance:</strong> Use only for authorized investigations and legal purposes</p>
+            <p>• <strong>Privacy Respect:</strong> Respect privacy laws and individual rights</p>
+            <p>• <strong>Data Protection:</strong> Handle all collected data responsibly</p>
+            <p>• <strong>Professional Use:</strong> Maintain ethical standards in all investigations</p>
+            <p>• <strong>Documentation:</strong> Keep proper records for legal compliance</p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={onComplete}
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+            >
+              I Understand and Agree
+            </button>
+            <button
+              onClick={onSkip}
+              className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+            >
+              Remind me later
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Legalities Popup Component  
+const LegalitiesPopup = ({ onComplete, onSkip }) => {
+  const [acceptedTerms, setAcceptedTerms] = useState({
+    usage: false,
+    privacy: false,
+    ethics: false,
+    compliance: false
+  });
+
+  const allTermsAccepted = Object.values(acceptedTerms).every(Boolean);
+
+  const terms = [
+    {
+      id: 'usage',
+      title: 'Responsible Usage',
+      description: 'I will use InfoScope only for legitimate, authorized investigations and legal purposes.'
+    },
+    {
+      id: 'privacy', 
+      title: 'Privacy Respect',
+      description: 'I will respect privacy laws, individual rights, and obtain proper authorization before investigations.'
+    },
+    {
+      id: 'ethics',
+      title: 'Ethical Standards', 
+      description: 'I will maintain professional ethics and avoid using this tool for harassment or illegal activities.'
+    },
+    {
+      id: 'compliance',
+      title: 'Legal Compliance',
+      description: 'I understand my local laws and will ensure all investigations comply with applicable regulations.'
+    }
+  ];
+
+  const handleTermChange = (termId) => {
+    setAcceptedTerms(prev => ({
+      ...prev,
+      [termId]: !prev[termId]
+    }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <span className="text-xl">📋</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Legal Terms & Conditions
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            Please review and accept each term individually
+          </p>
+          
+          <div className="text-left space-y-3 mb-4">
+            {terms.map((term) => (
+              <div 
+                key={term.id}
+                className={`p-3 rounded-lg border-2 transition-colors ${
+                  acceptedTerms[term.id] 
+                    ? 'border-green-300 bg-green-50 dark:border-green-600 dark:bg-green-900/20' 
+                    : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                    acceptedTerms[term.id]
+                      ? 'border-green-500 bg-green-500'
+                      : 'border-gray-300 dark:border-gray-500'
+                  }`}>
+                    {acceptedTerms[term.id] && (
+                      <span className="text-white text-xs">✓</span>
+                    )}
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => handleTermChange(term.id)}
+                      className="text-left"
+                    >
+                      <h3 className="font-medium text-gray-900 dark:text-white text-sm">{term.title}</h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{term.description}</p>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            <button
+              onClick={onComplete}
+              disabled={!allTermsAccepted}
+              className={`w-full font-medium py-2.5 px-4 rounded-lg transition-colors ${
+                allTermsAccepted
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-400'
+              }`}
+            >
+              Accept All Terms & Continue
+            </button>
+            <button
+              onClick={onSkip}
+              className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm py-1"
+            >
+              Review Later
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Get Started Popup Component (Compact & Mobile-Friendly)
+const GetStartedPopup = ({ onComplete, onSkip }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <span className="text-xl">🔍</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Welcome to InfoScope
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            Professional OSINT toolkit for digital investigations.
+          </p>
+          
+          {/* Compact Features */}
+          <div className="space-y-3 mb-4 text-left">
+            <div className="flex items-center gap-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs">🔍</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Investigation Tools</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">IP lookup, domain analysis, social media research</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs">🤖</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">AI Assistant</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Smart guidance and investigation tips</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <div className="w-6 h-6 bg-purple-600 rounded flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs">🌐</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Secure Browser</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Anonymous browsing with Tor support</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Quick Start Tips */}
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4 text-left">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Quick Start:</h4>
+            <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Start with <strong>Investigation</strong> tab</li>
+              <li>• Use <strong>OSINT Tools</strong> for research</li>
+              <li>• Click <strong>AI Help</strong> for guidance</li>
+            </ul>
+          </div>
+          
+          <div className="space-y-2">
+            <button
+              onClick={onComplete}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm"
+            >
+              Start Investigating
+            </button>
+            <button
+              onClick={onSkip}
+              className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xs py-1"
+            >
+              Skip tutorial
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Weekly Tips Popup Component
+const WeeklyTipsPopup = ({ onComplete, onSkip, onOpenChat }) => {
+  const [currentTip] = useState({
+    title: "Advanced Search Techniques",
+    content: "Use Google dorking with 'site:' and 'intext:' operators for more precise OSINT gathering. Combine multiple operators for deeper intelligence.",
+    category: "search",
+    level: "intermediate"
+  });
+
+  const handleComplete = () => {
+    onComplete();
+  };
+
+  if (!currentTip) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Loading Weekly Tip...
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              Fetching your personalized OSINT tip
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <span className="text-2xl">💡</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Weekly OSINT Tip
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+            {currentTip.title}
+          </p>
+          
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              {currentTip.content}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-full">
+              {currentTip.category}
+            </span>
+            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+              {currentTip.level}
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={onOpenChat}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
+            >
+              🤖 Ask AI for Advanced Tips
+            </button>
+            <button
+              onClick={handleComplete}
+              className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm font-medium py-2"
+            >
+              Thanks! I'll apply this tip
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Download Promo Popup Component
+const DownloadPromoPopup = ({ onComplete, onSkip }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 shadow-2xl">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">💻</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Download Desktop App
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">
+            Get the full InfoScope experience with our desktop application. Enhanced performance and offline capabilities.
+          </p>
+          
+          <div className="space-y-3">
+            <button
+              onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+            >
+              Download Now
+            </button>
+            <button
+              onClick={onComplete}
+              className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PopupManager;

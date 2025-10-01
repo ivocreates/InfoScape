@@ -1,22 +1,378 @@
-# InfoScope OSINT - Professional Investigation Platform
+# InfoScope OSINT Platform v2.3.0
 
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/ivocreates/InfoScope)
-[![PWA Ready](https://img.shields.io/badge/PWA-Ready-green.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
-[![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange.svg)](https://infoscope-osint.web.app)
+<div align="center">
 
-## 🌐 **Quick Access**
+![InfoScope Logo](https://via.placeholder.com/200x200/2563EB/FFFFFF?text=InfoScope)
 
-| Platform | Link | Description |
-|----------|------|-------------|
-| **🌐 Web App** | **[infoscope-osint.web.app](https://infoscope-osint.web.app)** | Instant access - no installation required |
-| **📱 PWA Install** | [Install Guide](https://infoscope-osint.web.app) | Add to home screen on mobile/desktop |
-| **💻 Desktop** | [GitHub Releases](https://github.com/ivocreates/InfoScope/releases) | Windows, macOS, Linux packages |
-| **📋 Source** | [GitHub Repository](https://github.com/ivocreates/InfoScope) | Full source code and documentation |
+**Professional Open Source Intelligence Investigation Platform**
 
-A comprehensive OSINT (Open Source Intelligence) investigation platform that combines advanced research tools with privacy-focused browsing capabilities. Available as both desktop application and web app with PWA support. Built for cybersecurity professionals, journalists, researchers, and digital investigators.
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](https://github.com/ivocreates/InfoScope/releases)
+[![License](https://img.shields.io/badge/license-CC%20BY--SA%204.0-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](#installation)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB.svg)](https://reactjs.org/)
+[![Electron](https://img.shields.io/badge/Electron-28.3.3-47848F.svg)](https://electronjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-10.7.1-FFCA28.svg)](https://firebase.google.com/)
 
-## 🚀 Key Features
+[Download](https://github.com/ivocreates/InfoScope/releases) • [Documentation](#documentation) • [API Guide](#api-configuration) • [Contributing](#contributing) • [Support](#support)
+
+</div>
+
+---
+
+## 🎯 Overview
+
+InfoScope is a cutting-edge **Open Source Intelligence (OSINT) platform** designed for cybersecurity professionals, investigators, researchers, and digital forensics experts. Built with modern web technologies and integrated with 15+ real-world APIs, InfoScope provides comprehensive intelligence gathering capabilities while maintaining privacy and security.
+
+### ✨ Key Features
+
+- **🔍 Advanced Intelligence Gathering**: IP analysis, email investigation, domain research, social media reconnaissance, phone lookup, and geolocation services
+- **🛡️ Real API Integrations**: 15+ professional APIs including VirusTotal, Shodan, Hunter.io, Have I Been Pwned, SecurityTrails, and more
+- **🌐 Built-in Secure Browser**: Anonymous browsing with Tor integration, proxy chaining, and privacy protection
+- **📊 Professional Reporting**: Export results in JSON, CSV, TXT, and XML formats with detailed analysis
+- **🎨 Modern Interface**: Dark/light themes, responsive design, mobile-friendly interface
+- **⚡ Real-time Investigation**: Live API calls with rate limiting and error handling
+- **💾 Local Data Storage**: All investigations stored locally for privacy and security
+- **🔒 Privacy-First Design**: No data collection, no tracking, complete user privacy
+- **📱 Cross-Platform**: Desktop applications for Windows, macOS, and Linux + web version
+
+---
+
+## 🚀 Quick Start
+
+### Web Version (Instant Access)
+Visit [InfoScope Web App](https://infoscope-osint.web.app) to start investigating immediately.
+
+### Desktop Installation
+
+#### Windows
+1. Download `InfoScope-OSINT-Platform-v2.3.0-Setup-x64.exe` from [Releases](https://github.com/ivocreates/InfoScope/releases)
+2. Run the installer as Administrator
+3. Launch InfoScope from Start Menu or Desktop shortcut
+
+#### macOS
+1. Download `InfoScope-OSINT-Platform-v2.3.0-x64.dmg` from [Releases](https://github.com/ivocreates/InfoScope/releases)
+2. Mount the DMG file and drag InfoScope to Applications
+3. Launch from Applications (may require allowing unsigned apps in Security preferences)
+
+#### Linux
+```bash
+# AppImage (Universal)
+wget https://github.com/ivocreates/InfoScope/releases/download/v2.3.0/InfoScope-OSINT-Platform-v2.3.0-x64.AppImage
+chmod +x InfoScope-OSINT-Platform-v2.3.0-x64.AppImage
+./InfoScope-OSINT-Platform-v2.3.0-x64.AppImage
+
+# Debian/Ubuntu (.deb)
+wget https://github.com/ivocreates/InfoScope/releases/download/v2.3.0/InfoScope-OSINT-Platform-v2.3.0-x64.deb
+sudo dpkg -i InfoScope-OSINT-Platform-v2.3.0-x64.deb
+
+# Red Hat/CentOS (.rpm)
+wget https://github.com/ivocreates/InfoScope/releases/download/v2.3.0/InfoScope-OSINT-Platform-v2.3.0-x64.rpm
+sudo rpm -i InfoScope-OSINT-Platform-v2.3.0-x64.rpm
+```
+
+---
+
+## 🔧 Investigation Modules
+
+### 🛡️ IP Intelligence
+Comprehensive IP address analysis with threat detection and geolocation.
+
+**Data Sources:**
+- **IPinfo.io** (Free) - Location, ISP, Organization, Timezone
+- **IPapi.co** (Free) - Geolocation, VPN/Proxy detection, ASN
+- **VirusTotal** (API Key) - Malware analysis, reputation scoring
+- **AbuseIPDB** (API Key) - Abuse reports, confidence scoring
+- **Shodan** (API Key) - Port scanning, vulnerability detection
+
+**Use Cases:**
+- Network security analysis
+- Incident response investigations
+- Threat hunting and attribution
+- Forensic analysis and evidence gathering
+
+### 📧 Email Analysis
+Professional email investigation and verification services.
+
+**Data Sources:**
+- **EmailRep.io** (Free) - Reputation analysis, blacklist checking
+- **Hunter.io** (API Key) - Email verification, domain analysis
+- **Have I Been Pwned** (API Key) - Data breach detection
+- **Clearbit** (API Key) - Person/company enrichment
+
+**Capabilities:**
+- Email validation and verification
+- Data breach history analysis
+- Reputation scoring and risk assessment
+- Domain and registrar investigation
+
+### 🌐 Domain Research
+Comprehensive domain intelligence and historical analysis.
+
+**Data Sources:**
+- **WHOIS Services** (Free) - Registration details, nameservers
+- **Wayback Machine** (Free) - Historical snapshots
+- **SecurityTrails** (API Key) - DNS history, subdomains
+- **URLVoid** (API Key) - Reputation and safety analysis
+
+**Features:**
+- Domain registration history
+- DNS record analysis
+- Subdomain enumeration
+- Certificate transparency logs
+
+### 👥 Social Media Intelligence
+Username enumeration across major social platforms.
+
+**Platforms Covered:**
+- Twitter/X, Instagram, LinkedIn, GitHub
+- TikTok, Reddit, YouTube, Telegram
+- Discord, Facebook, and more
+
+**Investigation Types:**
+- Username availability checking
+- Cross-platform account discovery
+- Profile verification and analysis
+- Digital footprint mapping
+
+### 📱 Phone Number Lookup
+Professional phone number investigation and validation.
+
+**Data Sources:**
+- **NumVerify** (API Key) - Number validation, carrier lookup
+- **Twilio Lookup** (API Key) - Caller information, SMS capabilities
+- **TrueCaller** (Limited) - Caller ID and spam detection
+
+**Information Gathered:**
+- Number validation and formatting
+- Carrier and line type identification
+- Geographic location analysis
+- Risk and spam assessment
+
+### 🗺️ Geolocation Services
+Advanced location intelligence and mapping capabilities.
+
+**Data Sources:**
+- **OpenCage Data** (API Key) - Geocoding, reverse geocoding
+- **GeoJS** (Free) - IP-based geolocation
+- **Mapbox** (API Key) - Advanced mapping and places search
+
+**Capabilities:**
+- Address to coordinates conversion
+- Reverse geocoding services
+- Timezone and administrative region data
+- Precision location analysis
+
+---
+
+## ⚙️ API Configuration
+
+InfoScope integrates with 15+ professional APIs to provide real-world intelligence capabilities. While some features work with free APIs, premium capabilities require API keys.
+
+### 🆓 Free APIs (No Key Required)
+- IPinfo.io - 50k requests/month
+- IPapi.co - 30k requests/month
+- EmailRep.io - Unlimited with rate limits
+- Wayback Machine - Unlimited
+- GeoJS - Unlimited
+
+### 🔑 Premium APIs (Key Required)
+
+#### Security & Threat Intelligence
+- **VirusTotal** - Malware analysis, IP/domain reputation
+  - Get key: [VirusTotal API](https://www.virustotal.com/gui/join-us)
+  - Free tier: 500 requests/day
+
+- **Shodan** - Internet-connected device search
+  - Get key: [Shodan API](https://developer.shodan.io/)
+  - Free tier: 100 queries/month
+
+- **AbuseIPDB** - IP abuse database
+  - Get key: [AbuseIPDB API](https://www.abuseipdb.com/api)
+  - Free tier: 1000 checks/day
+
+#### Email & Domain Intelligence
+- **Hunter.io** - Email finder and verifier
+  - Get key: [Hunter.io API](https://hunter.io/api)
+  - Free tier: 25 searches/month
+
+- **Have I Been Pwned** - Breach database
+  - Get key: [HIBP API](https://haveibeenpwned.com/API/Key)
+  - Rate limited: 1 request per 1.5 seconds
+
+- **SecurityTrails** - DNS and domain history
+  - Get key: [SecurityTrails API](https://securitytrails.com/corp/api)
+  - Free tier: 50 queries/month
+
+#### Communication & Location
+- **NumVerify** - Phone number validation
+  - Get key: [NumVerify API](https://numverify.com/)
+  - Free tier: 100 requests/month
+
+- **OpenCage Data** - Geocoding service
+  - Get key: [OpenCage API](https://opencagedata.com/api)
+  - Free tier: 2500 requests/day
+
+### 🔧 Setting Up API Keys
+
+1. **In-App Configuration:**
+   - Open InfoScope → Advanced Intel → API Config
+   - Enter your API keys for desired services
+   - Keys are stored locally in your browser
+
+2. **Environment Variables (Development):**
+   ```bash
+   export VT_API_KEY="your_virustotal_key"
+   export SHODAN_API_KEY="your_shodan_key"
+   export HUNTER_API_KEY="your_hunter_key"
+   # ... add other keys as needed
+   ```
+
+3. **Configuration File:**
+   Create `apiKeys.json` in the application directory:
+   ```json
+   {
+     "virustotal": "your_api_key_here",
+     "shodan": "your_api_key_here",
+     "hunter": "your_api_key_here"
+   }
+   ```
+
+---
+
+## 🛠️ Development Setup
+
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+- Modern web browser
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/ivocreates/InfoScope.git
+cd InfoScope
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Build for production
+npm run build
+
+# Build desktop applications
+npm run electron-pack-all
+```
+
+### Project Structure
+```
+InfoScope/
+├── public/                 # Static assets
+├── src/
+│   ├── components/        # React components
+│   ├── services/          # API integrations
+│   ├── contexts/          # React contexts
+│   └── utils/             # Utility functions
+├── main.js                # Electron main process
+├── package.json           # Dependencies and scripts
+└── README.md             # This file
+```
+
+### Available Scripts
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm run electron` - Start Electron app
+- `npm run electron-pack-win` - Build Windows installer
+- `npm run electron-pack-mac` - Build macOS application
+- `npm run electron-pack-linux` - Build Linux packages
+- `npm run deploy` - Deploy to Firebase hosting
+
+---
+
+## 📋 Feature Comparison
+
+| Feature | InfoScope | Maltego | SpiderFoot | Recon-ng | OSINTgram |
+|---------|-----------|---------|------------|----------|-----------|
+| **Free & Open Source** | ✅ | ❌ | ✅ | ✅ | ✅ |
+| **Cross-Platform Desktop** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Web Interface** | ✅ | ❌ | ✅ | ❌ | ❌ |
+| **Real-time API Integration** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Built-in Secure Browser** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Modern UI/UX** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **No Installation Required** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Mobile Responsive** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Privacy Focused** | ✅ | ❌ | ✅ | ✅ | ✅ |
+| **Multiple Export Formats** | ✅ | ✅ | ✅ | ❌ | ❌ |
+
+---
+
+## 🔒 Privacy & Security
+
+InfoScope is designed with privacy as a core principle:
+
+- **No Data Collection**: We don't collect, store, or transmit any personal data
+- **Local Storage Only**: All investigations are stored locally on your device
+- **No Tracking**: No analytics, cookies, or user tracking
+- **Open Source**: Complete transparency - audit the code yourself
+- **Secure Communication**: All API calls use HTTPS encryption
+- **Anonymous Usage**: Use with Tor, VPNs, and proxy chains
+- **Self-Hosted Option**: Deploy your own instance for maximum security
+
+### Security Best Practices
+1. Keep API keys secure and rotate them regularly
+2. Use VPN or Tor when conducting sensitive investigations
+3. Regularly clear investigation history if needed
+4. Verify SSL certificates when making API calls
+5. Follow responsible disclosure for any security issues
+
+---
+
+## 📜 License
+
+InfoScope is licensed under the **Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)**.
+
+This means you are free to:
+- **Share** — copy and redistribute the material in any medium or format
+- **Adapt** — remix, transform, and build upon the material for any purpose, even commercially
+
+Under the following terms:
+- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made
+- **ShareAlike** — If you remix, transform, or build upon the material, you must distribute your contributions under the same license
+
+[Read the full license](https://creativecommons.org/licenses/by-sa/4.0/)
+
+---
+
+## 📞 Support & Community
+
+### Getting Help
+- **Documentation**: [InfoScope Wiki](https://github.com/ivocreates/InfoScope/wiki)
+- **Issues**: [Report bugs or request features](https://github.com/ivocreates/InfoScope/issues)
+- **Discussions**: [Community forum](https://github.com/ivocreates/InfoScope/discussions)
+- **Email**: [ivo@ivocreates.gmail.com](mailto:ivo@ivocreates.gmail.com)
+
+### Community
+- **GitHub**: [Star us on GitHub](https://github.com/ivocreates/InfoScope)
+- **Twitter**: [@IvoCreates](https://twitter.com/IvoCreates)
+- **Website**: [ivocreates.site](https://ivocreates.site)
+
+### Professional Support
+For enterprise deployments, custom integrations, or professional consulting:
+- Email: [ivo@ivocreates.gmail.com](mailto:ivo@ivocreates.gmail.com)
+- Website: [ivocreates.site](https://ivocreates.site)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [Ivo Pereira](https://ivocreates.site)**
+
+[⭐ Star on GitHub](https://github.com/ivocreates/InfoScope) | [🐛 Report Bug](https://github.com/ivocreates/InfoScope/issues) | [💡 Request Feature](https://github.com/ivocreates/InfoScope/issues/new)
+
+**InfoScope OSINT Platform v2.3.0** - Professional Intelligence for Everyone
+
+</div>
 
 ### 🔍 **Advanced OSINT Tools (48+ Integrated)**
 - **People Search**: TruePeopleSearch, BeenVerified, PeopleFinder, Whitepages, FastPeopleSearch

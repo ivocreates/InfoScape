@@ -676,8 +676,7 @@ function Investigation() {
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 p-6">
-      <div className="mx-auto max-w-7xl">
+    <div className="p-6 max-w-7xl mx-auto animate-fade-in">
         {/* Enhanced Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -1355,7 +1354,6 @@ function Investigation() {
             </div>
           </section>
         </div>
-      </div>
     </div>
   );
 }

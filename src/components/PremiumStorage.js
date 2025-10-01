@@ -72,10 +72,10 @@ const PremiumStorage = ({ user, currentUsage, isOpen, onClose }) => {
       price: 299,
       currency: '₹',
       period: 'month',
-      storage: '1 GB',
+      storage: '50 MB',
       features: [
         'All Pro features',
-        '1GB cloud storage',
+        '50MB cloud storage',
         'Advanced analytics',
         'Custom investigation templates',
         'API access',

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star, MessageSquare, Moon, Sun, Menu, X } from 'lucide-react';
+import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star, MessageSquare, Moon, Sun, Menu, X, Zap, Crown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import BrowserSelector from './BrowserSelector';
 import BrowserManager from './BrowserManager';
 import InfoScopeIcon from './InfoScopeIcon';
 
-function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback, onShowLanding }) {
+function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback, onShowLanding, onOpenBrowser }) {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
   const [showBrowserManager, setShowBrowserManager] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,16 +36,20 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
       }
     }
     
-    // You can add additional handling here, such as:
-    // - Saving browser preferences to localStorage
-    // - Updating app state with browser selection
-    // - Displaying notifications about anonymity level
+    // Close the browser selector
+    setShowBrowserSelector(false);
+    
+    // Open the SimpleBrowser with configuration
+    if (onOpenBrowser) {
+      onOpenBrowser('https://www.google.com', browserConfig);
+    }
   };
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'investigation', label: 'Investigation', icon: Search },
     { id: 'osint-tools', label: 'OSINT Tools', icon: Shield },
+    { id: 'advanced-osint', label: 'Advanced Intel', icon: Zap },
     { id: 'about', label: 'About', icon: Info },
   ];
 
@@ -61,11 +65,11 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 transition-colors relative">
       <div className="flex items-center justify-between">
-        {/* Logo and Title - Clickable to go to landing page */}
+        {/* Logo and Title - Clickable to go to index page */}
         <button 
-          onClick={() => handleNavClick('landing')}
+          onClick={() => handleNavClick('dashboard')}
           className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 rounded-lg transition-all duration-200 group"
-          title="InfoScope OSINT - Professional Intelligence Platform"
+          title="InfoScope OSINT - Go to Dashboard"
         >
           <div className="relative">
             <InfoScopeIcon 
@@ -94,56 +98,47 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
             <button
               key={id}
               onClick={() => handleNavClick(id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                 currentView === id
                   ? 'bg-black dark:bg-white text-white dark:text-black shadow-md'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
+              title={label}
             >
               <Icon className="w-4 h-4" />
-              {label}
+              <span className="hidden xl:inline">{label}</span>
             </button>
           ))}
 
           {/* Browser Button */}
           <button
             onClick={handleOpenBrowser}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-all duration-200"
+            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-all duration-200"
             title="Open Browser with Options"
           >
             <Globe className="w-4 h-4" />
-            Browser
+            <span className="hidden xl:inline">Browser</span>
           </button>
 
           {/* Browser Manager Button */}
           <button
             onClick={() => setShowBrowserManager(true)}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-all duration-200"
+            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-all duration-200"
             title="Manage Browser Instances"
           >
             <Monitor className="w-4 h-4" />
-            Manager
+            <span className="hidden xl:inline">Manager</span>
           </button>
           {/* Action Buttons - Desktop */}
           <div className="hidden md:flex items-center gap-2">
             {/* AI Chat Button */}
             <button
               onClick={onOpenChat}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 border border-purple-200 dark:border-purple-700 flex items-center gap-2 transition-all duration-200"
+              className="px-3 py-2 rounded-lg text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-blue-200 dark:border-blue-700 flex items-center gap-2 transition-all duration-200"
               title="Open AI Assistant"
             >
               <MessageCircle className="w-4 h-4" />
               <span className="hidden xl:inline">AI Help</span>
-            </button>
-
-            {/* Favorites Button */}
-            <button
-              onClick={onOpenFavorites}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 flex items-center gap-2 transition-all duration-200"
-              title="View Favorites"
-            >
-              <Star className="w-4 h-4" />
-              <span className="hidden xl:inline">Favorites</span>
             </button>
 
             {/* Feedback Button */}
@@ -268,17 +263,6 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
               >
                 <MessageCircle className="w-5 h-5" />
                 <span className="font-medium">AI Assistant</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  onOpenFavorites();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-yellow-600 dark:text-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-all duration-200"
-              >
-                <Star className="w-5 h-5" />
-                <span className="font-medium">Favorites</span>
               </button>
 
               <button

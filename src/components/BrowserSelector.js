@@ -26,6 +26,7 @@ import {
 import { ProxyManager, freeProxyServers, proxyChains, torExitNodes, securityLevels, browserPresets } from '../utils/proxyManager';
 import BrowserInstaller from './BrowserInstaller';
 import SimpleBrowser from './SimpleBrowser';
+import BrowserPopup from './BrowserPopup';
 
 // Browser icon components (simplified versions)
 const BrowserIcons = {
@@ -71,6 +72,26 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   const [advancedMode, setAdvancedMode] = useState(false);
   const [showBrowserInstaller, setShowBrowserInstaller] = useState(false);
   const [showSimpleBrowser, setShowSimpleBrowser] = useState(false);
+  const [showBrowserPopup, setShowBrowserPopup] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl+R or Cmd+R to clear options
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r' && !e.shiftKey) {
+        e.preventDefault();
+        clearAllOptions();
+      }
+      // Escape to close
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen && window.electronAPI && typeof window.electronAPI.getAvailableBrowsers === 'function') {
@@ -472,6 +493,27 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
     });
   };
 
+  // Clear all selected options and reset to defaults
+  const clearAllOptions = () => {
+    setSelectedBrowser('builtin');
+    setSecurityLevel('medium');
+    setProxyConfig({
+      enabled: false,
+      type: 'http',
+      host: '',
+      port: '',
+      username: '',
+      password: ''
+    });
+    setTorMode(false);
+    setSelectedExitNode('auto');
+    setChainMode(false);
+    setSelectedPresetChain('chain1');
+    setCustomChain([]);
+    setSelectedPreset('research');
+    setAdvancedMode(false);
+  };
+
   const handleLaunch = () => {
     const browserConfig = {
       browser: selectedBrowser,
@@ -489,13 +531,18 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
     }
 
     // Launch the browser with enhanced configuration
-    if (selectedBrowser === 'simple') {
-      // Open the built-in simple browser
-      setShowSimpleBrowser(true);
+    if (selectedBrowser === 'simple' || !window.electronAPI) {
+      // For web app, use popup browser; for desktop, use window
+      if (window.electronAPI) {
+        setShowSimpleBrowser(true);
+      } else {
+        setShowBrowserPopup(true);
+      }
       onClose();
       return;
     }
     
+    // Desktop app specific functionality
     if (window.electronAPI) {
       if (selectedBrowser === 'tor' || torMode || proxyConfig.enabled) {
         // Use enhanced proxy launching for Tor and privacy browsers
@@ -504,6 +551,13 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
         window.electronAPI.openBrowser(url);
       } else {
         window.electronAPI.openBrowserWith(url, selectedBrowser);
+      }
+    } else {
+      // Web app fallback - open in new tab with privacy settings
+      const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!newWindow) {
+        // Popup blocked, show alternative
+        alert('Popup blocked. Please allow popups for InfoScope to open the browser.\n\nAlternatively, copy this URL and open it manually:\n' + url);
       }
     }
 
@@ -538,25 +592,46 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                 <Monitor className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Desktop Application Required</h4>
+                <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Web App Mode - Limited Browser Features</h4>
                 <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-                  To use different browsers and advanced proxy features, please install the desktop application. 
-                  The web version uses the built-in browser with limited proxy support.
+                  You're using the web version. Advanced proxy features and external browsers require the desktop app. 
+                  You can still use the built-in browser or open URLs in new tabs.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => window.open('https://github.com/ivocreates/InfoScope/releases', '_blank')}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <Download className="w-4 h-4" />
                     Download Desktop App
                   </button>
                   <button
-                    onClick={() => setAdvancedMode(!advancedMode)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => {
+                      setSelectedBrowser('simple');
+                      setShowSimpleBrowser(true);
+                      onClose();
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
                   >
-                    <Settings className="w-4 h-4" />
-                    Web Browser Setup Guide
+                    <Globe className="w-4 h-4" />
+                    Use Built-in Browser
+                  </button>
+                  <button
+                    onClick={() => {
+                      const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+                      if (!newWindow) {
+                        navigator.clipboard.writeText(url).then(() => {
+                          alert('URL copied to clipboard! Please open it manually in your browser.');
+                        }).catch(() => {
+                          alert('Please copy this URL and open it manually:\n' + url);
+                        });
+                      }
+                      onClose();
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 dark:bg-purple-700 text-white rounded-lg text-sm font-medium hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open in New Tab
                   </button>
                 </div>
               </div>
@@ -950,7 +1025,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                 
                 {/* Exit Node Selection */}
                 <div className="mb-6">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">Select Exit Node Location</label>
+                  <label className="text-sm font-medium text-gray-900 dark:text-white mb-3 block">Select Exit Node Location</label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto popup-scrollbar border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-800">
                     {Object.entries(torExitNodes).map(([key, node]) => (
                       <button
@@ -1001,7 +1076,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                           <label className="text-sm font-medium text-gray-700 mb-2 block">Current Chain:</label>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm text-gray-500">Your Device</span>
-                            {customChain.map((nodeKey, index) => (
+                            {(customChain || []).map((nodeKey, index) => (
                               <React.Fragment key={nodeKey}>
                                 <span className="text-gray-400">→</span>
                                 <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 border border-blue-200 rounded">
@@ -1074,11 +1149,39 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
 
           {/* Action Buttons */}
           <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <Info className="w-4 h-4" />
-              <span>Configuration will be used for this session only</span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Info className="w-4 h-4" />
+                <span>Configuration will be used for this session only</span>
+              </div>
+              {/* Configuration Status */}
+              {(selectedBrowser !== 'builtin' || proxyConfig.enabled || torMode || chainMode || advancedMode) ? (
+                <div className="flex items-center gap-2 text-sm">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-blue-600 dark:text-blue-400 font-medium">
+                    Custom: {selectedBrowser}
+                    {proxyConfig.enabled && ' + Proxy'}
+                    {torMode && ' + Tor'}
+                    {chainMode && ' + Chain'}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-green-600 dark:text-green-400">Default Settings</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-3">
+              <button
+                onClick={clearAllOptions}
+                className="px-4 py-2 text-orange-600 dark:text-orange-400 border border-orange-300 dark:border-orange-600 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors flex items-center gap-2"
+                title="Reset all options to defaults (Ctrl+R)"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Clear Options
+                <span className="text-xs opacity-60 ml-1">(Ctrl+R)</span>
+              </button>
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -1139,6 +1242,16 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
         initialUrl={url}
         enableProxy={proxyConfig.enabled}
         proxyConfig={proxyConfig.enabled ? proxyConfig : null}
+      />
+
+      {/* Browser Popup for Web App */}
+      <BrowserPopup
+        isOpen={showBrowserPopup}
+        onClose={() => setShowBrowserPopup(false)}
+        initialUrl={url}
+        enableProxy={proxyConfig.enabled}
+        proxyConfig={proxyConfig.enabled ? proxyConfig : null}
+        isWebApp={!window.electronAPI}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Info,
   Github,
@@ -28,6 +28,28 @@ function About() {
   const [showLegalDocs, setShowLegalDocs] = useState(false);
   const { theme } = useTheme();
 
+  // Handle URL parameters for direct navigation to tabs
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['about', 'developer', 'support', 'legal'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, []);
+
+  // Listen for hash changes to support navigation from popups
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash.includes('tab=legal')) {
+        setActiveTab('legal');
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const copyUPI = () => {
     navigator.clipboard.writeText('ivopereiraix3@oksbi');
     setCopiedUPI(true);
@@ -36,6 +58,10 @@ function About() {
 
   const openDonationLink = () => {
     window.open('https://razorpay.me/@ivocreates', '_blank');
+  };
+
+  const openPayPalLink = () => {
+    window.open('https://paypal.me/ivocreates', '_blank');
   };
 
   const features = [
@@ -558,7 +584,7 @@ function About() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* UPI Payment */}
                   <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -612,6 +638,32 @@ function About() {
                     
                     <p className="text-xs text-blue-700 dark:text-blue-400">
                       Secure payment processing. Supports international cards, wallets, and net banking.
+                    </p>
+                  </div>
+
+                  {/* PayPal Payment */}
+                  <div className="bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-900/20 dark:to-cyan-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-indigo-900 dark:text-indigo-300">PayPal (International)</h3>
+                        <p className="text-sm text-indigo-700 dark:text-indigo-400">Worldwide payments accepted</p>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={openPayPalLink}
+                      className="w-full bg-indigo-600 dark:bg-indigo-500 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors font-medium mb-4 flex items-center justify-center gap-2"
+                    >
+                      <Heart className="w-4 h-4" />
+                      Donate via PayPal
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                    
+                    <p className="text-xs text-indigo-700 dark:text-indigo-400">
+                      International payments, currency conversion, and buyer protection included.
                     </p>
                   </div>
                 </div>
@@ -693,6 +745,56 @@ function About() {
                   </p>
                 </div>
 
+                {/* Detailed Terms and Conditions */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6 mb-8">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <Scale className="w-5 h-5" />
+                    Terms & Conditions
+                  </h3>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">1. Acceptable Use Policy</h4>
+                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                        <li>• InfoScope must be used only for legitimate, authorized investigations</li>
+                        <li>• Users must comply with all applicable local, national, and international laws</li>
+                        <li>• Prohibited: harassment, stalking, illegal surveillance, or unauthorized data collection</li>
+                        <li>• Users must obtain proper authorization before conducting investigations involving third parties</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">2. User Responsibilities</h4>
+                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                        <li>• Maintain professional ethical standards at all times</li>
+                        <li>• Respect privacy rights and data protection regulations</li>
+                        <li>• Document investigations properly for legal compliance</li>
+                        <li>• Report security vulnerabilities responsibly</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">3. Data Protection & Privacy</h4>
+                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                        <li>• Data is processed locally whenever possible</li>
+                        <li>• No personal data is collected without explicit consent</li>
+                        <li>• Users retain full ownership of their investigation data</li>
+                        <li>• GDPR, CCPA, and other privacy regulations are respected</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">4. Limitation of Liability</h4>
+                      <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 ml-4">
+                        <li>• InfoScope is provided "as is" without warranties</li>
+                        <li>• Users are solely responsible for their investigation activities</li>
+                        <li>• The platform is not liable for misuse or legal violations by users</li>
+                        <li>• Results and data accuracy cannot be guaranteed</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
@@ -708,7 +810,7 @@ function About() {
                       <li>• Free to use, modify, and distribute</li>
                       <li>• Attribution required</li>
                       <li>• Derivatives must use same license</li>
-                      <li>• Commercial use permitted</li>
+                      <li>• Commercial use permitted with restrictions</li>
                     </ul>
                   </div>
 
@@ -723,10 +825,10 @@ function About() {
                       Privacy-by-design with minimal data collection and strong user control
                     </p>
                     <ul className="space-y-2 text-sm text-purple-600 dark:text-purple-400">
-                      <li>• GDPR compliant</li>
+                      <li>• GDPR compliant framework</li>
                       <li>• Local data storage priority</li>
                       <li>• No tracking or analytics by default</li>
-                      <li>• User data ownership</li>
+                      <li>• User data ownership and control</li>
                     </ul>
                   </div>
 
@@ -735,16 +837,16 @@ function About() {
                       <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
                         <Scale className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-blue-900 dark:text-blue-300">Terms of Service</h3>
+                      <h3 className="font-semibold text-blue-900 dark:text-blue-300">Ethical Guidelines</h3>
                     </div>
                     <p className="text-blue-700 dark:text-blue-400 mb-4">
-                      Clear guidelines for ethical and legal OSINT practices
+                      Professional standards for responsible OSINT investigations
                     </p>
                     <ul className="space-y-2 text-sm text-blue-600 dark:text-blue-400">
-                      <li>• Ethical use requirements</li>
-                      <li>• Legal compliance guidelines</li>
-                      <li>• User responsibilities</li>
-                      <li>• Service limitations</li>
+                      <li>• Respect for individual privacy</li>
+                      <li>• Authorized investigation requirements</li>
+                      <li>• Professional conduct standards</li>
+                      <li>• Legal compliance verification</li>
                     </ul>
                   </div>
 
@@ -753,16 +855,16 @@ function About() {
                       <div className="w-8 h-8 bg-orange-600 dark:bg-orange-500 rounded-lg flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-orange-900 dark:text-orange-300">Compliance</h3>
+                      <h3 className="font-semibold text-orange-900 dark:text-orange-300">Compliance Framework</h3>
                     </div>
                     <p className="text-orange-700 dark:text-orange-400 mb-4">
                       Adherence to international standards and regulations
                     </p>
                     <ul className="space-y-2 text-sm text-orange-600 dark:text-orange-400">
-                      <li>• GDPR compliance framework</li>
+                      <li>• GDPR compliance implementation</li>
                       <li>• Security best practices</li>
                       <li>• Legal framework adherence</li>
-                      <li>• Industry standards</li>
+                      <li>• Industry standards compliance</li>
                     </ul>
                   </div>
                 </div>
@@ -785,11 +887,16 @@ function About() {
                   <div className="flex items-start gap-3">
                     <ExternalLink className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                     <div>
-                      <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">Important Notice</h3>
-                      <p className="text-yellow-800 dark:text-yellow-400 text-sm">
+                      <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">Important Legal Notice</h3>
+                      <p className="text-yellow-800 dark:text-yellow-400 text-sm mb-3">
                         While InfoScope provides tools for OSINT investigations, users are solely responsible 
                         for ensuring their activities comply with applicable laws and regulations. Always 
                         consult with legal counsel when conducting sensitive investigations.
+                      </p>
+                      <p className="text-yellow-800 dark:text-yellow-400 text-sm">
+                        <strong>Disclaimer:</strong> InfoScope does not provide legal advice. Users must 
+                        understand and comply with their local laws, international regulations, and 
+                        professional ethical standards when conducting investigations.
                       </p>
                     </div>
                   </div>

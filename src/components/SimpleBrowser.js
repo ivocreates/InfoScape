@@ -207,24 +207,83 @@ const SimpleBrowser = ({ isOpen, onClose, initialUrl = 'https://www.google.com',
             useragent={incognito ? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' : undefined}
           />
         ) : (
-          /* Fallback for web version - iframe with limitations */
-          <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-            <div className="text-center p-8">
-              <Globe className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                Simple Browser (Web Mode)
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                The simple browser requires the desktop application for full functionality.
-              </p>
-              <button
-                onClick={openInExternal}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-                Open in External Browser
-              </button>
-            </div>
+          /* Enhanced fallback for web version - multiple options */
+          <div className="w-full h-full bg-white dark:bg-gray-900">
+            {/* Try iframe first, with fallback options */}
+            {currentUrl && !currentUrl.includes('google.com') && !currentUrl.includes('facebook.com') && !currentUrl.includes('twitter.com') ? (
+              <div className="w-full h-full relative">
+                <iframe
+                  src={currentUrl}
+                  className="w-full h-full border-0"
+                  title="Simple Browser"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
+                  onLoad={() => setIsLoading(false)}
+                  onError={() => {
+                    console.log('Iframe failed to load, showing fallback');
+                    setIsLoading(false);
+                  }}
+                />
+                {/* Iframe overlay for external link */}
+                <div className="absolute top-4 right-4">
+                  <button
+                    onClick={openInExternal}
+                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-lg text-sm flex items-center gap-2"
+                    title="Open in external browser for full functionality"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open Externally
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Fallback when iframe is not suitable */
+              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800 p-8">
+                <div className="max-w-md text-center">
+                  <Globe className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    Browser Redirect Required
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    This website cannot be displayed in an embedded browser due to security restrictions. 
+                    Use one of the options below to access it.
+                  </p>
+                  <div className="space-y-3">
+                    <button
+                      onClick={openInExternal}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      Open in External Browser
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(currentUrl).then(() => {
+                          alert('URL copied to clipboard!');
+                        }).catch(() => {
+                          prompt('Copy this URL:', currentUrl);
+                        });
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                    >
+                      <Download className="w-5 h-5" />
+                      Copy URL
+                    </button>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <div className="font-medium text-yellow-800 dark:text-yellow-200">Web App Limitation</div>
+                          <div className="text-yellow-700 dark:text-yellow-300">
+                            For full browser functionality with proxy support and advanced features, 
+                            please use the desktop application.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -3,23 +3,29 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { BrowserAlertProvider } from './hooks/useBrowserAlert';
+import BrowserAlertContainer from './components/BrowserAlertContainer';
 import LandingPage from './components/LandingPage';
 import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
 import Navigation from './components/Navigation';
 import LoadingSpinner from './components/LoadingSpinner';
 import AIChat from './components/AIChat';
-import WeeklySupportPopup from './components/WeeklySupportPopup';
 import Favorites from './components/Favorites';
-import Onboarding from './components/Onboarding';
 import Feedback from './components/Feedback';
 import OSINTTools from './components/OSINTTools';
 import Investigation from './components/Investigation';
 import Profile from './components/Profile';
 import About from './components/About';
-import DesktopAppPromotion from './components/DesktopAppPromotion';
 import SystemInfoToggle from './components/SystemInfoToggle';
-import WeeklyTips from './components/WeeklyTips';
+import AdvancedOSINTTools from './components/AdvancedOSINTTools';
+import PopupManager from './components/PopupManager';
+import SubscriptionPlans from './components/SubscriptionPlans';
+import ExportFeatures from './components/ExportFeatures';
+import DesktopAppPromo from './components/DesktopAppPromo';
+import DonationWidget from './components/DonationWidget';
+import SimpleBrowser from './components/SimpleBrowser';
+import subscriptionService from './services/subscriptionService';
 
 // Performance utilities only
 import { 
@@ -39,12 +45,20 @@ function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatMinimized, setIsChatMinimized] = useState(false);
-  const [showWeeklySupport, setShowWeeklySupport] = useState(false);
   const [chatInitialMessage, setChatInitialMessage] = useState(null);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [showWeeklyTips, setShowWeeklyTips] = useState(false);
+  const [showSubscription, setShowSubscription] = useState(false);
+  const [showSimpleBrowser, setShowSimpleBrowser] = useState(false);
+  const [browserUrl, setBrowserUrl] = useState('https://www.google.com');
+  const [browserConfig, setBrowserConfig] = useState(null);
+
+  // Handle opening browser with configuration
+  const handleOpenBrowser = (url = 'https://www.google.com', config = null) => {
+    setBrowserUrl(url);
+    setBrowserConfig(config);
+    setShowSimpleBrowser(true);
+  };
 
   useEffect(() => {
     // Initialize performance monitoring
@@ -60,12 +74,14 @@ function App() {
     preconnectToDomain('https://api.shodan.io');
     preconnectToDomain('https://api.virustotal.com');
     preconnectToDomain('https://api.hunter.io');
+    preconnectToDomain('https://ipinfo.io');
+    preconnectToDomain('https://ipapi.co');
     
     // Log app start performance
     const appStartTime = performance.now();
     console.log('App initialization time:', appStartTime);
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
       
@@ -73,6 +89,9 @@ function App() {
       analyticsManager.trackAuth(user ? 'login_detected' : 'logout_detected');
       
       if (user) {
+        // Initialize subscription service for the user
+        await subscriptionService.initializeUser(user);
+        
         // Set user in analytics
         analyticsManager.setUser(user.uid, {
           email: user.email,
@@ -83,30 +102,10 @@ function App() {
         // If user is already logged in, skip landing page
         setShowLanding(false);
         
-        // Check if user is new (first time login)
-        const hasSeenOnboarding = localStorage.getItem(`onboarding-seen-${user.uid}`);
-        
-        if (!hasSeenOnboarding) {
-          // Show onboarding for new users
-          setShowOnboarding(true);
-          analyticsManager.trackFeatureUsage('onboarding_shown', { user_type: 'new' });
-        } else {
-          // Show weekly support popup for returning users (with a delay)
-          setTimeout(() => {
-            setShowWeeklySupport(true);
-            analyticsManager.trackFeatureUsage('weekly_support_shown', { user_type: 'returning' });
-          }, 3000);
-          
-          // Check if we should show weekly tips (once per week)
-          const lastTipsShown = localStorage.getItem('lastWeeklyTipsShown');
-          const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-          
-          if (!lastTipsShown || parseInt(lastTipsShown) < oneWeekAgo) {
-            setTimeout(() => {
-              setShowWeeklyTips(true);
-            }, 5000); // Show after weekly support popup
-          }
-        }
+        analyticsManager.trackFeatureUsage('user_authenticated', { 
+          user_type: 'returning',
+          email_verified: user.emailVerified 
+        });
       }
 
       // Log authentication performance
@@ -115,11 +114,17 @@ function App() {
       analyticsManager.trackPerformance('auth_check_time', authTime);
     });
 
+    // Listen for global events
+    const handleOpenSubscription = () => setShowSubscription(true);
+
+    window.addEventListener('openSubscription', handleOpenSubscription);
+
     return () => {
       unsubscribe();
       performanceMonitor.cleanup();
+      window.removeEventListener('openSubscription', handleOpenSubscription);
     };
-  }, [loading]);
+  }, []);
 
   // Handle "Get Started" button click
   const handleGetStarted = () => {
@@ -133,23 +138,6 @@ function App() {
     setIsChatMinimized(false);
   };
 
-  // Handle onboarding completion
-  const handleOnboardingComplete = (targetView = 'dashboard') => {
-    if (user) {
-      localStorage.setItem(`onboarding-seen-${user.uid}`, 'true');
-    }
-    setShowOnboarding(false);
-    setCurrentView(targetView);
-    
-    // Track onboarding completion
-    analyticsManager.trackFeatureUsage('onboarding_completed', { target_view: targetView });
-    
-    // Show weekly support popup after onboarding with delay
-    setTimeout(() => {
-      setShowWeeklySupport(true);
-    }, 2000);
-  };
-
   // Track view changes
   useEffect(() => {
     if (currentView && user) {
@@ -159,14 +147,6 @@ function App() {
       });
     }
   }, [currentView, user]);
-
-  // Handle onboarding skip
-  const handleOnboardingSkip = () => {
-    if (user) {
-      localStorage.setItem(`onboarding-seen-${user.uid}`, 'true');
-    }
-    setShowOnboarding(false);
-  };
 
   useEffect(() => {
     // Listen to Electron menu events
@@ -221,79 +201,89 @@ function App() {
   }
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-        <Navigation 
-          currentView={currentView} 
-          setCurrentView={setCurrentView} 
-          user={user}
-          onOpenChat={() => setIsChatOpen(true)}
-          onOpenFavorites={() => setShowFavorites(true)}
-          onOpenFeedback={() => setShowFeedback(true)}
-          onShowLanding={() => setShowLanding(true)}
-        />
+    <BrowserAlertProvider>
+      <ThemeProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+          <Navigation 
+            currentView={currentView} 
+            setCurrentView={setCurrentView} 
+            user={user}
+            onOpenChat={() => setIsChatOpen(true)}
+            onOpenFavorites={() => setShowFavorites(true)}
+            onOpenFeedback={() => setShowFeedback(true)}
+            onShowLanding={() => setShowLanding(true)}
+            onOpenBrowser={handleOpenBrowser}
+          />
       
-      <main className="transition-all duration-200">
-        {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
-        {currentView === 'investigation' && <Investigation />}
-        {currentView === 'osint-tools' && <OSINTTools />}
-        {currentView === 'profile' && <Profile user={user} />}
-        {currentView === 'about' && <About />}
-      </main>
+        <main className="transition-all duration-200">
+          {currentView === 'dashboard' && <Dashboard setCurrentView={setCurrentView} />}
+          {currentView === 'investigation' && <Investigation />}
+          {currentView === 'osint-tools' && <OSINTTools />}
+          {currentView === 'advanced-osint' && <AdvancedOSINTTools />}
+          {currentView === 'profile' && <Profile user={user} setCurrentView={setCurrentView} />}
+          {currentView === 'about' && <About />}
+        </main>
 
-      {/* AI Chat Component */}
-      <AIChat
-        isOpen={isChatOpen}
-        onClose={() => {
-          setIsChatOpen(false);
-          setChatInitialMessage(null);
-        }}
-        onMinimize={setIsChatMinimized}
-        isMinimized={isChatMinimized}
-        initialMessage={chatInitialMessage}
-      />
-
-      {/* Favorites Component */}
-      <Favorites
-        user={user}
-        isOpen={showFavorites}
-        onClose={() => setShowFavorites(false)}
-      />
-
-      {/* Feedback Component */}
-      <Feedback
-        isOpen={showFeedback}
-        onClose={() => setShowFeedback(false)}
-      />
-
-      {/* Weekly Support Popup */}
-      <WeeklySupportPopup
-        isVisible={showWeeklySupport}
-        onClose={() => setShowWeeklySupport(false)}
-        onOpenChat={handleOpenChatWithMessage}
-      />
-
-      {/* Weekly Tips Component */}
-      <WeeklyTips
-        isOpen={showWeeklyTips}
-        onClose={() => setShowWeeklyTips(false)}
-      />
-
-      {/* Onboarding Component */}
-      {showOnboarding && (
-        <Onboarding
-          onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
+        {/* AI Chat Component */}
+        <AIChat
+          isOpen={isChatOpen}
+          onClose={() => {
+            setIsChatOpen(false);
+            setChatInitialMessage(null);
+          }}
+          onMinimize={setIsChatMinimized}
+          isMinimized={isChatMinimized}
+          initialMessage={chatInitialMessage}
         />
-      )}
 
-      {/* Desktop App Promotion - Only show in web version */}
-      <DesktopAppPromotion />
+        {/* Favorites Component */}
+        <Favorites
+          user={user}
+          isOpen={showFavorites}
+          onClose={() => setShowFavorites(false)}
+        />
 
-      {/* System Info Toggle - Floating component for OSINT context */}
-      <SystemInfoToggle />
+        {/* Feedback Component */}
+        <Feedback
+          isOpen={showFeedback}
+          onClose={() => setShowFeedback(false)}
+        />
+
+        {/* Subscription Plans Modal */}
+        <SubscriptionPlans
+          isOpen={showSubscription}
+          onClose={() => setShowSubscription(false)}
+        />
+
+        {/* Unified Popup Manager - handles all popups in correct order */}
+        <PopupManager
+          user={user}
+          onOpenChat={handleOpenChatWithMessage}
+        />
+
+        {/* System Info Toggle - Floating component for OSINT context */}
+        <SystemInfoToggle />
+
+        {/* Donation Widget - Bottom left corner */}
+        {user && <DonationWidget />}
+
+        {/* Desktop App Promotion - Bottom right corner */}
+        <DesktopAppPromo />
+
+        {/* Browser Alert Container */}
+        <BrowserAlertContainer />
+
+        {/* Simple Browser */}
+        <SimpleBrowser
+          isOpen={showSimpleBrowser}
+          onClose={() => setShowSimpleBrowser(false)}
+          initialUrl={browserUrl}
+          enableProxy={browserConfig?.torMode || browserConfig?.proxyMode || false}
+          proxyConfig={browserConfig}
+        />
       </div>
     </ThemeProvider>
+  </BrowserAlertProvider>
   );
 }
 

@@ -1,12 +1,13 @@
 {
   "name": "infoscope-osint",
-  "version": "2.2.0",
-  "description": "Professional OSINT Investigation Platform v2.2.0 - Advanced desktop and web application with mobile-responsive design, floating system info toggle, masked AI agents, weekly tips generation, and enhanced tutorial system. Features 48+ OSINT tools, dark mode, Firebase integration, and dual AI assistance.",
+  "version": "2.3.0",
+  "description": "Professional OSINT Investigation Platform v2.3.0 - Advanced desktop and web application with 15+ real API integrations for IP intelligence, email analysis, domain research, social media reconnaissance, phone lookup, and geolocation services. Features built-in secure browser, modern UI, cross-platform support, and privacy-first design.",
   "author": {
     "name": "Ivo Pereira",
     "email": "ivo@ivocreates.gmail.com",
     "url": "https://ivocreates.site"
   },
+  "license": "CC-BY-SA-4.0",
   "main": "main.js",
   "homepage": "https://infoscope-osint.web.app",
   "scripts": {
@@ -30,18 +31,20 @@
     "dist": "npm run build && electron-builder --publish=never"
   },
   "build": {
-    "appId": "com.infoscope.osint",
-    "productName": "InfoScope OSINT Platform",
-    "copyright": "Copyright © 2025 @ivocreates - Licensed under CC BY-SA 4.0",
+    "appId": "com.ivocreates.infoscope-osint",
+    "productName": "InfoScope OSINT Platform v2.3.0",
+    "copyright": "Copyright © 2025 Ivo Pereira - Licensed under CC BY-SA 4.0",
     "directories": {
-      "buildResources": "build-resources",
+      "buildResources": "assets",
       "output": "dist"
     },
     "files": [
       "build/**/*",
       "main.js",
-      "preload.js",
-      "node_modules/**/*"
+      "public/preload.js",
+      "public/electron.js",
+      "node_modules/**/*",
+      "package.json"
     ],
     "extraMetadata": {
       "main": "main.js"
@@ -50,64 +53,140 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
-      ]
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}",
+      "publish": {
+        "provider": "github",
+        "owner": "ivocreates",
+        "repo": "InfoScope"
+      }
     },
     "mac": {
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
     },
     "linux": {
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
         }
       ],
-      "category": "Utility"
+      "category": "Utility",
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "desktop": {
+        "Name": "InfoScope OSINT",
+        "Comment": "Advanced Open Source Intelligence Platform",
+        "Keywords": "osint;intelligence;investigation;cybersecurity;",
+        "Categories": "Network;Security;Development;"
+      }
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "allowElevation": true,
+      "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "InfoScope OSINT Platform"
+      "shortcutName": "InfoScope OSINT"
+    },
+    "dmg": {
+      "iconSize": 100,
+      "contents": [
+        {
+          "x": 380,
+          "y": 280,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 110,
+          "y": 280,
+          "type": "file"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
     },
     "publish": {
       "provider": "github",
       "owner": "ivocreates",
-      "repo": "InfoScape"
+      "repo": "InfoScope",
+      "releaseType": "release"
     }
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "@types/dompurify": "^3.0.5",
     "axios": "^1.12.2",
+    "docx": "^9.5.1",
     "dompurify": "^3.2.7",
     "electron-is-dev": "^2.0.0",
     "electron-updater": "^6.6.2",
     "firebase": "^10.7.1",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.303.0",
+    "papaparse": "^5.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
