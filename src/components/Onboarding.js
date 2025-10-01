@@ -24,34 +24,34 @@ const Onboarding = ({ onComplete, onSkip }) => {
       subtitle: "Your Professional OSINT Investigation Platform",
       icon: Shield,
       content: (
-        <div className="text-center space-y-6">
-          <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto">
-            <Shield className="w-12 h-12 text-white" />
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+            <Shield className="w-10 h-10 text-white" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
               Professional OSINT Made Simple
             </h3>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
-              InfoScope provides you with 37+ advanced OSINT tools, anonymous browsing capabilities, 
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
+              InfoScope provides you with 48+ advanced OSINT tools, anonymous browsing capabilities, 
               and comprehensive investigation features - all in one secure platform.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-              <Search className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
-              <span className="font-medium text-gray-900 dark:text-white">37+ Tools</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <div className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <Search className="w-5 h-5 text-blue-600 dark:text-blue-400 mb-1" />
+              <span className="font-medium text-gray-900 dark:text-white">48+ Tools</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
-              <Globe className="w-6 h-6 text-green-600 dark:text-green-400 mb-2" />
+            <div className="flex flex-col items-center p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+              <Globe className="w-5 h-5 text-green-600 dark:text-green-400 mb-1" />
               <span className="font-medium text-gray-900 dark:text-white">Anonymous</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
-              <Zap className="w-6 h-6 text-purple-600 dark:text-purple-400 mb-2" />
+            <div className="flex flex-col items-center p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+              <Zap className="w-5 h-5 text-purple-600 dark:text-purple-400 mb-1" />
               <span className="font-medium text-gray-900 dark:text-white">Fast</span>
             </div>
-            <div className="flex flex-col items-center p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
-              <Shield className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mb-2" />
+            <div className="flex flex-col items-center p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+              <Shield className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mb-1" />
               <span className="font-medium text-gray-900 dark:text-white">Secure</span>
             </div>
           </div>
@@ -65,59 +65,59 @@ const Onboarding = ({ onComplete, onSkip }) => {
       content: (
         <div className="space-y-6">
           <div className="text-center mb-8">
-            <Search className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <Search className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Complete OSINT Arsenal
             </h3>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
               Access specialized tools for every type of investigation
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <div>
-                  <div className="font-medium text-gray-900">People Investigation</div>
-                  <div className="text-sm text-gray-600">Social media, email lookup, username search</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">People Investigation</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Social media, email lookup, username search</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <Globe className="w-6 h-6 text-green-600" />
+              <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                <Globe className="w-6 h-6 text-green-600 dark:text-green-400" />
                 <div>
-                  <div className="font-medium text-gray-900">Domain Analysis</div>
-                  <div className="text-sm text-gray-600">WHOIS, DNS, SSL analysis, subdomains</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">Domain Analysis</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">WHOIS, DNS, SSL analysis, subdomains</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                <Search className="w-6 h-6 text-purple-600" />
+              <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                <Search className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 <div>
-                  <div className="font-medium text-gray-900">Google Dorking</div>
-                  <div className="text-sm text-gray-600">Advanced search operators and techniques</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">Google Dorking</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Advanced search operators and techniques</div>
                 </div>
               </div>
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                <Shield className="w-6 h-6 text-yellow-600" />
+              <div className="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+                <Shield className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                 <div>
-                  <div className="font-medium text-gray-900">Anonymous Browsing</div>
-                  <div className="text-sm text-gray-600">Tor integration with proxy chains</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">Anonymous Browsing</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Tor integration with proxy chains</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
-                <Zap className="w-6 h-6 text-red-600" />
+              <div className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                <Zap className="w-6 h-6 text-red-600 dark:text-red-400" />
                 <div>
-                  <div className="font-medium text-gray-900">Real-time Analysis</div>
-                  <div className="text-sm text-gray-600">Live monitoring and data collection</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">Real-time Analysis</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Live monitoring and data collection</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
-                <BookOpen className="w-6 h-6 text-indigo-600" />
+              <div className="flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                <BookOpen className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <div className="font-medium text-gray-900">Investigation Reports</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">Investigation Reports</div>
                   <div className="text-sm text-gray-600">Professional documentation tools</div>
                 </div>
               </div>
@@ -162,12 +162,12 @@ const Onboarding = ({ onComplete, onSkip }) => {
             </div>
           </div>
           
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <div className="flex gap-3">
-              <CheckCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+              <CheckCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
               <div>
-                <h4 className="font-medium text-yellow-900">Security Best Practices</h4>
-                <p className="text-sm text-yellow-800 mt-1">
+                <h4 className="font-medium text-yellow-900 dark:text-yellow-100">Security Best Practices</h4>
+                <p className="text-sm text-yellow-800 dark:text-yellow-200 mt-1">
                   InfoScope follows industry-standard security practices to protect your investigations 
                   and maintain operational security (OPSEC) throughout your research.
                 </p>
@@ -187,10 +187,10 @@ const Onboarding = ({ onComplete, onSkip }) => {
             <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Star className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Ready to Start Investigating?
             </h3>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
               Everything is set up and ready to go!
             </p>
           </div>
@@ -259,9 +259,9 @@ const Onboarding = ({ onComplete, onSkip }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl custom-scrollbar">
         {/* Progress Bar */}
-        <div className="h-1 bg-gray-200">
+        <div className="h-1 bg-gray-200 dark:bg-gray-700 sticky top-0 z-10">
           <div 
             className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -269,30 +269,30 @@ const Onboarding = ({ onComplete, onSkip }) => {
         </div>
         
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 text-center">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 text-center bg-white dark:bg-gray-900 sticky top-1 z-10">
           <div className="flex items-center justify-center gap-3 mb-2">
-            {React.createElement(steps[currentStep].icon, { className: "w-6 h-6 text-blue-600" })}
-            <h2 className="text-xl font-bold text-gray-900">
+            {React.createElement(steps[currentStep].icon, { className: "w-6 h-6 text-blue-600 dark:text-blue-400" })}
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
               {steps[currentStep].title}
             </h2>
           </div>
-          <p className="text-gray-600">{steps[currentStep].subtitle}</p>
-          <div className="mt-4 text-sm text-gray-500">
+          <p className="text-gray-600 dark:text-gray-400">{steps[currentStep].subtitle}</p>
+          <div className="mt-2 text-sm text-gray-500 dark:text-gray-500">
             Step {currentStep + 1} of {steps.length}
           </div>
         </div>
         
         {/* Content */}
-  <div className="p-8 overflow-y-auto max-h-[60vh] popup-scrollbar">
+        <div className="p-4 flex-1">
           {steps[currentStep].content}
         </div>
         
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 flex items-center justify-between">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-900 sticky bottom-0">
           <div className="flex gap-3">
             <button
               onClick={onSkip}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
             >
               Skip Tutorial
             </button>
@@ -302,7 +302,7 @@ const Onboarding = ({ onComplete, onSkip }) => {
             {currentStep > 0 && (
               <button
                 onClick={prevStep}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous

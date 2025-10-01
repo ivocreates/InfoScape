@@ -137,38 +137,38 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
   const getColorClasses = (color) => {
     const colorMap = {
       blue: {
-        bg: 'bg-blue-100',
-        border: 'border-blue-200',
-        text: 'text-blue-800',
-        icon: 'text-blue-600',
+        bg: 'bg-blue-100 dark:bg-blue-900/30',
+        border: 'border-blue-200 dark:border-blue-700',
+        text: 'text-blue-800 dark:text-blue-200',
+        icon: 'text-blue-600 dark:text-blue-400',
         button: 'bg-blue-600 hover:bg-blue-700'
       },
       green: {
-        bg: 'bg-green-100',
-        border: 'border-green-200',
-        text: 'text-green-800',
-        icon: 'text-green-600',
+        bg: 'bg-green-100 dark:bg-green-900/30',
+        border: 'border-green-200 dark:border-green-700',
+        text: 'text-green-800 dark:text-green-200',
+        icon: 'text-green-600 dark:text-green-400',
         button: 'bg-green-600 hover:bg-green-700'
       },
       purple: {
-        bg: 'bg-purple-100',
-        border: 'border-purple-200',
-        text: 'text-purple-800',
-        icon: 'text-purple-600',
+        bg: 'bg-purple-100 dark:bg-purple-900/30',
+        border: 'border-purple-200 dark:border-purple-700',
+        text: 'text-purple-800 dark:text-purple-200',
+        icon: 'text-purple-600 dark:text-purple-400',
         button: 'bg-purple-600 hover:bg-purple-700'
       },
       red: {
-        bg: 'bg-red-100',
-        border: 'border-red-200',
-        text: 'text-red-800',
-        icon: 'text-red-600',
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        border: 'border-red-200 dark:border-red-700',
+        text: 'text-red-800 dark:text-red-200',
+        icon: 'text-red-600 dark:text-red-400',
         button: 'bg-red-600 hover:bg-red-700'
       },
       yellow: {
-        bg: 'bg-yellow-100',
-        border: 'border-yellow-200',
-        text: 'text-yellow-800',
-        icon: 'text-yellow-600',
+        bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+        border: 'border-yellow-200 dark:border-yellow-700',
+        text: 'text-yellow-800 dark:text-yellow-200',
+        icon: 'text-yellow-600 dark:text-yellow-400',
         button: 'bg-yellow-600 hover:bg-yellow-700'
       }
     };
@@ -195,7 +195,7 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl transform transition-all">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full shadow-2xl transform transition-all">
         {/* Header */}
         <div className={`p-6 rounded-t-xl ${colors.bg} ${colors.border} border-b`}>
           <div className="flex items-center justify-between">
@@ -207,26 +207,30 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
               </div>
               <div>
                 <h2 className={`text-xl font-bold ${colors.text}`}>Weekly OSINT Tip</h2>
-                <div className="flex items-center gap-2 text-sm opacity-75">
+                <div className={`flex items-center gap-2 text-sm ${colors.text} opacity-75`}>
                   <Calendar className="w-4 h-4" />
-                  <span>Week of {new Date().toLocaleDateString()}</span>
+                  <span>Week of {new Date().toLocaleDateString('en-US', { 
+                    month: '2-digit', 
+                    day: '2-digit', 
+                    year: 'numeric' 
+                  })}</span>
                 </div>
               </div>
             </div>
             <button
               onClick={handleClose}
-              className="p-2 hover:bg-white hover:bg-opacity-50 rounded-lg transition-colors"
+              className="p-2 hover:bg-white hover:bg-opacity-50 dark:hover:bg-gray-800 dark:hover:bg-opacity-50 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-gray-600" />
+              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 bg-white dark:bg-gray-900">
           <div className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{currentWeekTip.title}</h3>
-            <p className="text-gray-600 mb-4">{currentWeekTip.description}</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{currentWeekTip.title}</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{currentWeekTip.description}</p>
             
             <div className="space-y-3">
               {currentWeekTip.tips.map((tip, index) => (
@@ -234,7 +238,7 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
                   <div className={`w-6 h-6 ${colors.bg} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
                     <div className={`w-2 h-2 ${colors.button.split(' ')[0]} rounded-full`}></div>
                   </div>
-                  <span className="text-gray-700 text-sm leading-relaxed">{tip}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{tip}</span>
                 </div>
               ))}
             </div>
@@ -287,8 +291,8 @@ const WeeklySupportPopup = ({ isVisible, onClose, onOpenChat }) => {
           </div>
 
           {/* Footer */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <Lightbulb className="w-4 h-4" />
                 <span>Tip #{Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000)) % 100}</span>

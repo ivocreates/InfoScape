@@ -12,7 +12,7 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [themePreference, setThemePreference] = useState(() => {
-    const saved = localStorage.getItem('infoscape-osint-theme-preference');
+    const saved = localStorage.getItem('infoscope-osint-theme-preference');
     return saved || 'system';
   });
 

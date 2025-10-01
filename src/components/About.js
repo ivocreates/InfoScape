@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import LegalDocumentation from './LegalDocumentation';
 import { useTheme } from '../contexts/ThemeContext';
+import InfoScopeIcon from './InfoScopeIcon';
 
 function About() {
   const [copiedUPI, setCopiedUPI] = useState(false);
@@ -68,20 +69,40 @@ function About() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 mb-6 text-center">
-          <div className="flex items-center justify-center w-16 h-16 bg-black dark:bg-gray-700 rounded-xl mx-auto mb-4">
-            <Shield className="w-8 h-8 text-white" />
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 p-8 mb-6 text-center relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)',
+              backgroundSize: '20px 20px'
+            }}></div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">InfoScope OSINT</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
-            Professional OSINT Investigation Platform
-          </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <span>Version 1.0.0</span>
-            <span>•</span>
-            <span>Open Source</span>
-            <span>•</span>
-            <span>MIT License</span>
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-center mb-6">
+              <InfoScopeIcon 
+                size={64} 
+                variant="gradient"
+                className="drop-shadow-lg"
+              />
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-3">
+              InfoScope OSINT
+            </h1>
+            <p className="text-xl text-gray-700 dark:text-gray-300 mb-6 font-medium">
+              Professional Open Source Intelligence Platform
+            </p>
+            <div className="flex items-center justify-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+              <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full font-medium">
+                Version 1.0.0
+              </span>
+              <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-medium">
+                Open Source
+              </span>
+              <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-medium">
+                MIT License
+              </span>
+            </div>
           </div>
         </div>
 
@@ -317,25 +338,25 @@ function About() {
                     <img
                       src="https://github.com/ivocreates.png"
                       alt="Ivo Pereira - GitHub Avatar"
-                      className="w-full h-full rounded-full object-cover border-4 border-blue-500 shadow-xl hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full rounded-full object-cover border-4 border-blue-500 dark:border-blue-400 shadow-xl hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         e.target.src = `https://ui-avatars.com/api/?name=Ivo+Pereira&background=4F46E5&color=fff&size=128`;
                       }}
                     />
                   </div>
                   
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">
                     Ivo Pereira
                   </h2>
-                  <p className="text-lg text-gray-600 mb-2">Full-Stack Developer & OSINT Enthusiast</p>
-                  <p className="text-sm text-gray-500 mb-6">Hover over the photo to see more!</p>
+                  <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">Full-Stack Developer & OSINT Enthusiast</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Hover over the photo to see more!</p>
                   
                   <div className="flex items-center justify-center gap-4 flex-wrap">
                     <a 
                       href="https://github.com/ivocreates" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      className="group flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
                       <Github className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                       GitHub
@@ -345,7 +366,7 @@ function About() {
                       href="https://ivocreates.site/" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 dark:hover:from-blue-600 dark:hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
                       <Globe className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                       Website
@@ -353,7 +374,7 @@ function About() {
                     </a>
                     <a 
                       href="mailto:hello@ivocreates.site" 
-                      className="group flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                      className="group flex items-center gap-2 px-6 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
                       <CreditCard className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                       Contact
@@ -362,9 +383,9 @@ function About() {
                 </div>
 
                 {/* Enhanced About Section */}
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-200">
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-8 border border-blue-200 dark:border-blue-700">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 rounded-lg flex items-center justify-center">
                       <Users className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white">About the Developer</h3>
@@ -382,112 +403,112 @@ function About() {
                       Every feature has been carefully designed to prioritize user privacy while delivering 
                       powerful investigation capabilities.
                     </p>
-                    <div className="bg-white rounded-lg p-4 border-l-4 border-blue-500">
-                      <p className="italic text-blue-800">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border-l-4 border-blue-500 dark:border-blue-400">
+                      <p className="italic text-blue-800 dark:text-blue-300">
                         "Building tools that empower investigators while respecting privacy and security is not just my profession—it's my mission."
                       </p>
-                      <p className="text-sm text-blue-600 mt-2">— Ivo Pereira</p>
+                      <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">— Ivo Pereira</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Enhanced Skills & Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-xl transition-shadow">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Zap className="w-4 h-4 text-blue-600" />
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                        <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       </div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">Technical Expertise</h4>
                     </div>
                     <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
                         <span>React.js & Modern JavaScript</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full"></div>
                         <span>Node.js & Backend Development</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
                         <span>Electron & Desktop Apps</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-yellow-500 dark:bg-yellow-400 rounded-full"></div>
                         <span>Firebase & Cloud Platforms</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full"></div>
                         <span>Cybersecurity & Privacy</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-xl transition-shadow">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-green-600" />
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
                       </div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">OSINT Specialization</h4>
                     </div>
                     <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
                         <span>Digital Footprint Analysis</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full"></div>
                         <span>Social Media Intelligence</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
                         <span>Domain & Network Analysis</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-yellow-500 dark:bg-yellow-400 rounded-full"></div>
                         <span>Anonymous Browsing</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full"></div>
                         <span>Investigation Methodologies</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-xl transition-shadow">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Star className="w-4 h-4 text-purple-600" />
+                      <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                        <Star className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                       </div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">Project Stats</h4>
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">OSINT Tools</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">OSINT Tools</span>
                         <span className="font-semibold text-gray-900 dark:text-white">37+</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">Development Time</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Development Time</span>
                         <span className="font-semibold text-gray-900 dark:text-white">6+ months</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">Lines of Code</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Lines of Code</span>
                         <span className="font-semibold text-gray-900 dark:text-white">10,000+</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-300">Open Source</span>
-                        <span className="font-semibold text-green-600 dark:text-green-400">✓ MIT License</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Open Source</span>
+                        <span className="font-semibold text-green-600 dark:text-green-400">✓ CC BY-SA 4.0 License</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Connect Section */}
-                <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-8 text-white">
+                <div className="bg-gradient-to-r from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-xl p-8 text-white">
                   <div className="text-center">
                     <h3 className="text-2xl font-bold mb-4">Let's Connect!</h3>
-                    <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                    <p className="text-gray-300 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
                       Interested in collaborating, have questions about InfoScope, or want to discuss OSINT methodologies? 
                       I'd love to hear from you! Feel free to reach out through any of these channels.
                     </p>
@@ -496,7 +517,7 @@ function About() {
                         href="https://github.com/ivocreates/InfoScape/discussions" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
                       >
                         <MessageCircle className="w-4 h-4" />
                         Discussions
@@ -505,7 +526,7 @@ function About() {
                         href="https://github.com/ivocreates/InfoScape/issues" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
                       >
                         <ExternalLink className="w-4 h-4" />
                         Issues
@@ -514,7 +535,7 @@ function About() {
                         href="https://ivocreates.site/contact" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 dark:bg-white/5 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
                       >
                         <Globe className="w-4 h-4" />
                         Contact Form
@@ -529,9 +550,9 @@ function About() {
             {activeTab === 'support' && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <Heart className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                  <Heart className="w-16 h-16 text-red-500 dark:text-red-400 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Support InfoScope Development</h2>
-                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                     InfoScope OSINT is free and open source. Your support helps maintain and improve the platform, 
                     add new features, and keep the project sustainable for the OSINT community.
                   </p>
@@ -539,23 +560,23 @@ function About() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* UPI Payment */}
-                  <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-lg p-6">
+                  <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <Smartphone className="w-5 h-5 text-orange-600" />
+                      <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/50 rounded-lg flex items-center justify-center">
+                        <Smartphone className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-orange-900">UPI Payment (India)</h3>
-                        <p className="text-sm text-orange-700">Quick and secure UPI transfer</p>
+                        <h3 className="font-semibold text-orange-900 dark:text-orange-300">UPI Payment (India)</h3>
+                        <p className="text-sm text-orange-700 dark:text-orange-400">Quick and secure UPI transfer</p>
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-lg p-4 mb-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-sm text-gray-700 dark:text-gray-300">ivopereiraix3@oksbi</span>
                         <button
                           onClick={copyUPI}
-                          className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 text-orange-700 rounded hover:bg-orange-200 transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 rounded hover:bg-orange-200 dark:hover:bg-orange-900/70 transition-colors"
                         >
                           {copiedUPI ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                           {copiedUPI ? 'Copied!' : 'Copy'}
@@ -563,65 +584,65 @@ function About() {
                       </div>
                     </div>
                     
-                    <p className="text-xs text-orange-700">
+                    <p className="text-xs text-orange-700 dark:text-orange-400">
                       Scan QR code or copy UPI ID for direct transfer. Available 24/7 for instant donations.
                     </p>
                   </div>
 
                   {/* Razorpay Payment */}
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <CreditCard className="w-5 h-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                        <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-blue-900">Razorpay (Global)</h3>
-                        <p className="text-sm text-blue-700">Credit/Debit cards accepted</p>
+                        <h3 className="font-semibold text-blue-900 dark:text-blue-300">Razorpay (Global)</h3>
+                        <p className="text-sm text-blue-700 dark:text-blue-400">Credit/Debit cards accepted</p>
                       </div>
                     </div>
                     
                     <button
                       onClick={openDonationLink}
-                      className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium mb-4 flex items-center justify-center gap-2"
+                      className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium mb-4 flex items-center justify-center gap-2"
                     >
                       <Heart className="w-4 h-4" />
                       Donate via Razorpay
                       <ExternalLink className="w-4 h-4" />
                     </button>
                     
-                    <p className="text-xs text-blue-700">
+                    <p className="text-xs text-blue-700 dark:text-blue-400">
                       Secure payment processing. Supports international cards, wallets, and net banking.
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <h3 className="font-semibold text-green-900 mb-4">🌟 How Your Support Helps</h3>
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
+                  <h3 className="font-semibold text-green-900 dark:text-green-300 mb-4">🌟 How Your Support Helps</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Coffee className="w-4 h-4" />
                         <span className="text-sm">Server costs and infrastructure</span>
                       </div>
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Zap className="w-4 h-4" />
                         <span className="text-sm">New OSINT tool integrations</span>
                       </div>
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Shield className="w-4 h-4" />
                         <span className="text-sm">Enhanced security features</span>
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Download className="w-4 h-4" />
                         <span className="text-sm">Mobile app development</span>
                       </div>
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Users className="w-4 h-4" />
                         <span className="text-sm">Community support and documentation</span>
                       </div>
-                      <div className="flex items-center gap-2 text-green-800">
+                      <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
                         <Star className="w-4 h-4" />
                         <span className="text-sm">Regular updates and improvements</span>
                       </div>
@@ -629,29 +650,29 @@ function About() {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-3">💡 Other Ways to Support</h3>
                   <div className="space-y-3 text-gray-700 dark:text-gray-300">
                     <div className="flex items-start gap-2">
-                      <Star className="w-4 h-4 text-yellow-500 mt-0.5" />
+                      <Star className="w-4 h-4 text-yellow-500 dark:text-yellow-400 mt-0.5" />
                       <span className="text-sm">Star the project on GitHub to show your appreciation</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Users className="w-4 h-4 text-blue-500 mt-0.5" />
+                      <Users className="w-4 h-4 text-blue-500 dark:text-blue-400 mt-0.5" />
                       <span className="text-sm">Share InfoScope with the OSINT and cybersecurity community</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Github className="w-4 h-4 text-gray-600 mt-0.5" />
+                      <Github className="w-4 h-4 text-gray-600 dark:text-gray-400 mt-0.5" />
                       <span className="text-sm">Contribute code, report bugs, or suggest new features</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Globe className="w-4 h-4 text-green-500 mt-0.5" />
+                      <Globe className="w-4 h-4 text-green-500 dark:text-green-400 mt-0.5" />
                       <span className="text-sm">Write blog posts or tutorials about OSINT investigations</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-center text-gray-600">
+                <div className="text-center text-gray-600 dark:text-gray-400">
                   <p className="text-sm">
                     Every contribution, no matter the size, makes a difference. Thank you for supporting 
                     open source OSINT tools and helping make digital investigations more accessible to everyone.
@@ -664,26 +685,26 @@ function About() {
             {activeTab === 'legal' && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <Scale className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                  <Scale className="w-16 h-16 text-blue-500 dark:text-blue-400 mx-auto mb-4" />
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Legal Information</h2>
-                  <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                     InfoScope operates under a comprehensive legal framework ensuring compliance, 
                     privacy protection, and ethical OSINT practices.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-green-600 dark:bg-green-500 rounded-lg flex items-center justify-center">
                         <Shield className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-green-900">Open Source License</h3>
+                      <h3 className="font-semibold text-green-900 dark:text-green-300">Open Source License</h3>
                     </div>
-                    <p className="text-green-700 mb-4">
+                    <p className="text-green-700 dark:text-green-400 mb-4">
                       Licensed under Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)
                     </p>
-                    <ul className="space-y-2 text-sm text-green-600">
+                    <ul className="space-y-2 text-sm text-green-600 dark:text-green-400">
                       <li>• Free to use, modify, and distribute</li>
                       <li>• Attribution required</li>
                       <li>• Derivatives must use same license</li>
@@ -691,17 +712,17 @@ function About() {
                     </ul>
                   </div>
 
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                  <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-purple-600 dark:bg-purple-500 rounded-lg flex items-center justify-center">
                         <Shield className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-purple-900">Privacy Protection</h3>
+                      <h3 className="font-semibold text-purple-900 dark:text-purple-300">Privacy Protection</h3>
                     </div>
-                    <p className="text-purple-700 mb-4">
+                    <p className="text-purple-700 dark:text-purple-400 mb-4">
                       Privacy-by-design with minimal data collection and strong user control
                     </p>
-                    <ul className="space-y-2 text-sm text-purple-600">
+                    <ul className="space-y-2 text-sm text-purple-600 dark:text-purple-400">
                       <li>• GDPR compliant</li>
                       <li>• Local data storage priority</li>
                       <li>• No tracking or analytics by default</li>
@@ -709,17 +730,17 @@ function About() {
                     </ul>
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
                         <Scale className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-blue-900">Terms of Service</h3>
+                      <h3 className="font-semibold text-blue-900 dark:text-blue-300">Terms of Service</h3>
                     </div>
-                    <p className="text-blue-700 mb-4">
+                    <p className="text-blue-700 dark:text-blue-400 mb-4">
                       Clear guidelines for ethical and legal OSINT practices
                     </p>
-                    <ul className="space-y-2 text-sm text-blue-600">
+                    <ul className="space-y-2 text-sm text-blue-600 dark:text-blue-400">
                       <li>• Ethical use requirements</li>
                       <li>• Legal compliance guidelines</li>
                       <li>• User responsibilities</li>
@@ -727,17 +748,17 @@ function About() {
                     </ul>
                   </div>
 
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                  <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center">
+                      <div className="w-8 h-8 bg-orange-600 dark:bg-orange-500 rounded-lg flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-orange-900">Compliance</h3>
+                      <h3 className="font-semibold text-orange-900 dark:text-orange-300">Compliance</h3>
                     </div>
-                    <p className="text-orange-700 mb-4">
+                    <p className="text-orange-700 dark:text-orange-400 mb-4">
                       Adherence to international standards and regulations
                     </p>
-                    <ul className="space-y-2 text-sm text-orange-600">
+                    <ul className="space-y-2 text-sm text-orange-600 dark:text-orange-400">
                       <li>• GDPR compliance framework</li>
                       <li>• Security best practices</li>
                       <li>• Legal framework adherence</li>
@@ -749,23 +770,23 @@ function About() {
                 <div className="text-center">
                   <button
                     onClick={() => setShowLegalDocs(true)}
-                    className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className="inline-flex items-center gap-2 bg-gray-900 dark:bg-gray-100 hover:bg-gray-800 dark:hover:bg-gray-200 text-white dark:text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     <Scale className="w-4 h-4" />
                     View Complete Legal Documentation
                   </button>
-                  <p className="text-sm text-gray-500 mt-3">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
                     Access comprehensive legal documentation including privacy policy, terms of service, 
                     compliance framework, and licensing details.
                   </p>
                 </div>
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6">
                   <div className="flex items-start gap-3">
-                    <ExternalLink className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <ExternalLink className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                     <div>
-                      <h3 className="font-semibold text-yellow-900 mb-2">Important Notice</h3>
-                      <p className="text-yellow-800 text-sm">
+                      <h3 className="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">Important Notice</h3>
+                      <p className="text-yellow-800 dark:text-yellow-400 text-sm">
                         While InfoScope provides tools for OSINT investigations, users are solely responsible 
                         for ensuring their activities comply with applicable laws and regulations. Always 
                         consult with legal counsel when conducting sensitive investigations.

@@ -1,0 +1,46 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://infoscope-osint.web.app/sitemap.xml
+
+# Allow crawling of all important pages
+Allow: /tools
+Allow: /investigation
+Allow: /profile
+Allow: /browser
+Allow: /about
+
+# Disallow crawling of sensitive or unnecessary files
+Disallow: /static/
+Disallow: /*.json$
+Disallow: /manifest.json
+Disallow: /sw.js
+
+# Crawl delay (be respectful to server resources)
+Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Block malicious bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

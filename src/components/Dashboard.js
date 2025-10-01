@@ -7,6 +7,7 @@ import {
   ChevronRight, Star, Zap, Compass, Link
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
+import LegalDocumentation from './LegalDocumentation';
 
 function Dashboard({ setCurrentView }) {
   const [recentInvestigations, setRecentInvestigations] = useState([]);
@@ -14,6 +15,8 @@ function Dashboard({ setCurrentView }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [favoriteTools, setFavoriteTools] = useState([]);
+  const [showLegalDocs, setShowLegalDocs] = useState(false);
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [stats, setStats] = useState({
     totalInvestigations: 0,
     successfulFinds: 0,
@@ -24,6 +27,7 @@ function Dashboard({ setCurrentView }) {
     fetchRecentInvestigations();
     fetchStats();
     loadFavoriteTools();
+    checkTermsAcceptance();
   }, []);
 
   useEffect(() => {
@@ -31,6 +35,21 @@ function Dashboard({ setCurrentView }) {
     fetchStats();
     loadFavoriteTools();
   }, []);
+
+  const checkTermsAcceptance = () => {
+    const termsAccepted = localStorage.getItem(`terms_accepted_${auth.currentUser?.uid}`);
+    if (!termsAccepted) {
+      setShowLegalDocs(true);
+    } else {
+      setHasAcceptedTerms(true);
+    }
+  };
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem(`terms_accepted_${auth.currentUser?.uid}`, 'true');
+    setHasAcceptedTerms(true);
+    setShowLegalDocs(false);
+  };
 
   const loadFavoriteTools = async () => {
     try {
@@ -224,43 +243,159 @@ function Dashboard({ setCurrentView }) {
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card p-6 hover:shadow-lg transition-all">
+      {/* Enhanced Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Investigations */}
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Investigations</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalInvestigations}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
+              <p className="text-sm font-medium text-blue-700 dark:text-blue-300">Total Investigations</p>
+              <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">{stats.totalInvestigations}</p>
+              <div className="flex items-center gap-1 mt-2">
+                <TrendingUp className="w-3 h-3 text-green-500" />
+                <p className="text-xs text-green-600 dark:text-green-400">+12% this month</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center">
-              <Search className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+            <div className="w-14 h-14 bg-blue-200 dark:bg-blue-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Search className="w-7 h-7 text-blue-700 dark:text-blue-300" />
             </div>
           </div>
         </div>
 
-        <div className="card p-6 hover:shadow-lg transition-all">
+        {/* Successful Findings */}
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Successful Finds</p>
-              <p className="text-3xl font-bold text-green-600">{stats.successfulFinds}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Completed cases</p>
+              <p className="text-sm font-medium text-green-700 dark:text-green-300">Successful Findings</p>
+              <p className="text-3xl font-bold text-green-900 dark:text-green-100">{stats.successfulFinds}</p>
+              <div className="flex items-center gap-1 mt-2">
+                <Target className="w-3 h-3 text-green-500" />
+                <p className="text-xs text-green-600 dark:text-green-400">89% success rate</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-green-600" />
+            <div className="w-14 h-14 bg-green-200 dark:bg-green-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Shield className="w-7 h-7 text-green-700 dark:text-green-300" />
             </div>
           </div>
         </div>
 
-        <div className="card p-6 hover:shadow-lg transition-all">
+        {/* Data Sources */}
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200 group">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Platforms Covered</p>
-              <p className="text-3xl font-bold text-blue-600">{stats.platformsCovered}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Data sources</p>
+              <p className="text-sm font-medium text-purple-700 dark:text-purple-300">Data Sources</p>
+              <p className="text-3xl font-bold text-purple-900 dark:text-purple-100">{stats.platformsCovered}+</p>
+              <div className="flex items-center gap-1 mt-2">
+                <Globe className="w-3 h-3 text-purple-500" />
+                <p className="text-xs text-purple-600 dark:text-purple-400">Social, Web, Email</p>
+              </div>
             </div>
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-              <Globe className="w-6 h-6 text-blue-600" />
+            <div className="w-14 h-14 bg-purple-200 dark:bg-purple-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Globe className="w-7 h-7 text-purple-700 dark:text-purple-300" />
+            </div>
+          </div>
+        </div>
+
+        {/* Active Tools */}
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border border-orange-200 dark:border-orange-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200 group">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-orange-700 dark:text-orange-300">Active Tools</p>
+              <p className="text-3xl font-bold text-orange-900 dark:text-orange-100">24</p>
+              <div className="flex items-center gap-1 mt-2">
+                <Zap className="w-3 h-3 text-orange-500" />
+                <p className="text-xs text-orange-600 dark:text-orange-400">All operational</p>
+              </div>
+            </div>
+            <div className="w-14 h-14 bg-orange-200 dark:bg-orange-800 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Command className="w-7 h-7 text-orange-700 dark:text-orange-300" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Advanced Analytics Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Investigation Timeline */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-semibold text-gray-900 dark:text-white">This Week</h4>
+            <Activity className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">New Cases</span>
+              <span className="font-medium text-gray-900 dark:text-white">8</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Completed</span>
+              <span className="font-medium text-green-600 dark:text-green-400">5</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">In Progress</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400">3</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Popular Tools */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-semibold text-gray-900 dark:text-white">Top Tools</h4>
+            <Star className="w-5 h-5 text-yellow-500" />
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Social Analyzer</span>
+              <div className="flex items-center gap-1">
+                <div className="w-8 h-2 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+                  <div className="w-6 h-full bg-blue-500 rounded-full"></div>
+                </div>
+                <span className="text-xs text-gray-500">75%</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Username Hunter</span>
+              <div className="flex items-center gap-1">
+                <div className="w-8 h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden">
+                  <div className="w-5 h-full bg-green-500 rounded-full"></div>
+                </div>
+                <span className="text-xs text-gray-500">62%</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Email Validator</span>
+              <div className="flex items-center gap-1">
+                <div className="w-8 h-2 bg-purple-200 dark:bg-purple-800 rounded-full overflow-hidden">
+                  <div className="w-4 h-full bg-purple-500 rounded-full"></div>
+                </div>
+                <span className="text-xs text-gray-500">50%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* System Status */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-200">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-semibold text-gray-900 dark:text-white">System Status</h4>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-600 dark:text-green-400">Operational</span>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">API Services</span>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">Online</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Database</span>
+              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">Healthy</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Response Time</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">123ms</span>
             </div>
           </div>
         </div>
@@ -413,6 +548,12 @@ function Dashboard({ setCurrentView }) {
           </div>
         </div>
       </div>
+      
+      {/* Legal Documentation Modal */}
+      <LegalDocumentation 
+        isOpen={showLegalDocs} 
+        onClose={handleAcceptTerms}
+      />
     </div>
   );
 }

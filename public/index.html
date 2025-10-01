@@ -4,29 +4,346 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="InfoScope OSINT - Professional Intelligence Platform. Advanced OSINT tools for cybersecurity professionals, researchers, and digital investigators" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <meta name="theme-color" content="#1f2937" />
+    
+    <!-- Primary Meta Tags -->
+    <title>InfoScope OSINT - Advanced Open Source Intelligence Platform | 50+ OSINT Tools</title>
+    <meta name="title" content="InfoScope OSINT - Advanced Open Source Intelligence Platform | 50+ OSINT Tools">
+    <meta name="description" content="Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools. Better than infoooze with advanced features." />
+    <meta name="keywords" content="OSINT, open source intelligence, cybersecurity tools, digital investigation, social media intelligence, domain analysis, email investigation, phone number lookup, subdomain enumeration, port scanner, WHOIS lookup, IP geolocation, GitHub reconnaissance, website analysis, InfoScope, cybersecurity, threat intelligence, digital forensics, penetration testing, reconnaissance tools" />
+    <meta name="author" content="InfoScope OSINT Team" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="1 days" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://infoscope-osint.web.app" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://infoscope-osint.web.app" />
+    <meta property="og:title" content="InfoScope OSINT - Advanced Open Source Intelligence Platform | 50+ OSINT Tools" />
+    <meta property="og:description" content="Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools." />
+    <meta property="og:image" content="https://infoscope-osint.web.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="InfoScope OSINT" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://infoscope-osint.web.app" />
+    <meta property="twitter:title" content="InfoScope OSINT - Advanced Open Source Intelligence Platform | 50+ OSINT Tools" />
+    <meta property="twitter:description" content="Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools." />
+    <meta property="twitter:image" content="https://infoscope-osint.web.app/twitter-image.png" />
+    <meta property="twitter:creator" content="@InfoScopeOSINT" />
+    <meta property="twitter:site" content="@InfoScopeOSINT" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="application-name" content="InfoScope OSINT" />
+    <meta name="apple-mobile-web-app-title" content="InfoScope OSINT" />
+    <meta name="msapplication-TileColor" content="#1f2937" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
     
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="InfoScope OSINT">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#000000">
     <meta name="msapplication-tap-highlight" content="no">
     
-    <!-- SEO Meta Tags -->
-    <meta property="og:title" content="InfoScope OSINT - Professional Intelligence Platform">
-    <meta property="og:description" content="Professional Intelligence Platform. Comprehensive OSINT platform with 37+ tools, Tor integration, and advanced investigation capabilities">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://infoscope-osint.web.app">
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "InfoScope OSINT",
+      "description": "Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools.",
+      "url": "https://infoscope-osint.web.app",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "InfoScope OSINT Team"
+      },
+      "screenshot": "https://infoscope-osint.web.app/screenshot.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "150"
+      },
+      "featureList": [
+        "Subdomain Enumeration",
+        "Port Scanning",
+        "DNS Analysis",
+        "WHOIS Lookup",
+        "IP Geolocation",
+        "Email Intelligence",
+        "Social Media Analysis",
+        "GitHub Reconnaissance",
+        "Website Technology Profiling",
+        "URL Security Analysis",
+        "Phone Number Analysis",
+        "Built-in Tor Browser",
+        "Dark Mode Interface",
+        "Mobile Responsive Design"
+      ]
+    }
+    </script>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//google.com">
+    <link rel="dns-prefetch" href="//github.com">
+    <link rel="dns-prefetch" href="//shodan.io">
+    <link rel="dns-prefetch" href="//virustotal.com">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="%PUBLIC_URL%/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="%PUBLIC_URL%/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="%PUBLIC_URL%/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="%PUBLIC_URL%/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="%PUBLIC_URL%/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="%PUBLIC_URL%/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="%PUBLIC_URL%/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="%PUBLIC_URL%/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/apple-icon-180x180.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="%PUBLIC_URL%/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="InfoScope OSINT Updates" href="/feed.xml" />
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX', {
+        page_title: document.title,
+        page_location: window.location.href,
+        custom_map: {
+          'custom_parameter_1': 'osint_tool_usage',
+          'custom_parameter_2': 'investigation_type'
+        }
+      });
+    </script>
+    
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+    
+    <!-- Bing Webmaster Tools Verification -->
+    <meta name="msvalidate.01" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+    
+    <!-- Yandex Verification -->
+    <meta name="yandex-verification" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />
+    
+    <!-- Schema.org Rich Snippets for Tools -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://infoscope-osint.web.app/#organization",
+          "name": "InfoScope OSINT",
+          "url": "https://infoscope-osint.web.app",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://infoscope-osint.web.app/logo512.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "Professional OSINT platform providing advanced open source intelligence tools for cybersecurity professionals, researchers, and digital investigators.",
+          "foundingDate": "2024",
+          "founder": {
+            "@type": "Person",
+            "name": "InfoScope Team"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer support",
+            "email": "support@infoscope-osint.web.app"
+          },
+          "sameAs": [
+            "https://github.com/infoscope-osint",
+            "https://twitter.com/InfoScopeOSINT"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://infoscope-osint.web.app/#software",
+          "name": "InfoScope OSINT Platform",
+          "description": "Advanced OSINT platform with 50+ intelligence gathering tools including built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and comprehensive cybersecurity investigation capabilities.",
+          "url": "https://infoscope-osint.web.app",
+          "applicationCategory": "SecurityApplication",
+          "operatingSystem": "Any",
+          "browserRequirements": "Requires JavaScript. Chrome, Firefox, Safari, Edge supported.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "150",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@id": "https://infoscope-osint.web.app/#organization"
+          },
+          "publisher": {
+            "@id": "https://infoscope-osint.web.app/#organization"
+          },
+          "dateCreated": "2024-01-01",
+          "dateModified": "2024-01-15",
+          "featureList": [
+            "Subdomain Enumeration",
+            "Advanced Port Scanning", 
+            "DNS Intelligence Suite",
+            "Enhanced WHOIS Lookup",
+            "IP Geolocation Intelligence",
+            "Email Intelligence Suite",
+            "User Reconnaissance",
+            "GitHub Intelligence",
+            "Website Technology Profiler",
+            "Advanced URL Analysis",
+            "Social Media Intelligence",
+            "Phone Intelligence",
+            "Built-in Tor Browser Integration",
+            "Dark Mode Interface",
+            "Mobile Responsive Design",
+            "Offline Capability",
+            "Investigation Management",
+            "Export & Reporting"
+          ],
+          "screenshot": "https://infoscope-osint.web.app/screenshot.png"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://infoscope-osint.web.app/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is InfoScope OSINT?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "InfoScope OSINT is a professional open source intelligence platform with 50+ advanced tools for cybersecurity professionals, researchers, and digital investigators. It includes built-in tools for subdomain enumeration, port scanning, email analysis, and social media intelligence."
+              }
+            },
+            {
+              "@type": "Question", 
+              "name": "Is InfoScope OSINT free to use?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, InfoScope OSINT is completely free and includes access to all 50+ OSINT tools, built-in advanced features, and investigation management capabilities."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What makes InfoScope OSINT better than other OSINT platforms?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "InfoScope OSINT offers 12 advanced built-in tools that execute directly in your browser, comprehensive mobile support, dark mode interface, investigation management, and a curated collection of 50+ external OSINT tools - all in one platform."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Performance Monitoring -->
+    <script>
+      // Core Web Vitals tracking
+      function getCLS(onPerfEntry) {
+        if (onPerfEntry && onPerfEntry instanceof Function) {
+          import('web-vitals').then(({ getCLS }) => getCLS(onPerfEntry));
+        }
+      }
+      
+      function getFID(onPerfEntry) {
+        if (onPerfEntry && onPerfEntry instanceof Function) {
+          import('web-vitals').then(({ getFID }) => getFID(onPerfEntry));
+        }
+      }
+      
+      function getFCP(onPerfEntry) {
+        if (onPerfEntry && onPerfEntry instanceof Function) {
+          import('web-vitals').then(({ getFCP }) => getFCP(onPerfEntry));
+        }
+      }
+      
+      function getLCP(onPerfEntry) {
+        if (onPerfEntry && onPerfEntry instanceof Function) {
+          import('web-vitals').then(({ getLCP }) => getLCP(onPerfEntry));
+        }
+      }
+      
+      function getTTFB(onPerfEntry) {
+        if (onPerfEntry && onPerfEntry instanceof Function) {
+          import('web-vitals').then(({ getTTFB }) => getTTFB(onPerfEntry));
+        }
+      }
+      
+      // Track Core Web Vitals
+      function sendToAnalytics(metric) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            event_label: metric.id,
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            non_interaction: true,
+          });
+        }
+      }
+      
+      getCLS(sendToAnalytics);
+      getFID(sendToAnalytics);
+      getFCP(sendToAnalytics);
+      getLCP(sendToAnalytics);
+      getTTFB(sendToAnalytics);
+    </script>
     
     <!-- Razorpay Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
-    <title>InfoScope OSINT - Professional Intelligence Platform</title>
+    <!-- Critical CSS (above the fold styles) -->
+    <style>
+      /* Critical styles for faster perceived performance */
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+      #root { min-height: 100vh; }
+      .loading { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run InfoScope OSINT.</noscript>

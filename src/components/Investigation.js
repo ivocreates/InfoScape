@@ -26,7 +26,11 @@ import {
   RefreshCw, 
   Database, 
   Target, 
-  Layers
+  Layers,
+  MapPin,
+  Type,
+  Tag,
+  Settings
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -319,13 +323,19 @@ function buildAdvancedQuery(values, preset = null, useAND = false, engineKey = '
 function EnhancedField({ labelText, children, hint, error, required = false }) {
   return (
     <div className="space-y-2">
-      <label className={`text-sm font-medium ${error ? 'text-red-700' : 'text-gray-700'}`}>
-        {labelText}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+      {labelText && (
+        <label className={`text-sm font-semibold ${
+          error 
+            ? 'text-red-700 dark:text-red-400' 
+            : 'text-gray-900 dark:text-gray-200'
+        }`}>
+          {labelText}
+          {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
+        </label>
+      )}
       {children}
-      {error && <p className="text-xs text-red-600">{error}</p>}
-      {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
+      {error && <p className="text-xs text-red-600 dark:text-red-400 font-medium">{error}</p>}
+      {hint && !error && <p className="text-xs text-gray-500 dark:text-gray-400">{hint}</p>}
     </div>
   );
 }
@@ -357,6 +367,8 @@ function Investigation() {
   const [useAND, setUseAND] = useState(false);
   const [saving, setSaving] = useState(false);
   const [investigationName, setInvestigationName] = useState("");
+  const [investigationDescription, setInvestigationDescription] = useState("");
+  const [investigationNotes, setInvestigationNotes] = useState("");
   const [searchHistory, setSearchHistory] = useState([]);
   const [activeSearches, setActiveSearches] = useState([]);
   const [errors, setErrors] = useState({});
@@ -538,6 +550,8 @@ function Investigation() {
 
       const investigationData = {
         name: investigationName,
+        description: investigationDescription,
+        notes: investigationNotes,
         targetName: values.fullName || values.username || values.email || 'Unknown',
         searchParameters: values,
         query: query,
@@ -556,6 +570,8 @@ function Investigation() {
       await addDoc(collection(db, `users/${auth.currentUser.uid}/investigations`), investigationData);
       alert('Investigation saved successfully!');
       setInvestigationName('');
+      setInvestigationDescription('');
+      setInvestigationNotes('');
     } catch (error) {
       console.error('Error saving investigation:', error);
       alert('Failed to save investigation. Please try again.');
@@ -586,6 +602,8 @@ function Investigation() {
     });
     setPreset(null);
     setInvestigationName("");
+    setInvestigationDescription("");
+    setInvestigationNotes("");
     setSearchHistory([]);
     setActiveSearches([]);
     setResults([]);
@@ -602,164 +620,215 @@ function Investigation() {
   ].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 p-6">
       <div className="mx-auto max-w-7xl">
         {/* Enhanced Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                 Advanced OSINT Investigation Engine
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
                 Professional-grade open source intelligence gathering with multi-engine search capabilities
               </p>
             </div>
             
-            <div className="flex items-center gap-2">
-              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                riskLevel === 'low' ? 'bg-green-100 text-green-800' :
-                riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                riskLevel === 'high' ? 'bg-red-100 text-red-800' :
-                'bg-purple-100 text-purple-800'
+            <div className="flex items-center gap-3">
+              <div className={`px-4 py-2 rounded-xl text-sm font-semibold shadow-sm border ${
+                riskLevel === 'low' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-700' :
+                riskLevel === 'medium' ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-700' :
+                riskLevel === 'high' ? 'bg-red-50 text-red-800 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-700' :
+                'bg-purple-50 text-purple-800 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-700'
               }`}>
                 Risk: {riskLevels[riskLevel].label}
               </div>
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="btn-secondary text-sm"
+                className="btn-secondary text-sm font-medium hover:shadow-md transition-all duration-200"
               >
-                <Filter className="w-4 h-4 mr-1" />
-                {showAdvanced ? 'Basic' : 'Advanced'}
+                <Filter className="w-4 h-4 mr-2" />
+                {showAdvanced ? 'Basic Mode' : 'Advanced Mode'}
               </button>
               <button
                 onClick={resetForm}
-                className="btn-secondary text-sm"
+                className="btn-secondary text-sm font-medium hover:shadow-md transition-all duration-200"
               >
-                <Zap className="w-4 h-4 mr-1" />
-                Reset
+                <Zap className="w-4 h-4 mr-2" />
+                Reset All
               </button>
             </div>
           </div>
 
           {/* Risk Warning */}
           {(riskLevel === 'high' || riskLevel === 'critical') && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-red-900">High Risk Investigation</h3>
-                  <p className="text-sm text-red-800 mt-1">
-                    This search may access sensitive or confidential information. Ensure you have proper authorization and comply with all applicable laws and regulations.
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-6 mb-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-red-900 dark:text-red-200 text-lg">High Risk Investigation Detected</h3>
+                  <p className="text-sm text-red-800 dark:text-red-300 mt-2 leading-relaxed">
+                    This search may access sensitive or confidential information. Ensure you have proper authorization and comply with all applicable laws and regulations. Consider ethical implications and privacy rights.
                   </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-red-100 dark:bg-red-800/30 text-red-800 dark:text-red-300">
+                      Legal Compliance Required
+                    </span>
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-red-100 dark:bg-red-800/30 text-red-800 dark:text-red-300">
+                      Authorization Needed
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Search Engine & Logic Selection */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Search Engine:</span>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(osintEngines).map(([key, engineData]) => (
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6 shadow-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+              <div className="flex flex-col gap-3 flex-1">
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">Search Engine:</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(osintEngines).map(([key, engineData]) => (
+                    <button
+                      key={key}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                        engine === key 
+                          ? "bg-black text-white border-black shadow-md dark:bg-white dark:text-black dark:border-white" 
+                          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                      }`}
+                      onClick={() => setEngine(key)}
+                      title={`${engineData.name} - Rate limit: ${engineData.rateLimit}/hour`}
+                    >
+                      {engineData.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">Query Logic:</span>
+                </div>
+                <div className="flex gap-2">
                   <button
-                    key={key}
-                    className={`chip text-xs transition-all duration-200 ${
-                      engine === key ? "chip-primary" : "chip-secondary hover:bg-gray-200"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                      !useAND 
+                        ? "bg-black text-white border-black shadow-md dark:bg-white dark:text-black dark:border-white" 
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
                     }`}
-                    onClick={() => setEngine(key)}
-                    title={`${engineData.name} - Rate limit: ${engineData.rateLimit}/hour`}
+                    onClick={() => setUseAND(false)}
                   >
-                    {engineData.name}
+                    OR (Broad Search)
                   </button>
-                ))}
+                  <button
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                      useAND 
+                        ? "bg-black text-white border-black shadow-md dark:bg-white dark:text-black dark:border-white" 
+                        : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    }`}
+                    onClick={() => setUseAND(true)}
+                  >
+                    AND (Precise Search)
+                  </button>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Logic:</span>
-              <div className="flex gap-2">
-                <button
-                  className={`chip text-xs transition-all duration-200 ${
-                    !useAND ? "chip-primary" : "chip-secondary hover:bg-gray-200"
-                  }`}
-                  onClick={() => setUseAND(false)}
-                >
-                  OR (Broad)
-                </button>
-                <button
-                  className={`chip text-xs transition-all duration-200 ${
-                    useAND ? "chip-primary" : "chip-secondary hover:bg-gray-200"
-                  }`}
-                  onClick={() => setUseAND(true)}
-                >
-                  AND (Precise)
-                </button>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <input
-                type="checkbox"
-                id="multiEngine"
-                checked={multiEngine}
-                onChange={(e) => setMultiEngine(e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="multiEngine" className="text-sm font-medium text-gray-700">
-                Multi-Engine Search
-              </label>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Search className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">Multi-Engine:</span>
+                </div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={multiEngine}
+                    onChange={(e) => setMultiEngine(e.target.checked)}
+                    className="w-4 h-4 text-black bg-gray-100 border-gray-300 rounded focus:ring-black dark:focus:ring-white dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    Search All Engines
+                  </span>
+                </label>
+              </div>
             </div>
           </div>
 
           {/* Enhanced Dorking Templates */}
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Investigation Templates:</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <Shield className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Investigation Templates</h3>
+              <div className="flex-1 h-px bg-gradient-to-r from-gray-300 to-transparent dark:from-gray-600"></div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {advancedTemplates.map((template) => {
                 const Icon = template.icon;
                 const isSelected = preset === template.id;
                 return (
                   <button
                     key={template.id}
-                    className={`p-4 rounded-lg border text-left transition-all duration-200 relative group ${
+                    className={`group p-5 rounded-xl border-2 text-left transition-all duration-300 relative overflow-hidden ${
                       isSelected 
-                        ? "bg-black text-white border-black shadow-lg transform scale-105" 
-                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                        ? "bg-black text-white border-black shadow-lg transform scale-105 dark:bg-white dark:text-black dark:border-white" 
+                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-xl text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-750 hover:-translate-y-1"
                     }`}
                     onClick={() => setPreset(preset === template.id ? null : template.id)}
                     title={template.description}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <Icon className={`w-5 h-5 flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-700'}`} />
-                      <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`p-2 rounded-lg ${
+                        isSelected 
+                          ? 'bg-white/20 dark:bg-black/20' 
+                          : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-gray-200 dark:group-hover:bg-gray-600'
+                      }`}>
+                        <Icon className={`w-5 h-5 ${
+                          isSelected 
+                            ? 'text-white dark:text-black' 
+                            : 'text-gray-700 dark:text-gray-300'
+                        }`} />
+                      </div>
+                      <span className={`text-sm font-bold ${
+                        isSelected 
+                          ? 'text-white dark:text-black' 
+                          : 'text-gray-900 dark:text-white'
+                      }`}>
                         {template.name}
                       </span>
                     </div>
-                    <p className={`text-xs leading-relaxed mb-3 ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-xs leading-relaxed mb-4 ${
+                      isSelected 
+                        ? 'text-gray-300 dark:text-gray-700' 
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}>
                       {template.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         template.risk === 'low' ? 
-                          (isSelected ? 'bg-green-600 text-green-100' : 'bg-green-100 text-green-800') :
+                          (isSelected ? 'bg-emerald-500/20 text-emerald-200 dark:bg-emerald-200/20 dark:text-emerald-700' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300') :
                         template.risk === 'medium' ? 
-                          (isSelected ? 'bg-yellow-600 text-yellow-100' : 'bg-yellow-100 text-yellow-800') :
+                          (isSelected ? 'bg-amber-500/20 text-amber-200 dark:bg-amber-200/20 dark:text-amber-700' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300') :
                         template.risk === 'high' ? 
-                          (isSelected ? 'bg-red-600 text-red-100' : 'bg-red-100 text-red-800') :
-                          (isSelected ? 'bg-purple-600 text-purple-100' : 'bg-purple-100 text-purple-800')
+                          (isSelected ? 'bg-red-500/20 text-red-200 dark:bg-red-200/20 dark:text-red-700' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300') :
+                          (isSelected ? 'bg-purple-500/20 text-purple-200 dark:bg-purple-200/20 dark:text-purple-700' : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300')
                       }`}>
-                        {template.risk}
+                        {template.risk.toUpperCase()}
                       </span>
                       {isSelected && (
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                        <div className="w-3 h-3 bg-white dark:bg-black rounded-full animate-pulse"></div>
                       )}
                     </div>
                     
-                    {/* Hover effect indicator */}
+                    {/* Subtle hover effect */}
                     {!isSelected && (
-                      <div className="absolute inset-0 bg-gray-900 opacity-0 group-hover:opacity-5 rounded-lg transition-opacity"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 dark:to-white/5 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300 pointer-events-none"></div>
                     )}
                   </button>
                 );
@@ -768,34 +837,36 @@ function Investigation() {
             
             {/* Template Selection Helper */}
             {preset && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2 text-blue-800">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                  <span className="text-sm font-medium">
-                    {advancedTemplates.find(t => t.id === preset)?.name} template active
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
+                <div className="flex items-center gap-3 text-blue-800 dark:text-blue-300">
+                  <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-semibold">
+                    {advancedTemplates.find(t => t.id === preset)?.name} template is active
                   </span>
                 </div>
-                <p className="text-xs text-blue-700 mt-1">
-                  This template will modify your search query with specialized operators and filters.
+                <p className="text-xs text-blue-700 dark:text-blue-400 mt-2 leading-relaxed">
+                  This template will automatically apply specialized search operators and filters to optimize your investigation query.
                 </p>
               </div>
             )}
           </div>
         </header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           {/* Identity & Context - Left Column */}
           <section className="xl:col-span-4">
-            <div className="card p-6 space-y-6">
+            <div className="card p-6 space-y-8 shadow-md">
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
-                  <Target className="w-5 h-5" />
-                  Target Information
-                </h2>
-                <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-black dark:bg-white rounded-lg">
+                    <Target className="w-5 h-5 text-white dark:text-black" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Target Information</h2>
+                </div>
+                <div className="space-y-5">
                   <EnhancedField labelText="Full Name" hint="Exact name for precise matching" required>
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder='e.g., "John Smith"'
                       value={values.fullName}
                       onChange={(e) => update("fullName", e.target.value)}
@@ -803,7 +874,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Username / Handle" hint="Social media handles, forum names">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="e.g., johnsmith123, @john_smith"
                       value={values.username}
                       onChange={(e) => update("username", e.target.value)}
@@ -811,7 +882,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Email Address" hint="Primary or known email addresses">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="e.g., john@example.com"
                       value={values.email}
                       onChange={(e) => update("email", e.target.value)}
@@ -819,7 +890,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Phone Number" hint="Include country code if known">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="e.g., +1 555-123-4567"
                       value={values.phone}
                       onChange={(e) => update("phone", e.target.value)}
@@ -828,12 +899,17 @@ function Investigation() {
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Context Information</h2>
-                <div className="space-y-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-black dark:bg-white rounded-lg">
+                    <MapPin className="w-5 h-5 text-white dark:text-black" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Context Information</h2>
+                </div>
+                <div className="space-y-5">
                   <EnhancedField labelText="Location" hint="City, state, country - be specific">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="New York, NY, USA"
                       value={values.location}
                       onChange={(e) => update("location", e.target.value)}
@@ -841,7 +917,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Company / Organization" hint="Current or previous employers">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="Acme Corporation, Google Inc."
                       value={values.company}
                       onChange={(e) => update("company", e.target.value)}
@@ -849,7 +925,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="School / University" hint="Educational institutions attended">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="Harvard University, MIT"
                       value={values.school}
                       onChange={(e) => update("school", e.target.value)}
@@ -860,11 +936,14 @@ function Investigation() {
 
               {/* Display identity chips */}
               {chips.length > 0 && (
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Active Search Terms:</h3>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Tag className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Active Search Terms</h3>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {chips.map((chip, index) => (
-                      <span key={index} className="chip-secondary text-xs">
+                      <span key={index} className="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm border border-gray-200 dark:border-gray-600">
                         {chip}
                         <button
                           onClick={() => {
@@ -880,7 +959,7 @@ function Investigation() {
                             };
                             if (fieldMap[key]) update(fieldMap[key], '');
                           }}
-                          className="ml-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold transition-all duration-200"
+                          className="ml-1 w-5 h-5 flex items-center justify-center text-xs font-bold text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-200"
                         >
                           ×
                         </button>
@@ -894,16 +973,18 @@ function Investigation() {
 
           {/* Operators & Keywords - Middle Column */}
           <section className="xl:col-span-4">
-            <div className="card p-6 space-y-6">
+            <div className="card p-6 space-y-8 shadow-md">
               <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-900 dark:text-white">
-                  <Layers className="w-5 h-5" />
-                  Search Operators
-                </h2>
-                <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-black dark:bg-white rounded-lg">
+                    <Layers className="w-5 h-5 text-white dark:text-black" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Search Operators</h2>
+                </div>
+                <div className="space-y-5">
                   <EnhancedField labelText="Target Sites" hint="Specific domains to search within">
                     <textarea
-                      className="input-field min-h-[72px] resize-none"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 min-h-[80px] resize-none custom-scrollbar"
                       placeholder="linkedin.com, github.com, twitter.com"
                       value={values.sites}
                       onChange={(e) => update("sites", e.target.value)}
@@ -911,7 +992,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="File Types" hint="Document types to search for">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="pdf, docx, xlsx, pptx"
                       value={values.filetypes}
                       onChange={(e) => update("filetypes", e.target.value)}
@@ -919,7 +1000,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="URL Contains (inurl:)" hint="Keywords that must appear in URLs">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="profile, resume, contact, about"
                       value={values.inurl}
                       onChange={(e) => update("inurl", e.target.value)}
@@ -927,7 +1008,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Title Contains (intitle:)" hint="Keywords in page titles">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="resume, cv, portfolio, about"
                       value={values.intitle}
                       onChange={(e) => update("intitle", e.target.value)}
@@ -935,7 +1016,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Text Contains (intext:)" hint="Keywords in page content">
                     <input
-                      className="input-field"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="phone, email, address, contact"
                       value={values.intext}
                       onChange={(e) => update("intext", e.target.value)}
@@ -945,11 +1026,11 @@ function Investigation() {
                   {/* Advanced operators for experienced users */}
                   {showAdvanced && (
                     <>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-4">
                         <EnhancedField labelText="After Date">
                           <input
                             type="date"
-                            className="input-field"
+                            className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             value={values.after}
                             onChange={(e) => update("after", e.target.value)}
                           />
@@ -957,7 +1038,7 @@ function Investigation() {
                         <EnhancedField labelText="Before Date">
                           <input
                             type="date"
-                            className="input-field"
+                            className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             value={values.before}
                             onChange={(e) => update("before", e.target.value)}
                           />
@@ -966,7 +1047,7 @@ function Investigation() {
                       <EnhancedField labelText="Proximity (words apart)" hint="For engines that support proximity search">
                         <input
                           type="number"
-                          className="input-field"
+                          className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                           placeholder="5"
                           min="1"
                           max="20"
@@ -979,12 +1060,17 @@ function Investigation() {
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Keywords</h2>
-                <div className="space-y-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-black dark:bg-white rounded-lg">
+                    <Type className="w-5 h-5 text-white dark:text-black" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Keywords</h2>
+                </div>
+                <div className="space-y-5">
                   <EnhancedField labelText="Include Keywords" hint="Comma or newline separated">
                     <textarea
-                      className="input-field min-h-[72px] resize-none"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 min-h-[80px] resize-none custom-scrollbar"
                       placeholder="portfolio, developer, engineer, consultant"
                       value={values.include}
                       onChange={(e) => update("include", e.target.value)}
@@ -992,7 +1078,7 @@ function Investigation() {
                   </EnhancedField>
                   <EnhancedField labelText="Exclude Keywords" hint="Terms to exclude from results">
                     <textarea
-                      className="input-field min-h-[72px] resize-none"
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 min-h-[80px] resize-none custom-scrollbar"
                       placeholder="footballer, actor, musician, student"
                       value={values.exclude}
                       onChange={(e) => update("exclude", e.target.value)}
@@ -1007,15 +1093,21 @@ function Investigation() {
           <section className="xl:col-span-4">
             <div className="space-y-6">
               {/* Generated Query */}
-              <div className="card p-6">
+              <div className="card p-6 shadow-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-black dark:bg-white rounded-lg">
+                    <Code className="w-5 h-5 text-white dark:text-black" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Generated Query</h3>
+                </div>
                 <EnhancedField 
-                  labelText="Generated Query" 
+                  labelText="" 
                   error={errors.query}
                   hint={`${query.length}/${osintEngines[engine].maxQueryLength} characters`}
                 >
                   <textarea
-                    className={`input-field font-mono text-xs min-h-[120px] resize-none ${
-                      errors.query ? 'border-red-300 focus:ring-red-500' : ''
+                    className={`input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 font-mono text-sm min-h-[140px] resize-none custom-scrollbar ${
+                      errors.query ? 'border-red-300 focus:ring-red-500 dark:border-red-600' : ''
                     }`}
                     value={query}
                     readOnly
@@ -1023,9 +1115,9 @@ function Investigation() {
                   />
                 </EnhancedField>
 
-                <div className="flex flex-wrap gap-2 mt-4">
+                <div className="flex flex-wrap gap-3 mt-6">
                   <button
-                    className="btn-primary flex items-center gap-2"
+                    className="btn-primary flex items-center gap-2 text-sm font-semibold px-6 py-3 shadow-md hover:shadow-lg transition-all duration-200"
                     onClick={() => openEngine(engine, query)}
                     disabled={!query.trim() || errors.query}
                   >
@@ -1034,29 +1126,29 @@ function Investigation() {
                   </button>
                   
                   <button
-                    className="btn-secondary flex items-center gap-2"
+                    className="btn-secondary flex items-center gap-2 text-sm font-semibold px-4 py-3 shadow-md hover:shadow-lg transition-all duration-200"
                     onClick={copyQuery}
                     disabled={!query.trim()}
                   >
                     <Copy className="w-4 h-4" />
-                    Copy
+                    Copy Query
                   </button>
                 </div>
               </div>
 
               {/* Query Variations */}
               {values.fullName && getVariations().length > 0 && (
-                <div className="card p-6 bg-blue-50 border-blue-200">
-                  <h3 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Query Variations
-                  </h3>
-                  <div className="space-y-2">
+                <div className="card p-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 shadow-md">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300">Query Variations</h3>
+                  </div>
+                  <div className="space-y-3">
                     {getVariations().map((variation, index) => (
-                      <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-800 p-2 rounded border border-blue-200 dark:border-blue-600">
-                        <code className="text-xs text-blue-800">{variation}</code>
+                      <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-800 p-3 rounded-lg border border-blue-200 dark:border-blue-600 shadow-sm">
+                        <code className="text-sm text-blue-800 dark:text-blue-300 font-medium">{variation}</code>
                         <button
-                          className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                          className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 transition-colors duration-200"
                           onClick={() => {
                             const variationQuery = buildAdvancedQuery({...values, fullName: variation.replace(/"/g, '')}, preset, useAND, engine);
                             openEngine(engine, variationQuery);
@@ -1072,29 +1164,33 @@ function Investigation() {
 
               {/* Search History */}
               {searchHistory.length > 0 && (
-                <div className="card p-6">
-                  <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    Recent Searches ({searchHistory.length})
-                  </h3>
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className="card p-6 shadow-md">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Clock className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Recent Searches ({searchHistory.length})
+                    </h3>
+                  </div>
+                  <div className="space-y-3 max-h-72 overflow-y-auto custom-scrollbar">
                     {searchHistory.slice(0, 10).map((search) => (
-                      <div key={search.id} className="bg-gray-50 dark:bg-gray-700 p-2 rounded text-xs">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-gray-700">{search.engine}</span>
-                          <div className="flex items-center gap-2">
-                            <span className={`px-1.5 py-0.5 rounded text-xs ${
-                              search.risk === 'low' ? 'bg-green-100 text-green-800' :
-                              search.risk === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                              search.risk === 'high' ? 'bg-red-100 text-red-800' :
-                              'bg-purple-100 text-purple-800'
+                      <div key={search.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-gray-900 dark:text-white text-sm">{search.engine}</span>
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              search.risk === 'low' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' :
+                              search.risk === 'medium' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' :
+                              search.risk === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                              'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
                             }`}>
-                              {search.risk}
+                              {search.risk.toUpperCase()}
                             </span>
-                            <span className="text-gray-500">{new Date(search.timestamp).toLocaleTimeString()}</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                              {new Date(search.timestamp).toLocaleTimeString()}
+                            </span>
                           </div>
                         </div>
-                        <code className="text-gray-600 break-all">{search.query}</code>
+                        <code className="text-gray-700 dark:text-gray-300 text-xs break-all leading-relaxed">{search.query}</code>
                       </div>
                     ))}
                   </div>
@@ -1102,38 +1198,82 @@ function Investigation() {
               )}
 
               {/* Save Investigation */}
-              <div className="card p-6">
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Save Investigation</h3>
-                <EnhancedField labelText="Investigation Name" required>
-                  <input
-                    className="input-field"
-                    placeholder="e.g., John Smith Corporate Background Check"
-                    value={investigationName}
-                    onChange={(e) => setInvestigationName(e.target.value)}
-                  />
-                </EnhancedField>
+              <div className="card p-6 shadow-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <Save className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Save Investigation</h3>
+                </div>
+                
+                <div className="space-y-4">
+                  <EnhancedField labelText="Investigation Name" required>
+                    <input
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                      placeholder="e.g., John Smith Corporate Background Check"
+                      value={investigationName}
+                      onChange={(e) => setInvestigationName(e.target.value)}
+                    />
+                  </EnhancedField>
+                  
+                  <EnhancedField labelText="Description" optional>
+                    <input
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                      placeholder="Brief description of the investigation purpose"
+                      value={investigationDescription}
+                      onChange={(e) => setInvestigationDescription(e.target.value)}
+                    />
+                  </EnhancedField>
+                  
+                  <EnhancedField labelText="Notes" optional>
+                    <textarea
+                      className="input-field dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                      placeholder="Investigation notes, findings, or observations..."
+                      value={investigationNotes}
+                      onChange={(e) => setInvestigationNotes(e.target.value)}
+                      rows="3"
+                      style={{ minHeight: '80px', resize: 'vertical' }}
+                    />
+                  </EnhancedField>
+                </div>
+                
                 <button
-                  className="btn-primary w-full mt-3 flex items-center justify-center gap-2"
+                  className="btn-primary w-full mt-4 flex items-center justify-center gap-2 py-3 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
                   onClick={saveInvestigation}
                   disabled={saving || !investigationName.trim()}
                 >
                   {saving ? <LoadingSpinner size="small" /> : <Save className="w-4 h-4" />}
-                  {saving ? 'Saving...' : 'Save Investigation'}
+                  {saving ? 'Saving Investigation...' : 'Save Investigation'}
                 </button>
               </div>
 
               {/* Ethics & Legal Notice */}
-              <div className="card p-6 bg-amber-50 border-amber-200">
-                <h3 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Ethics & Legal Compliance
-                </h3>
-                <div className="text-sm text-amber-700 space-y-2">
-                  <p>• Only investigate with legitimate purpose and proper authorization</p>
-                  <p>• Respect privacy rights and comply with local laws (GDPR, CCPA, etc.)</p>
-                  <p>• Avoid harassment, stalking, or doxxing activities</p>
-                  <p>• Follow platform terms of service and rate limits</p>
-                  <p>• Document your legal basis for investigation</p>
+              <div className="card p-6 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700 shadow-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-amber-600 dark:bg-amber-500 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-300">Ethics & Legal Compliance</h3>
+                </div>
+                <div className="text-sm text-amber-700 dark:text-amber-300 space-y-3 leading-relaxed">
+                  <div className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <p>Only investigate with legitimate purpose and proper authorization</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <p>Respect privacy rights and comply with local laws (GDPR, CCPA, etc.)</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <p>Avoid harassment, stalking, or doxxing activities</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <p>Follow platform terms of service and rate limits</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-amber-600 dark:bg-amber-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <p>Document your legal basis for investigation</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>InfoScope OSINT Updates</title>
+    <description>Latest updates, new tools, and features from InfoScope OSINT - Advanced Open Source Intelligence Platform</description>
+    <link>https://infoscope-osint.web.app</link>
+    <atom:link href="https://infoscope-osint.web.app/feed.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 Jan 2024 12:00:00 GMT</lastBuildDate>
+    <generator>InfoScope OSINT</generator>
+    <managingEditor>updates@infoscope-osint.web.app (InfoScope OSINT Team)</managingEditor>
+    <webMaster>tech@infoscope-osint.web.app (InfoScope OSINT Tech Team)</webMaster>
+    <image>
+      <url>https://infoscope-osint.web.app/logo512.png</url>
+      <title>InfoScope OSINT</title>
+      <link>https://infoscope-osint.web.app</link>
+      <width>512</width>
+      <height>512</height>
+    </image>
+    
+    <item>
+      <title>InfoScope OSINT v2.0 - Enhanced Platform with 50+ Tools</title>
+      <description>Major platform update with 12 new built-in tools, enhanced mobile interface, advanced SEO optimization, and improved user experience. Now featuring subdomain enumeration, port scanning, email intelligence, and social media analysis tools.</description>
+      <link>https://infoscope-osint.web.app/updates/v2-0-release</link>
+      <guid>https://infoscope-osint.web.app/updates/v2-0-release</guid>
+      <pubDate>Mon, 15 Jan 2024 12:00:00 GMT</pubDate>
+      <category>Platform Updates</category>
+      <author>updates@infoscope-osint.web.app (InfoScope OSINT Team)</author>
+    </item>
+    
+    <item>
+      <title>New Built-in OSINT Tools Available</title>
+      <description>Introducing 12 powerful built-in OSINT tools including advanced subdomain enumeration, comprehensive port scanning, DNS intelligence suite, enhanced WHOIS lookup, IP geolocation intelligence, email analysis suite, user reconnaissance tools, GitHub intelligence, website profiler, URL analyzer, social media intelligence, and phone number analysis.</description>
+      <link>https://infoscope-osint.web.app/tools?category=builtin</link>
+      <guid>https://infoscope-osint.web.app/tools?category=builtin</guid>
+      <pubDate>Mon, 15 Jan 2024 10:00:00 GMT</pubDate>
+      <category>New Features</category>
+      <author>updates@infoscope-osint.web.app (InfoScope OSINT Team)</author>
+    </item>
+    
+    <item>
+      <title>Mobile-First Responsive Design Launch</title>
+      <description>InfoScope OSINT now features a completely redesigned mobile-first interface with enhanced navigation, touch-optimized controls, and improved accessibility across all devices.</description>
+      <link>https://infoscope-osint.web.app/mobile</link>
+      <guid>https://infoscope-osint.web.app/mobile</guid>
+      <pubDate>Mon, 15 Jan 2024 08:00:00 GMT</pubDate>
+      <category>UI/UX Improvements</category>
+      <author>updates@infoscope-osint.web.app (InfoScope OSINT Team)</author>
+    </item>
+    
+  </channel>
+</rss>

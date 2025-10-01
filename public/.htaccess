@@ -1,0 +1,133 @@
+# InfoScope OSINT - SEO and Performance Optimizations
+
+# Enable HTTPS redirect
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove www subdomain (choose one)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# SEO-friendly URLs and routing for SPA
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+# Security Headers
+<IfModule mod_headers.c>
+    # HSTS (HTTP Strict Transport Security)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Content Security Policy
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https: wss:; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+    
+    # XSS Protection
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Content Type Options
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Frame Options
+    Header set X-Frame-Options "DENY"
+    
+    # Referrer Policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Permissions Policy
+    Header set Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+</IfModule>
+
+# Compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Cache Control for performance
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # HTML - Short cache for dynamic content
+    ExpiresByType text/html "access plus 1 hour"
+    
+    # CSS and JavaScript - Longer cache with versioning
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    
+    # Images - Long cache
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/ico "access plus 1 year"
+    ExpiresByType image/icon "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    
+    # Fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # Manifests and feeds
+    ExpiresByType application/manifest+json "access plus 1 week"
+    ExpiresByType application/rss+xml "access plus 1 day"
+    ExpiresByType application/xml "access plus 1 day"
+    ExpiresByType text/xml "access plus 1 day"
+</IfModule>
+
+# Custom Error Pages
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+# MIME Types for better SEO
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+    AddType application/rss+xml .rss
+    AddType text/cache-manifest .appcache
+    AddType image/webp .webp
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+</IfModule>
+
+# Prevent access to sensitive files
+<FilesMatch "\.(env|log|bak|backup|old|tmp|config|ini|sql|tar|gz|zip)$">
+    Require all denied
+</FilesMatch>
+
+# Block malicious bots and scrapers
+<RequireAll>
+    Require all granted
+    Require not env bad-bot
+</RequireAll>
+
+SetEnvIfNoCase User-Agent "AhrefsBot" bad-bot
+SetEnvIfNoCase User-Agent "MJ12bot" bad-bot
+SetEnvIfNoCase User-Agent "SemrushBot" bad-bot
+SetEnvIfNoCase User-Agent "DotBot" bad-bot
+
+# Canonical redirect handling
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\ ]*)/+(\?[^\ ]*)?\ HTTP/
+RewriteRule ^(.*)/+$ /$1? [R=301,L]
+
+# SEO redirects for old URLs (if migrating)
+# RewriteRule ^old-path/?$ /new-path [R=301,L]
+
+# Enable server-side includes for dynamic content
+AddHandler server-parsed .html
+
+# Performance: Remove ETags
+FileETag None

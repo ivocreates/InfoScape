@@ -3,12 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { ThemeProvider } from './contexts/ThemeContext';
+import LandingPage from './components/LandingPage';
 import AuthScreen from './components/AuthScreen';
 import Dashboard from './components/Dashboard';
-import Investigation from './components/Investigation';
-import OSINTTools from './components/OSINTTools';
-import Profile from './components/Profile';
-import About from './components/About';
 import Navigation from './components/Navigation';
 import LoadingSpinner from './components/LoadingSpinner';
 import AIChat from './components/AIChat';
@@ -16,11 +13,27 @@ import WeeklySupportPopup from './components/WeeklySupportPopup';
 import Favorites from './components/Favorites';
 import Onboarding from './components/Onboarding';
 import Feedback from './components/Feedback';
+import OSINTTools from './components/OSINTTools';
+import Investigation from './components/Investigation';
+import Profile from './components/Profile';
+import About from './components/About';
+
+// Performance utilities only
+import { 
+  LoadingFallback,
+  performanceMonitor,
+  preconnectToDomain
+} from './utils/performance';
+
+// PWA and Analytics
+import pwaManager from './utils/pwa';
+import analyticsManager from './utils/analytics';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [showLanding, setShowLanding] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatMinimized, setIsChatMinimized] = useState(false);
   const [showWeeklySupport, setShowWeeklySupport] = useState(false);
@@ -30,28 +43,74 @@ function App() {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
+    // Initialize performance monitoring
+    performanceMonitor.init();
+    
+    // Initialize PWA features
+    pwaManager.init();
+    
+    // Initialize analytics
+    analyticsManager.trackPageView('app_init');
+    
+    // Preconnect to essential domains for OSINT tools
+    preconnectToDomain('https://api.shodan.io');
+    preconnectToDomain('https://api.virustotal.com');
+    preconnectToDomain('https://api.hunter.io');
+    
+    // Log app start performance
+    const appStartTime = performance.now();
+    console.log('App initialization time:', appStartTime);
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
       
-      if (user && !loading) {
+      // Track authentication state
+      analyticsManager.trackAuth(user ? 'login_detected' : 'logout_detected');
+      
+      if (user) {
+        // Set user in analytics
+        analyticsManager.setUser(user.uid, {
+          email: user.email,
+          display_name: user.displayName,
+          email_verified: user.emailVerified
+        });
+        
+        // If user is already logged in, skip landing page
+        setShowLanding(false);
+        
         // Check if user is new (first time login)
         const hasSeenOnboarding = localStorage.getItem(`onboarding-seen-${user.uid}`);
         
         if (!hasSeenOnboarding) {
           // Show onboarding for new users
           setShowOnboarding(true);
+          analyticsManager.trackFeatureUsage('onboarding_shown', { user_type: 'new' });
         } else {
           // Show weekly support popup for returning users (with a delay)
           setTimeout(() => {
             setShowWeeklySupport(true);
+            analyticsManager.trackFeatureUsage('weekly_support_shown', { user_type: 'returning' });
           }, 3000);
         }
       }
+
+      // Log authentication performance
+      const authTime = performance.now() - appStartTime;
+      console.log('Authentication check time:', authTime);
+      analyticsManager.trackPerformance('auth_check_time', authTime);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      performanceMonitor.cleanup();
+    };
   }, [loading]);
+
+  // Handle "Get Started" button click
+  const handleGetStarted = () => {
+    setShowLanding(false);
+  };
 
   // Handle opening chat with predefined message
   const handleOpenChatWithMessage = (message) => {
@@ -68,11 +127,24 @@ function App() {
     setShowOnboarding(false);
     setCurrentView(targetView);
     
+    // Track onboarding completion
+    analyticsManager.trackFeatureUsage('onboarding_completed', { target_view: targetView });
+    
     // Show weekly support popup after onboarding with delay
     setTimeout(() => {
       setShowWeeklySupport(true);
     }, 2000);
   };
+
+  // Track view changes
+  useEffect(() => {
+    if (currentView && user) {
+      analyticsManager.trackPageView(currentView, {
+        user_id: user.uid,
+        timestamp: Date.now()
+      });
+    }
+  }, [currentView, user]);
 
   // Handle onboarding skip
   const handleOnboardingSkip = () => {
@@ -125,7 +197,11 @@ function App() {
   if (!user) {
     return (
       <ThemeProvider>
-        <AuthScreen />
+        {showLanding ? (
+          <LandingPage onGetStarted={handleGetStarted} />
+        ) : (
+          <AuthScreen />
+        )}
       </ThemeProvider>
     );
   }

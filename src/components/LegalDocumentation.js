@@ -233,8 +233,8 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
             <h4 className="font-medium text-gray-900 mb-2">How to Attribute InfoScope:</h4>
             <div className="bg-white border border-gray-200 rounded-lg p-4">
               <code className="text-sm text-gray-800">
-                InfoScope OSINT Platform by InfoScope Team, licensed under CC BY-SA 4.0.<br/>
-                Source: https://github.com/infoscope/infoscope<br/>
+                InfoScope OSINT Platform by @ivocreates, licensed under CC BY-SA 4.0.<br/>
+                Source: https://github.com/ivocreates/InfoScape<br/>
                 License: https://creativecommons.org/licenses/by-sa/4.0/
               </code>
             </div>
@@ -243,11 +243,45 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
             <h4 className="font-medium text-gray-900 mb-2">Required Elements:</h4>
             <ul className="space-y-2 text-gray-600">
               <li>• Title of the work: "InfoScope OSINT Platform"</li>
-              <li>• Creator: "InfoScope Team"</li>
-              <li>• Source URL: Link to the original repository</li>
+              <li>• Creator: "@ivocreates"</li>
+              <li>• Source URL: https://github.com/ivocreates/InfoScape</li>
               <li>• License: "CC BY-SA 4.0" with link to license</li>
               <li>• Changes: Indicate if you modified the original work</li>
             </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-blue-900 mb-4">Contribution Guidelines</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-blue-900 mb-2">🚫 What You CANNOT Do:</h4>
+            <ul className="space-y-2 text-red-700">
+              <li>• ❌ Claim this software as your own creation</li>
+              <li>• ❌ Remove attribution or copyright notices</li>
+              <li>• ❌ Sell or commercially license without proper attribution</li>
+              <li>• ❌ Copy the strategy or codebase without giving credit</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-blue-900 mb-2">✅ How You CAN Contribute:</h4>
+            <ul className="space-y-2 text-green-700">
+              <li>• 🍴 Fork the repository on GitHub</li>
+              <li>• 📧 Submit feature requests via email: ivocreates@proton.me</li>
+              <li>• 💬 Participate in discussions for feedback and issues</li>
+              <li>• 🔄 Submit pull requests with improvements</li>
+              <li>• 🐛 Report bugs and security issues responsibly</li>
+              <li>• 📚 Contribute to documentation and translations</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-blue-900 mb-2">📞 Contact Information:</h4>
+            <div className="bg-white border border-blue-200 rounded-lg p-3">
+              <p className="text-blue-800">Email: <strong>ivocreates@proton.me</strong></p>
+              <p className="text-blue-800">GitHub: <strong>@ivocreates</strong></p>
+              <p className="text-blue-800">Repository: <strong>github.com/ivocreates/InfoScape</strong></p>
+            </div>
           </div>
         </div>
       </div>
@@ -587,8 +621,14 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Limitation of Liability</h3>
           <div className="space-y-4 text-gray-600">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p className="text-red-800 font-semibold">
+                ⚠️ IMPORTANT: The creator (@ivocreates) shall NOT be held liable for any misuse, illegal activities, 
+                or consequences arising from the use of InfoScope OSINT Platform.
+              </p>
+            </div>
             <p>
-              <strong>No Consequential Damages:</strong> In no event shall InfoScope, its developers, or contributors 
+              <strong>No Consequential Damages:</strong> In no event shall InfoScope, its developers (@ivocreates), or contributors 
               be liable for any indirect, incidental, special, consequential, or punitive damages arising from your 
               use of the service.
             </p>
@@ -600,6 +640,10 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
               <strong>Legal Consequences:</strong> Users are solely responsible for any legal consequences arising 
               from their use of InfoScope, including but not limited to violations of privacy laws, terms of service 
               of third-party websites, or other applicable regulations.
+            </p>
+            <p>
+              <strong>User Responsibility:</strong> By using this software, you acknowledge that you are using it at your own risk 
+              and that @ivocreates cannot be held responsible for any damage, legal issues, or problems that may arise.
             </p>
           </div>
         </div>

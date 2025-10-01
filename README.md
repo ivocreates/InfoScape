@@ -1,6 +1,6 @@
 # InfoScope OSINT - Professional Investigation Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/ivocreates/InfoScope)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-green.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 [![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange.svg)](https://infoscope-osint.web.app)
@@ -18,13 +18,24 @@ A comprehensive OSINT (Open Source Intelligence) investigation platform that com
 
 ## 🚀 Key Features
 
-### 🔍 **Advanced OSINT Tools (37+ Integrated)**
+### 🔍 **Advanced OSINT Tools (48+ Integrated)**
 - **People Search**: TruePeopleSearch, BeenVerified, PeopleFinder, Whitepages, FastPeopleSearch
 - **Social Media Intelligence**: Sherlock, Social Searcher, Mention, KnowEm, Namechk
 - **Email Analysis**: Hunter.io, Verify-Email, EmailRep, Have I Been Pwned, VoilaNorbert
 - **Breach Analysis**: BreachDirectory, IntelligenceX, Snusbase, LeakCheck
 - **Search Engines**: Shodan, Censys, Google Dorking, DuckDuckGo, Pipl
 - **Ethical Hacking**: Maltego, SpiderFoot, theHarvester, Recon-ng, OSINT Framework
+- **Domain Analysis**: Whois lookup, DNS analysis, SSL certificate inspection
+- **Network Security**: Port scanning, vulnerability assessment, network mapping
+
+### ✨ **Latest Enhancements (October 2025)**
+- **🎯 Show All Tools by Default**: No need to select categories - all 48+ tools visible immediately
+- **📱 Enhanced UI/UX**: Improved dropdown positioning, centered categories, responsive design
+- **🔐 Password Visibility Toggle**: Show/hide password functionality in authentication
+- **🌙 Dark Mode Improvements**: Better contrast and readability in dark theme
+- **📚 Interactive Onboarding**: Step-by-step guided tour for new users
+- **⚖️ Legal Framework**: Comprehensive terms of service and Creative Commons licensing
+- **🚀 Performance Optimizations**: Faster loading times and improved stability
 
 ### 🌐 **Multi-Platform Anonymous Browsing**
 - **Tor Browser Integration** with exit node selection (18+ countries)
@@ -61,8 +72,39 @@ A comprehensive OSINT (Open Source Intelligence) investigation platform that com
 - **Frontend**: React 18 with Tailwind CSS
 - **Desktop**: Electron 28
 - **Backend**: Firebase (Authentication, Firestore, Storage)
-- **Icons**: Lucide React
-- **Styling**: Tailwind CSS with custom components
+- **Icons**: Lucide React (48+ professional icons)
+- **Styling**: Tailwind CSS with custom components and dark mode support
+- **Security**: Input sanitization, CSRF protection, rate limiting
+- **Performance**: Optimized bundle size, lazy loading elimination for stability
+- **Authentication**: Firebase Auth with Google OAuth and email/password
+- **Legal Compliance**: Creative Commons BY-SA 4.0 licensing
+
+## 📝 Recent Updates & Fixes
+
+### Version 1.1.0 - October 2025
+
+#### 🛠️ **Major Fixes**
+- ✅ **Resolved Chunk Loading Errors**: Fixed React lazy loading issues causing runtime failures
+- ✅ **UI Dropdown Improvements**: Fixed filter dropdown overlapping and content shifting
+- ✅ **Performance Optimizations**: Eliminated webpack chunk loading for improved stability
+
+#### ✨ **New Features**
+- 🎯 **Show All Tools by Default**: All 48+ OSINT tools now visible immediately without category selection
+- 🔐 **Password Visibility Toggle**: Added show/hide password functionality in login/register forms
+- 📚 **Enhanced Onboarding**: Interactive step-by-step tutorial for new users
+- 🌙 **Dark Mode Refinements**: Improved contrast and readability in dark theme
+- ⚖️ **Legal Documentation**: Comprehensive terms of service and legal framework
+
+#### 🎨 **UI/UX Enhancements**
+- 📱 **Centered Categories**: Better visual layout for OSINT tool categories
+- 🎨 **Custom Scrollbars**: Enhanced scrolling experience throughout the application
+- 🔄 **Responsive Design**: Improved layout across all screen sizes
+- 🎯 **Better Navigation**: More intuitive user interface and interaction patterns
+
+#### 🔒 **Security Improvements**
+- 🛡️ **Input Sanitization**: Enhanced security measures for user input
+- 🔐 **CSRF Protection**: Cross-site request forgery protection implementation
+- ⚡ **Rate Limiting**: Prevents abuse and ensures stable performance
 
 ## 🚀 **Get Started - Multiple Ways to Access**
 
@@ -226,7 +268,7 @@ infoscope-osint/
 InfoScope OSINT is free and open source. Your support helps maintain the project and add new features:
 
 - **💳 UPI (India):** `ivopereiraix3@oksbi`
-- **🌍 Razorpay (Global):** [razorpay.me/@inovix](https://razorpay.me/@inovix)
+- **🌍 Razorpay (Global):** [razorpay.me/@inovix](https://razorpay.me/@ivocreates)
 - **⭐ GitHub:** Star the repository to show appreciation
 - **🤝 Contribute:** Submit PRs, report bugs, suggest features
 

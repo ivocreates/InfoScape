@@ -1,58 +1,135 @@
 {
-  "short_name": "InfoScope",
-  "name": "InfoScope OSINT - Professional Intelligence Platform",
-  "description": "Professional Intelligence Platform. Comprehensive OSINT tools with anonymous browsing, Tor integration, and advanced investigation capabilities.",
+  "short_name": "InfoScope OSINT",
+  "name": "InfoScope OSINT - Advanced Open Source Intelligence Platform",
+  "description": "Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools. Better than infoooze.",
+  "lang": "en",
+  "scope": "/",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "theme_color": "#1f2937",
+  "background_color": "#111827",
+  "categories": ["productivity", "security", "utilities", "education", "developer"],
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "type": "image/x-icon",
+      "purpose": "any"
     },
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-icon-180x180.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
-  "orientation": "portrait-primary",
-  "categories": ["productivity", "security", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "InfoScope OSINT Desktop Interface"
+    },
+    {
+      "src": "screenshot-mobile.png", 
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "InfoScope OSINT Mobile Interface"
+    }
+  ],
   "shortcuts": [
     {
-      "name": "New Investigation",
+      "name": "OSINT Tools",
+      "short_name": "Tools",
+      "description": "Access 50+ professional OSINT tools",
+      "url": "/tools?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-tools.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "New Investigation", 
       "short_name": "Investigate",
       "description": "Start a new OSINT investigation",
-      "url": "/?view=investigation",
-      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+      "url": "/investigation?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-investigation.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "OSINT Tools",
-      "short_name": "Tools", 
-      "description": "Access OSINT tools collection",
-      "url": "/?view=osint-tools",
-      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+      "name": "Built-in Tools",
+      "short_name": "Built-in",
+      "description": "Use advanced built-in OSINT tools",
+      "url": "/tools?category=builtin&source=shortcut",
+      "icons": [
+        {
+          "src": "icon-builtin.png",
+          "sizes": "96x96", 
+          "type": "image/png"
+        }
+      ]
     },
     {
-      "name": "Anonymous Browser",
-      "short_name": "Browser",
-      "description": "Open anonymous browser session", 
-      "url": "/?action=browser",
-      "icons": [{ "src": "favicon.ico", "sizes": "64x64" }]
+      "name": "Profile & History",
+      "short_name": "Profile",
+      "description": "View investigations and profile",
+      "url": "/profile?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-profile.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
     }
   ],
   "prefer_related_applications": false,
   "related_applications": [
     {
+      "platform": "webapp",
+      "url": "https://infoscope-osint.web.app"
+    },
+    {
       "platform": "windows",
-      "url": "https://github.com/ivocreates/InfoScape/releases"
+      "url": "https://github.com/infoscope-osint/desktop/releases",
+      "id": "com.infoscope.osint"
     }
-  ]
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+osint",
+      "url": "/investigate?target=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

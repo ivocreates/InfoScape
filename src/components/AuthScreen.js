@@ -8,7 +8,8 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Shield, Eye, Globe, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
+import { Search, Shield, Eye, EyeOff, Globe, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
+import InfoScopeIcon from './InfoScopeIcon';
 
 function AuthScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +22,8 @@ function AuthScreen() {
     confirmPassword: '',
     displayName: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData(prev => ({
@@ -199,11 +202,11 @@ function AuthScreen() {
       <div className="max-w-md w-full">
         {/* Logo/Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl mb-4">
-            <Search className="w-8 h-8 text-gray-900" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4">
+            <InfoScopeIcon size={32} variant="monochrome" className="text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">InfoScope OSINT</h1>
-          <p className="text-gray-400">Professional Person Intelligence Platform</p>
+          <p className="text-gray-400">Professional OSINT Intelligence Platform</p>
         </div>
 
         {/* Features */}
@@ -376,14 +379,21 @@ function AuthScreen() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                  className="w-full pl-10 pr-12 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
                   placeholder="••••••••"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
             </div>
 
@@ -395,14 +405,21 @@ function AuthScreen() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                    className="w-full pl-10 pr-12 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white"
                     placeholder="••••••••"
                     required={authMode === 'signup'}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             )}

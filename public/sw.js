@@ -1,7 +1,8 @@
 // Service Worker for InfoScope OSINT PWA
-const CACHE_NAME = 'infoscope-v1.1.0';
-const STATIC_CACHE = 'infoscope-static-v1.1.0';
-const DYNAMIC_CACHE = 'infoscope-dynamic-v1.1.0';
+const CACHE_NAME = 'infoscope-v2.1.0';
+const STATIC_CACHE = 'infoscope-static-v2.1.0';
+const DYNAMIC_CACHE = 'infoscope-dynamic-v2.1.0';
+const API_CACHE = 'infoscope-api-v2.1.0';
 
 const urlsToCache = [
   '/',
@@ -10,21 +11,60 @@ const urlsToCache = [
   '/manifest.json',
   '/favicon.ico',
   '/logo192.png',
-  '/logo512.png'
+  '/logo512.png',
+  '/sitemap.xml',
+  '/robots.txt'
 ];
+
+// SEO-friendly routes to cache
+const IMPORTANT_ROUTES = [
+  '/',
+  '/tools',
+  '/investigation',
+  '/profile',
+  '/about',
+  '/browser',
+  '/tools/reconnaissance',
+  '/tools/people',
+  '/tools/domains',
+  '/tools/email',
+  '/tools/social',
+  '/tools/security',
+  '/tools/communication'
+];
+
+// API endpoints to cache for offline functionality
+const API_ENDPOINTS = [
+  '/api/osint-tools',
+  '/api/user-data',
+  '/api/favorites'
+];
+
+// Push notification configuration
+const NOTIFICATION_CONFIG = {
+  badge: '/logo192.png',
+  icon: '/logo192.png',
+  tag: 'infoscope-notification',
+  renotify: true,
+  requireInteraction: false,
+  silent: false
+};
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
+  console.log('[SW] InfoScope OSINT v2.0.0 installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('[SW] Caching static assets for SEO');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('Service Worker installed successfully');
+        console.log('[SW] Service Worker installed successfully');
         self.skipWaiting(); // Force activation of new service worker
+      })
+      .catch((error) => {
+        console.error('[SW] Installation failed:', error);
       })
   );
 });
@@ -218,26 +258,153 @@ self.addEventListener('push', (event) => {
   );
 });
 
+// Push notification handler
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push message received:', event);
+  
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: 'InfoScope OSINT', body: 'New update available' };
+  }
+
+  const options = {
+    body: data.body || 'OSINT investigation update',
+    icon: NOTIFICATION_CONFIG.icon,
+    badge: NOTIFICATION_CONFIG.badge,
+    tag: data.tag || NOTIFICATION_CONFIG.tag,
+    data: data.data || {},
+    actions: [
+      {
+        action: 'open',
+        title: 'Open InfoScope',
+        icon: '/logo192.png'
+      },
+      {
+        action: 'dismiss',
+        title: 'Dismiss',
+        icon: '/favicon.ico'
+      }
+    ],
+    requireInteraction: data.requireInteraction || false,
+    silent: data.silent || false,
+    vibrate: [200, 100, 200],
+    timestamp: Date.now()
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'InfoScope OSINT', options)
+  );
+});
+
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.notification.tag);
   event.notification.close();
 
-  if (event.action === 'explore') {
+  if (event.action === 'open' || !event.action) {
     // Open or focus the app
     event.waitUntil(
-      clients.matchAll().then((clientList) => {
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        // Check if app is already open
         for (const client of clientList) {
-          if (client.url === '/' && 'focus' in client) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
             return client.focus();
           }
         }
+        // Open new window if app not open
         if (clients.openWindow) {
-          return clients.openWindow('/');
+          const url = event.notification.data?.url || '/';
+          return clients.openWindow(url);
         }
       })
     );
+  } else if (event.action === 'dismiss') {
+    // Just close notification - no action needed
+    console.log('[SW] Notification dismissed');
   }
 });
+
+// Background sync for offline actions
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Background sync triggered:', event.tag);
+  
+  if (event.tag === 'osint-investigation-sync') {
+    event.waitUntil(syncInvestigationData());
+  } else if (event.tag === 'favorites-sync') {
+    event.waitUntil(syncFavoritesData());
+  } else if (event.tag === 'user-data-sync') {
+    event.waitUntil(syncUserData());
+  }
+});
+
+// Sync investigation data when back online
+async function syncInvestigationData() {
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const pendingData = await cache.match('/pending-investigations');
+    
+    if (pendingData) {
+      const investigations = await pendingData.json();
+      // Sync with server when online
+      for (const investigation of investigations) {
+        await fetch('/api/investigations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(investigation)
+        });
+      }
+      // Clear pending data after successful sync
+      await cache.delete('/pending-investigations');
+      console.log('[SW] Investigation data synced successfully');
+    }
+  } catch (error) {
+    console.error('[SW] Investigation sync failed:', error);
+  }
+}
+
+// Sync favorites data
+async function syncFavoritesData() {
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const pendingData = await cache.match('/pending-favorites');
+    
+    if (pendingData) {
+      const favorites = await pendingData.json();
+      await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(favorites)
+      });
+      await cache.delete('/pending-favorites');
+      console.log('[SW] Favorites data synced successfully');
+    }
+  } catch (error) {
+    console.error('[SW] Favorites sync failed:', error);
+  }
+}
+
+// Sync user data
+async function syncUserData() {
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const pendingData = await cache.match('/pending-user-data');
+    
+    if (pendingData) {
+      const userData = await pendingData.json();
+      await fetch('/api/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      await cache.delete('/pending-user-data');
+      console.log('[SW] User data synced successfully');
+    }
+  } catch (error) {
+    console.error('[SW] User data sync failed:', error);
+  }
+}
 
 // Handle messages from the main app
 self.addEventListener('message', (event) => {

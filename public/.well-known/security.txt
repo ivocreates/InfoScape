@@ -1,0 +1,9 @@
+Contact: mailto:security@infoscope-osint.web.app
+Contact: https://github.com/infoscope-osint/platform/security/advisories/new
+Encryption: https://infoscope-osint.web.app/pgp-key.txt
+Acknowledgments: https://infoscope-osint.web.app/security-acknowledgments
+Policy: https://infoscope-osint.web.app/security-policy
+Hiring: https://infoscope-osint.web.app/careers
+Preferred-Languages: en
+Canonical: https://infoscope-osint.web.app/.well-known/security.txt
+Expires: 2024-12-31T23:59:59.000Z

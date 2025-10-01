@@ -1,8 +1,39 @@
-# InfoScope OSINT - Desktop Application
+# InfoScope OSINT - Changelog
 
-## Latest Update - September 2025
+## Version 1.1.0 - October 2025
 
-Complete rewrite and enhancement of the OSINT desktop application with the following new features:
+### 🛠️ **Critical Fixes**
+- ✅ **Fixed Chunk Loading Errors**: Resolved React lazy loading issues causing `ChunkLoadError` and `Unexpected token '<'` runtime failures
+- ✅ **UI Dropdown Improvements**: Fixed filter dropdown overlapping and content reshifting issues
+- ✅ **Performance Stability**: Eliminated webpack chunk loading for improved application stability
+
+### ✨ **Major Features**
+- 🎯 **Show All Tools by Default**: All 48+ OSINT tools now visible immediately without category selection
+- 🔐 **Password Visibility Toggle**: Added show/hide password functionality in authentication forms
+- 📚 **Interactive Onboarding**: Step-by-step guided tour for new users with custom scrollbars
+- ⚖️ **Legal Framework**: Comprehensive terms of service and Creative Commons BY-SA 4.0 licensing
+
+### 🎨 **UI/UX Enhancements**
+- 📱 **Centered Categories**: Improved visual layout for OSINT tool categories with responsive grid
+- 🌙 **Dark Mode Refinements**: Better contrast and readability in dark theme, especially for weekly tips
+- 🎨 **Custom Scrollbars**: Enhanced scrolling experience throughout the application
+- 🔄 **Responsive Design**: Better layout across all screen sizes with improved category centering
+
+### 🔒 **Security & Performance**
+- 🛡️ **Enhanced Security**: Improved input sanitization, CSRF protection, and rate limiting
+- ⚡ **Performance Optimizations**: Faster loading times and improved bundle efficiency
+- 🚀 **Stability Improvements**: Replaced problematic lazy loading with direct imports for reliability
+
+### 📊 **Tool Arsenal Expansion**
+- 🔍 **48+ OSINT Tools**: Expanded from 37+ to 48+ integrated professional tools
+- 🌐 **Enhanced Categories**: Better organization across 8 categories
+- 🎯 **Improved Accessibility**: All tools visible by default for better user experience
+
+---
+
+## Previous Update - September 2025
+
+Complete rewrite and enhancement of the OSINT desktop application with the following features:
 
 ### 🆕 Enhanced Authentication
 - ✅ Fixed Google OAuth authentication issues

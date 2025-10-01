@@ -26,7 +26,8 @@ import {
   MessageSquare,
   Sun,
   Moon,
-  Laptop
+  Laptop,
+  LogOut
 } from 'lucide-react';
 import { collection, query, where, orderBy, getDocs, deleteDoc, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
@@ -356,21 +357,23 @@ function Profile({ user }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header with Profile Editing */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center gap-4">
+        {/* Enhanced Header with Profile Editing */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {/* Enhanced Profile Picture */}
             <div className="relative group">
-              <img
-                src={getCurrentProfilePicture()}
-                alt={user?.displayName || 'User'}
-                className="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600 group-hover:border-blue-500 transition-colors"
-                onError={(e) => {
-                  e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'User')}&background=4F46E5&color=fff&size=200`;
-                }}
-              />
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 p-1">
+                <img
+                  src={getCurrentProfilePicture()}
+                  alt={user?.displayName || 'User'}
+                  className="w-full h-full rounded-full object-cover border-2 border-white dark:border-gray-700 group-hover:border-blue-500 dark:group-hover:border-blue-400 transition-colors"
+                  onError={(e) => {
+                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.displayName || 'User')}&background=4F46E5&color=fff&size=200`;
+                  }}
+                />
+              </div>
               {isEditingProfile && (
                 <button
                   onClick={() => setShowProfilePictureModal(true)}
@@ -380,41 +383,42 @@ function Profile({ user }) {
                 </button>
               )}
             </div>
-            <div className="flex-1">
+            
+            <div className="flex-1 space-y-4">
               {isEditingProfile ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <input
                     type="text"
                     value={profileData.displayName}
                     onChange={(e) => setProfileData(prev => ({ ...prev, displayName: e.target.value }))}
                     placeholder="Display Name"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-medium"
                   />
                   <input
                     type="text"
                     value={profileData.title}
                     onChange={(e) => setProfileData(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Professional Title"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   />
                   <textarea
                     value={profileData.bio}
                     onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
-                    placeholder="Bio"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Professional Bio"
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                     rows="3"
                   />
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <button
                       onClick={saveProfileData}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                      className="px-6 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
                     >
                       <Save className="w-4 h-4" />
-                      Save
+                      Save Changes
                     </button>
                     <button
                       onClick={() => setIsEditingProfile(false)}
-                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2"
+                      className="px-6 py-2 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
                     >
                       <X className="w-4 h-4" />
                       Cancel
@@ -423,29 +427,40 @@ function Profile({ user }) {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-2xl font-bold text-gray-900">{profileData.displayName || user?.displayName || 'User'}</h1>
-                  <p className="text-gray-600">{user?.email}</p>
-                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <Shield className="w-4 h-4" />
-                      {profileData.title || 'OSINT Investigator'}
+                  <div className="space-y-2">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                      {profileData.displayName || user?.displayName || 'User'}
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-400 font-medium">{user?.email}</p>
+                  </div>
+                  <div className="flex items-center gap-6 mt-4 text-sm">
+                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <span className="font-medium">{profileData.title || 'OSINT Investigator'}</span>
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      Member since {new Date().toLocaleDateString()}
+                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                        <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      </div>
+                      <span className="font-medium">Member since {new Date().toLocaleDateString()}</span>
                     </span>
                   </div>
                   {profileData.bio && (
-                    <p className="text-gray-700 mt-2">{profileData.bio}</p>
+                    <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{profileData.bio}</p>
+                    </div>
                   )}
                 </>
               )}
             </div>
-            <div className="flex gap-2">
+            
+            <div className="flex flex-wrap gap-3">
               {!isEditingProfile && (
                 <button
                   onClick={() => setIsEditingProfile(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
                 >
                   <Edit2 className="w-4 h-4" />
                   Edit Profile
@@ -453,25 +468,35 @@ function Profile({ user }) {
               )}
               <button
                 onClick={() => setShowFeedbackForm(true)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                className="px-6 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
               >
                 <MessageSquare className="w-4 h-4" />
                 Send Feedback
               </button>
               <button
                 onClick={installPWA}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="px-6 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
               >
                 <Download className="w-4 h-4" />
                 Install App
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.reload();
+                }}
+                className="px-6 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
               </button>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-          <div className="flex border-b border-gray-200 dark:border-gray-600">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden">
+          <div className="flex border-b border-gray-200 dark:border-gray-600 overflow-x-auto">
             {[
               { id: 'overview', label: 'Overview', icon: User },
               { id: 'saved', label: `Saved Pages (${savedPages.length})`, icon: Bookmark },
@@ -482,10 +507,10 @@ function Profile({ user }) {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                   activeTab === id
-                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -498,75 +523,81 @@ function Profile({ user }) {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-6 border border-blue-200 dark:border-blue-700">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                        <Search className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <div className="w-12 h-12 bg-blue-500 dark:bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Search className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{investigationHistory.length}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Investigations</div>
+                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{investigationHistory.length}</div>
+                        <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">Investigations</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-6 border border-green-200 dark:border-green-700">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                        <Bookmark className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div className="w-12 h-12 bg-green-500 dark:bg-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Bookmark className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">{savedPages.length}</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Saved Pages</div>
+                        <div className="text-2xl font-bold text-green-900 dark:text-green-100">{savedPages.length}</div>
+                        <div className="text-sm text-green-700 dark:text-green-300 font-medium">Saved Pages</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-xl p-6 border border-yellow-200 dark:border-yellow-700">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <CheckCircle className="w-5 h-5 text-yellow-600" />
+                      <div className="w-12 h-12 bg-yellow-500 dark:bg-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <CheckCircle className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
                           {investigationHistory.filter(inv => inv.status === 'completed').length}
                         </div>
-                        <div className="text-sm text-gray-600">Completed</div>
+                        <div className="text-sm text-yellow-700 dark:text-yellow-300 font-medium">Completed</div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-xl p-6 border border-purple-200 dark:border-purple-700">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Database className="w-5 h-5 text-purple-600" />
+                      <div className="w-12 h-12 bg-purple-500 dark:bg-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Database className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-900">{storageInfo.used}MB</div>
-                        <div className="text-sm text-gray-600">Data Used</div>
+                        <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{storageInfo.used}MB</div>
+                        <div className="text-sm text-purple-700 dark:text-purple-300 font-medium">Data Used</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-blue-900 mb-2">Access InfoScope Anywhere</h3>
-                  <p className="text-blue-800 text-sm mb-3">
-                    InfoScope works as both a desktop application and web app. You can access your investigations from any device.
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
+                  <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-3 text-lg">Access InfoScope Anywhere</h3>
+                  <p className="text-blue-800 dark:text-blue-200 text-sm mb-4 leading-relaxed">
+                    InfoScope works as both a desktop application and web app. You can access your investigations from any device with seamless synchronization.
                   </p>
-                  <div className="flex items-center gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-blue-700">
-                      <Monitor className="w-4 h-4" />
-                      <span>Desktop App</span>
+                  <div className="flex flex-wrap items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                      <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-lg flex items-center justify-center">
+                        <Monitor className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="font-medium">Desktop App</span>
                     </div>
-                    <div className="flex items-center gap-2 text-blue-700">
-                      <Globe className="w-4 h-4" />
-                      <span>Web Browser</span>
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                      <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-lg flex items-center justify-center">
+                        <Globe className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="font-medium">Web Browser</span>
                     </div>
-                    <div className="flex items-center gap-2 text-blue-700">
-                      <Smartphone className="w-4 h-4" />
-                      <span>Mobile Device</span>
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                      <div className="w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-lg flex items-center justify-center">
+                        <Smartphone className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="font-medium">Mobile Device</span>
                     </div>
                   </div>
                 </div>
@@ -575,12 +606,12 @@ function Profile({ user }) {
 
             {/* Saved Pages Tab */}
             {activeTab === 'saved' && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Saved Pages</h3>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Saved Pages</h3>
                   <button
                     onClick={() => setShowAddPageModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                    className="px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-200 flex items-center gap-2 font-medium shadow-md hover:shadow-lg"
                   >
                     <Plus className="w-4 h-4" />
                     Save New Page
@@ -588,52 +619,64 @@ function Profile({ user }) {
                 </div>
                 
                 {savedPages.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Bookmark className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-lg font-medium">No saved pages yet</p>
-                    <p className="text-sm">Save important pages from your investigations for quick access later</p>
+                  <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Bookmark className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No saved pages yet</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">Save important pages from your investigations for quick access later. Build your personal knowledge base.</p>
                   </div>
                 ) : (
                   <div className="grid gap-4">
                     {savedPages.map(page => (
-                      <div key={page.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div key={page.id} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              {page.category === 'investigation' && <Search className="w-4 h-4 text-blue-600" />}
-                              {page.category === 'resource' && <FileText className="w-4 h-4 text-green-600" />}
-                              {page.category === 'evidence' && <Image className="w-4 h-4 text-purple-600" />}
-                              {page.category === 'reference' && <Bookmark className="w-4 h-4 text-yellow-600" />}
-                              <h4 className="font-medium text-gray-900">{page.title}</h4>
-                              <span className={`px-2 py-1 text-xs rounded-full ${
-                                page.category === 'investigation' ? 'bg-blue-100 text-blue-800' :
-                                page.category === 'resource' ? 'bg-green-100 text-green-800' :
-                                page.category === 'evidence' ? 'bg-purple-100 text-purple-800' :
-                                'bg-yellow-100 text-yellow-800'
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                page.category === 'investigation' ? 'bg-blue-100 dark:bg-blue-900/30' :
+                                page.category === 'resource' ? 'bg-green-100 dark:bg-green-900/30' :
+                                page.category === 'evidence' ? 'bg-purple-100 dark:bg-purple-900/30' :
+                                'bg-yellow-100 dark:bg-yellow-900/30'
+                              }`}>
+                                {page.category === 'investigation' && <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
+                                {page.category === 'resource' && <FileText className="w-4 h-4 text-green-600 dark:text-green-400" />}
+                                {page.category === 'evidence' && <Image className="w-4 h-4 text-purple-600 dark:text-purple-400" />}
+                                {page.category === 'reference' && <Bookmark className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />}
+                              </div>
+                              <h4 className="font-semibold text-gray-900 dark:text-white text-lg">{page.title}</h4>
+                              <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                                page.category === 'investigation' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+                                page.category === 'resource' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+                                page.category === 'evidence' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300' :
+                                'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                               }`}>
                                 {page.category}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-1 font-mono">{page.url}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-mono bg-gray-50 dark:bg-gray-700 px-3 py-1 rounded-lg">{page.url}</p>
                             {page.description && (
-                              <p className="text-sm text-gray-700 mb-2">{page.description}</p>
+                              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{page.description}</p>
                             )}
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
                               Saved on {page.savedAt.toLocaleDateString()}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2 ml-4">
+                          <div className="flex items-center gap-2 ml-6">
                             <a
                               href={page.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-3 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                              title="Open in new tab"
                             >
                               <ExternalLink className="w-4 h-4" />
                             </a>
                             <button
                               onClick={() => deletePage(page.id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                              title="Delete page"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -648,20 +691,25 @@ function Profile({ user }) {
 
             {/* Investigation History Tab */}
             {activeTab === 'history' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Investigation History</h3>
-                  <div className="flex items-center gap-2">
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Investigation History</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      {investigationHistory.length} total investigations
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={exportData}
-                      className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2"
+                      className="px-6 py-2 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-500 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200 flex items-center gap-2 font-medium"
                     >
                       <Download className="w-4 h-4" />
                       Export Data
                     </button>
                     <button
                       onClick={clearInvestigationHistory}
-                      className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-2"
+                      className="px-6 py-2 text-red-600 dark:text-red-400 border border-red-600 dark:border-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200 flex items-center gap-2 font-medium"
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear All
@@ -670,42 +718,190 @@ function Profile({ user }) {
                 </div>
 
                 {investigationHistory.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <History className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                    <p>No investigations found</p>
-                    <p className="text-sm">Start your first investigation to see it here</p>
+                  <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <History className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No investigations found</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">Start your first investigation to see it here. All your research will be automatically tracked and saved.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="grid gap-6">
                     {investigationHistory.map((investigation) => (
-                      <div key={investigation.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900">{investigation.name}</h4>
-                            <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                              <span>{investigation.date}</span>
-                              <span>Target: {investigation.targetName || 'Unknown'}</span>
-                              <span>Engine: {investigation.engine || 'google'}</span>
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                investigation.status === 'completed' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {investigation.status || 'active'}
-                              </span>
-                            </div>
-                            {investigation.query && (
-                              <div className="mt-2 p-2 bg-gray-100 rounded text-xs font-mono text-gray-700">
-                                {investigation.query}
+                      <div key={investigation.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
+                        {/* Investigation Header */}
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <h4 className="font-bold text-gray-900 dark:text-white text-lg">{investigation.name}</h4>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  investigation.status === 'completed' 
+                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
+                                    : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                                }`}>
+                                  <CheckCircle className="w-3 h-3 inline mr-1" />
+                                  {investigation.status === 'completed' ? 'Completed' : 'In Progress'}
+                                </span>
                               </div>
-                            )}
+                              
+                              {/* Investigation Metadata */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                  <Clock className="w-4 h-4 text-blue-500" />
+                                  <div>
+                                    <p className="font-medium">Created</p>
+                                    <p>{investigation.date}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                  <User className="w-4 h-4 text-green-500" />
+                                  <div>
+                                    <p className="font-medium">Target</p>
+                                    <p className="text-gray-900 dark:text-white">{investigation.targetName || 'Anonymous'}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                                  <Search className="w-4 h-4 text-purple-500" />
+                                  <div>
+                                    <p className="font-medium">Search Engine</p>
+                                    <p className="capitalize">{investigation.engine || 'Google'}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 ml-6">
+                              <button
+                                className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                title="View details"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </button>
+                              {investigation.status !== 'completed' && (
+                                <button
+                                  onClick={() => {
+                                    const updatedHistory = investigationHistory.map(inv => 
+                                      inv.id === investigation.id 
+                                        ? { ...inv, status: 'completed', completedAt: new Date().toISOString() }
+                                        : inv
+                                    );
+                                    setInvestigationHistory(updatedHistory);
+                                    localStorage.setItem('investigationHistory', JSON.stringify(updatedHistory));
+                                  }}
+                                  className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                                  title="Mark as completed"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => deleteInvestigation(investigation.id)}
+                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                title="Delete investigation"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => deleteInvestigation(investigation.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        </div>
+
+                        {/* Investigation Details */}
+                        <div className="p-6 space-y-4">
+                          {/* Search Query */}
+                          {investigation.query && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-gray-500" />
+                                Search Query
+                              </h5>
+                              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600">
+                                <p className="text-sm font-mono text-gray-700 dark:text-gray-300 leading-relaxed break-all">
+                                  {investigation.query}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Search Parameters */}
+                          {investigation.searchParameters && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                <Settings className="w-4 h-4 text-gray-500" />
+                                Search Parameters
+                              </h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {Object.entries(investigation.searchParameters).map(([key, value]) => (
+                                  <div key={key} className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                                      {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                                    </p>
+                                    <p className="text-sm text-gray-900 dark:text-white">{value}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Investigation Results Summary */}
+                          {investigation.resultsCount !== undefined && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                <Database className="w-4 h-4 text-gray-500" />
+                                Results Summary
+                              </h5>
+                              <div className="flex items-center gap-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <div className="text-center">
+                                  <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                                    {investigation.resultsCount || 0}
+                                  </p>
+                                  <p className="text-xs text-blue-600 dark:text-blue-400">Results Found</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                                    {investigation.linksScanned || 0}
+                                  </p>
+                                  <p className="text-xs text-green-600 dark:text-green-400">Links Scanned</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+                                    {investigation.profilesFound || 0}
+                                  </p>
+                                  <p className="text-xs text-purple-600 dark:text-purple-400">Profiles Found</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Notes */}
+                          {investigation.notes && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                <MessageSquare className="w-4 h-4 text-gray-500" />
+                                Investigation Notes
+                              </h5>
+                              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                <p className="text-sm text-gray-700 dark:text-gray-300">{investigation.notes}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Tags */}
+                          {investigation.tags && investigation.tags.length > 0 && (
+                            <div>
+                              <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                                <Bookmark className="w-4 h-4 text-gray-500" />
+                                Tags
+                              </h5>
+                              <div className="flex flex-wrap gap-2">
+                                {investigation.tags.map((tag, index) => (
+                                  <span key={index} className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-full font-medium">
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -717,55 +913,55 @@ function Profile({ user }) {
             {/* Settings Tab */}
             {activeTab === 'settings' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Application Settings</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Application Settings</h3>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                      <label className="font-medium text-gray-900 dark:text-white">Auto-save investigations</label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Automatically save your work as you type</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="mb-3 sm:mb-0">
+                      <label className="font-semibold text-gray-900 dark:text-white text-base">Auto-save investigations</label>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Automatically save your work as you type</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.autoSave}
                       onChange={(e) => updateSetting('autoSave', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                      <label className="font-medium text-gray-900 dark:text-white">Anonymous mode</label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Hide your identity in browser requests</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="mb-3 sm:mb-0">
+                      <label className="font-semibold text-gray-900 dark:text-white text-base">Anonymous mode</label>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Hide your identity in browser requests</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.anonymousMode}
                       onChange={(e) => updateSetting('anonymousMode', e.target.checked)}
-                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700"
                     />
                   </div>
 
-                  <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
-                    <div>
-                      <label className="font-medium text-gray-900 dark:text-white">Notifications</label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Get notified about investigation updates</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="mb-3 sm:mb-0">
+                      <label className="font-semibold text-gray-900 dark:text-white text-base">Notifications</label>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Get notified about investigation updates</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={settings.notifications}
                       onChange={(e) => updateSetting('notifications', e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700"
                     />
                   </div>
 
-                  <div className="py-3">
-                    <label className="font-medium text-gray-900 block mb-2">Data retention (days)</label>
-                    <p className="text-sm text-gray-600 mb-3">How long to keep investigation data</p>
+                  <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <label className="font-semibold text-gray-900 dark:text-white text-base block mb-2">Data retention (days)</label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">How long to keep investigation data</p>
                     <select
                       value={settings.dataRetention}
                       onChange={(e) => updateSetting('dataRetention', parseInt(e.target.value))}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full sm:w-auto px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value={7}>7 days</option>
                       <option value={30}>30 days</option>
@@ -781,49 +977,49 @@ function Profile({ user }) {
             {/* Storage Tab */}
             {activeTab === 'storage' && (
               <div className="space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Data & Storage</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Data & Storage</h3>
                 
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900">Storage Usage</h4>
-                      <p className="text-sm text-gray-600">Local data stored on this device</p>
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+                    <div className="mb-4 sm:mb-0">
+                      <h4 className="font-semibold text-gray-900 dark:text-white text-lg">Storage Usage</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Local data stored on this device</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-semibold text-gray-900">{storageInfo.used}MB</div>
-                      <div className="text-sm text-gray-600">of {storageInfo.total}MB</div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{storageInfo.used}MB</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">of {storageInfo.total}MB</div>
                     </div>
                   </div>
                   
-                  <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-6">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full" 
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300" 
                       style={{ width: `${(storageInfo.used / storageInfo.total) * 100}%` }}
                     ></div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Investigations:</span>
-                      <span className="ml-2 font-medium">{storageInfo.investigations}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div className="flex justify-between sm:flex-col sm:justify-start">
+                      <span className="text-gray-600 dark:text-gray-400">Investigations:</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">{storageInfo.investigations}</span>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Saved Pages:</span>
-                      <span className="ml-2 font-medium">{storageInfo.savedPages || savedPages.length}</span>
+                    <div className="flex justify-between sm:flex-col sm:justify-start">
+                      <span className="text-gray-600 dark:text-gray-400">Saved Pages:</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">{storageInfo.savedPages || savedPages.length}</span>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Settings:</span>
-                      <span className="ml-2 font-medium">Synced</span>
+                    <div className="flex justify-between sm:flex-col sm:justify-start">
+                      <span className="text-gray-600 dark:text-gray-400">Settings:</span>
+                      <span className="font-semibold text-green-600 dark:text-green-400">Synced</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-6">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
                     <div>
-                      <h4 className="font-medium text-yellow-900">Data Privacy Notice</h4>
-                      <p className="text-sm text-yellow-800 mt-1">
+                      <h4 className="font-semibold text-yellow-900 dark:text-yellow-100">Data Privacy Notice</h4>
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200 mt-2 leading-relaxed">
                         Your investigation data is stored locally and in Firebase. We do not share your data with third parties. 
                         You can export or delete your data at any time.
                       </p>
@@ -832,34 +1028,34 @@ function Profile({ user }) {
                 </div>
 
                 {/* Premium Storage Upgrade */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-700 rounded-xl p-6 text-white">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
                         <Database className="w-5 h-5" />
-                        <h4 className="font-semibold">Need More Storage?</h4>
+                        <h4 className="font-bold text-lg">Need More Storage?</h4>
                       </div>
-                      <p className="text-blue-100 mb-4">
+                      <p className="text-blue-100 dark:text-blue-200 mb-4 leading-relaxed">
                         Upgrade to premium for more storage, advanced features, and priority support.
                       </p>
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4" />
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 flex-shrink-0" />
                           <span>Up to 10GB storage</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4" />
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 flex-shrink-0" />
                           <span>Advanced analytics</span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4" />
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 flex-shrink-0" />
                           <span>Team collaboration</span>
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={() => setShowPremiumStorage(true)}
-                      className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center gap-2"
+                      className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 shadow-lg"
                     >
                       <Database className="w-4 h-4" />
                       View Plans
