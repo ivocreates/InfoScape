@@ -62,7 +62,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   const [torMode, setTorMode] = useState(false);
   const [selectedExitNode, setSelectedExitNode] = useState('auto');
   const [chainMode, setChainMode] = useState(false);
-  const [selectedChain, setSelectedChain] = useState('chain1');
+  const [selectedPresetChain, setSelectedPresetChain] = useState('chain1');
   const [customChain, setCustomChain] = useState([]);
   const [proxyList, setProxyList] = useState(freeProxyServers);
   const [proxyTestResults, setProxyTestResults] = useState({});
@@ -98,12 +98,39 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
           };
         });
         
+        // Add built-in lightweight browsers (always available)
+        browserMap['simple'] = {
+          name: 'Simple Browser (Built-in)',
+          available: true,
+          builtin: true,
+          proxy: true,
+          description: 'Lightweight web browser built into InfoScope'
+        };
+        
+        browserMap['lynx'] = {
+          name: 'Lynx Text Browser',
+          available: true,
+          builtin: true,
+          proxy: true,
+          description: 'Text-based browser for minimal footprint'
+        };
+        
+        browserMap['w3m'] = {
+          name: 'W3M Browser',
+          available: true,
+          builtin: true,
+          proxy: true,
+          description: 'Text-mode web browser with images support'
+        };
+        
         // Add install options for missing browsers
         const commonBrowsers = [
           { key: 'chrome', name: 'Google Chrome', available: false },
           { key: 'firefox', name: 'Mozilla Firefox', available: false },
           { key: 'tor', name: 'Tor Browser', available: false },
-          { key: 'brave', name: 'Brave Browser', available: false }
+          { key: 'brave', name: 'Brave Browser', available: false },
+          { key: 'vivaldi', name: 'Vivaldi Browser', available: false },
+          { key: 'opera', name: 'Opera Browser', available: false }
         ];
         
         commonBrowsers.forEach(browser => {
@@ -119,18 +146,53 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
         setAvailableBrowsers(browserMap);
       }).catch(error => {
         console.warn('Failed to get available browsers:', error);
-        // Fallback browsers
+        // Fallback browsers (lightweight options always available)
+        setAvailableBrowsers(browserMap);
+      }).catch(error => {
+        console.warn('Failed to get available browsers:', error);
+        // Fallback browsers (lightweight options always available)
         setAvailableBrowsers({
           simple: {
-            name: 'Simple Browser',
+            name: 'Simple Browser (Built-in)',
             available: true,
+            builtin: true,
             proxy: true,
-            description: 'Built-in secure browser'
+            description: 'Lightweight web browser built into InfoScope'
+          },
+          lynx: {
+            name: 'Lynx Text Browser',
+            available: true,
+            builtin: true,
+            proxy: true,
+            description: 'Text-based browser for minimal footprint'
+          },
+          w3m: {
+            name: 'W3M Browser',
+            available: true,
+            builtin: true,
+            proxy: true,
+            description: 'Text-mode web browser with images support'
           },
           default: {
-            name: 'Default Browser',
+            name: 'System Default Browser',
             available: true,
-            proxy: false
+            proxy: false,
+            description: 'Use system default browser'
+          },
+          chrome: {
+            name: 'Google Chrome',
+            available: false,
+            needsInstall: true
+          },
+          firefox: {
+            name: 'Mozilla Firefox',
+            available: false,
+            needsInstall: true
+          },
+          tor: {
+            name: 'Tor Browser',
+            available: false,
+            needsInstall: true
           }
         });
       });
@@ -351,7 +413,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   const applyProxyChain = (chainId) => {
     const chain = proxyChains.find(c => c.id === chainId);
     if (chain) {
-      setSelectedChain(chainId);
+      setSelectedPresetChain(chainId);
       setChainMode(true);
       
       // Configure first proxy in chain
@@ -370,17 +432,17 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
   };
 
   const addToChain = (nodeKey) => {
-    if (selectedChain.length < 3 && !selectedChain.includes(nodeKey) && nodeKey !== 'auto') {
-      setSelectedChain([...selectedChain, nodeKey]);
+    if (customChain.length < 3 && !customChain.includes(nodeKey) && nodeKey !== 'auto') {
+      setCustomChain([...customChain, nodeKey]);
     }
   };
 
   const removeFromChain = (nodeKey) => {
-    setSelectedChain(selectedChain.filter(key => key !== nodeKey));
+    setCustomChain(customChain.filter(key => key !== nodeKey));
   };
 
   const clearChain = () => {
-    setSelectedChain([]);
+    setCustomChain([]);
   };
 
   const handleProxyProfileSelect = (profileKey) => {
@@ -418,7 +480,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
       torMode: torMode,
       exitNode: selectedExitNode,
       chainMode: chainMode,
-      proxyChain: selectedChain,
+      proxyChain: customChain,
       url: url
     };
 
@@ -522,12 +584,14 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                   return (
                     <div
                       key={key}
-                      onClick={() => browser.available && handleBrowserSelect(key)}
+                      onClick={() => browser.available ? handleBrowserSelect(key) : browser.needsInstall ? setShowBrowserInstaller(true) : null}
                       className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                         selectedBrowser === key
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400'
                           : browser.available
                           ? 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700'
+                          : browser.needsInstall
+                          ? 'border-orange-200 dark:border-orange-600 hover:border-orange-300 dark:hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20'
                           : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-50'
                       }`}
                     >
@@ -536,16 +600,31 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                           selectedBrowser === key ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
                         }`} />
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900 dark:text-white">{browser.name}</div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-white">{browser.name}</span>
+                            {browser.builtin && (
+                              <span className="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+                                Built-in
+                              </span>
+                            )}
+                            {browser.recommended && (
+                              <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">
+                                Recommended
+                              </span>
+                            )}
+                          </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {browser.available ? 
-                              (browser.proxy ? 'Proxy support available' : 'Standard browsing') :
-                              'Not installed'
+                              (browser.description || (browser.proxy ? 'Proxy support available' : 'Standard browsing')) :
+                              'Not installed - Click to install'
                             }
                           </div>
                         </div>
                         {selectedBrowser === key && (
                           <div className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+                        )}
+                        {!browser.available && browser.needsInstall && (
+                          <Download className="w-4 h-4 text-orange-500 dark:text-orange-400" />
                         )}
                       </div>
                     </div>
@@ -917,12 +996,12 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                       </div>
                       
                       {/* Chain Display */}
-                      {selectedChain.length > 0 && (
+                      {customChain.length > 0 && (
                         <div className="mb-4">
                           <label className="text-sm font-medium text-gray-700 mb-2 block">Current Chain:</label>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm text-gray-500">Your Device</span>
-                            {selectedChain.map((nodeKey, index) => (
+                            {customChain.map((nodeKey, index) => (
                               <React.Fragment key={nodeKey}>
                                 <span className="text-gray-400">→</span>
                                 <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 border border-blue-200 rounded">
@@ -954,7 +1033,7 @@ function BrowserSelector({ isOpen, onClose, url, onBrowserSelect }) {
                         <label className="text-sm font-medium text-gray-700 mb-2 block">Add to Chain:</label>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-1 max-h-32 overflow-y-auto popup-scrollbar">
                           {Object.entries(torExitNodes).map(([key, node]) => {
-                            if (key === 'auto' || selectedChain.includes(key) || selectedChain.length >= 3) return null;
+                            if (key === 'auto' || customChain.includes(key) || customChain.length >= 3) return null;
                             return (
                               <button
                                 key={key}

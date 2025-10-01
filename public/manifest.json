@@ -1,7 +1,7 @@
 {
-  "short_name": "InfoScope OSINT",
-  "name": "InfoScope OSINT - Advanced Open Source Intelligence Platform",
-  "description": "Professional OSINT platform with 50+ advanced intelligence gathering tools. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools. Better than infoooze.",
+  "short_name": "InfoScope OSINT v2.2.0",
+  "name": "InfoScope OSINT v2.2.0 - Advanced Open Source Intelligence Platform",
+  "description": "Professional OSINT platform v2.2.0 with 50+ advanced intelligence gathering tools, mobile-responsive design, floating system info, masked AI agents, and weekly tips. Built-in subdomain enumeration, port scanning, email analysis, social media intelligence, and cybersecurity investigation tools.",
   "lang": "en",
   "scope": "/",
   "start_url": "/?source=pwa",

@@ -29,7 +29,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
     {
       id: '1',
       type: 'bot',
-      content: 'Hello! I\'m your OSINT AI assistant powered by Google Gemini and OpenAI. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
+      content: 'Hello! I\'m your OSINT AI assistant with dual agent support. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
       timestamp: new Date(),
       suggestions: aiService.getOSINTSuggestions().slice(0, 4)
     }
@@ -38,8 +38,37 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
   const [isLoading, setIsLoading] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('checking');
   const [currentProvider, setCurrentProvider] = useState('auto');
+  const [selectedAgent, setSelectedAgent] = useState('gemini'); // Track which agent user prefers
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Helper function to get masked agent names
+  const getAgentName = (provider) => {
+    switch (provider) {
+      case 'gemini':
+        return 'Agent 1';
+      case 'openai':
+        return 'Agent 2';
+      default:
+        return 'AI Assistant';
+    }
+  };
+
+  // Handle agent switching
+  const handleAgentSwitch = (agent) => {
+    setSelectedAgent(agent);
+    setCurrentProvider(agent);
+    
+    // Add a system message about the switch
+    const switchMessage = {
+      id: Date.now().toString(),
+      type: 'system',
+      content: `Switched to ${getAgentName(agent)}`,
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, switchMessage]);
+  };
 
   // Check AI service status on component mount
   useEffect(() => {
@@ -88,7 +117,8 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
     setConnectionStatus('connecting');
     
     try {
-      const result = await aiService.generateResponse(userMessage, messages);
+      // Pass selected agent preference to AI service
+      const result = await aiService.generateResponse(userMessage, messages, selectedAgent);
       setConnectionStatus('connected');
       setCurrentProvider(result.provider);
       
@@ -187,7 +217,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
       {
         id: '1',
         type: 'bot',
-        content: 'Hello! I\'m your OSINT AI assistant powered by Google Gemini and OpenAI. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
+        content: 'Hello! I\'m your OSINT AI assistant with dual agent support. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
         timestamp: new Date(),
         suggestions: aiService.getOSINTSuggestions().slice(0, 4)
       }
@@ -212,8 +242,8 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
   const getStatusText = () => {
     switch (connectionStatus) {
       case 'connected':
-        const providerName = currentProvider === 'gemini' ? 'Gemini' : currentProvider === 'openai' ? 'OpenAI' : 'AI';
-        return `${providerName} Assistant Online`;
+        const providerName = getAgentName(currentProvider);
+        return `${providerName} Online`;
       case 'connecting':
         return 'Connecting...';
       case 'checking':
@@ -259,7 +289,34 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
             </div>
           </div>
         </div>
+        
+        {/* Agent Switching Controls */}
         <div className="flex items-center gap-1">
+          <div className="flex bg-white dark:bg-gray-700 rounded-lg p-1 mr-2">
+            <button
+              onClick={() => handleAgentSwitch('gemini')}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                selectedAgent === 'gemini'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
+              }`}
+              title="Switch to Agent 1"
+            >
+              <Brain className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => handleAgentSwitch('openai')}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                selectedAgent === 'openai'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
+              }`}
+              title="Switch to Agent 2"
+            >
+              <Zap className="w-3 h-3" />
+            </button>
+          </div>
+          
           <button
             onClick={handleClearChat}
             className="p-1.5 hover:bg-white hover:bg-opacity-50 dark:hover:bg-gray-600 rounded-lg transition-colors"
@@ -316,7 +373,7 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
                       ) : message.provider === 'openai' ? (
                         <Zap className="w-3 h-3" />
                       ) : null}
-                      {message.provider === 'gemini' ? 'Gemini' : message.provider === 'openai' ? 'OpenAI' : message.provider}
+                      {getAgentName(message.provider)}
                       {message.usedFallback && <span className="text-orange-400">*</span>}
                     </span>
                   )}

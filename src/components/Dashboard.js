@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import LegalDocumentation from './LegalDocumentation';
+import statisticsService from '../services/statisticsService';
 
 function Dashboard({ setCurrentView }) {
   const [recentInvestigations, setRecentInvestigations] = useState([]);
@@ -21,6 +22,23 @@ function Dashboard({ setCurrentView }) {
     totalInvestigations: 0,
     successfulFinds: 0,
     platformsCovered: 0
+  });
+  const [weeklyStats, setWeeklyStats] = useState({
+    newCases: 8,
+    completed: 5,
+    inProgress: 3
+  });
+  const [topTools, setTopTools] = useState([
+    { name: 'Social Media Analyzer', usage: 75, trend: '+5%' },
+    { name: 'Username Hunter', usage: 68, trend: '+12%' },
+    { name: 'Email Validator', usage: 62, trend: '+8%' }
+  ]);
+  const [systemStatus, setSystemStatus] = useState({
+    overall: 'operational',
+    apiServices: 'online',
+    database: 'healthy',
+    responseTime: '123ms',
+    lastUpdated: new Date().toLocaleTimeString()
   });
 
   useEffect(() => {
@@ -149,10 +167,31 @@ function Dashboard({ setCurrentView }) {
         successfulFinds: successful,
         platformsCovered: platforms.size
       });
+
+      // Fetch real-time statistics
+      await fetchRealTimeStats();
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRealTimeStats = async () => {
+    try {
+      // Get weekly statistics
+      const weeklyData = await statisticsService.getWeeklyStats();
+      setWeeklyStats(weeklyData.thisWeek);
+
+      // Get top tools usage
+      const topToolsData = await statisticsService.getTopToolsStats();
+      setTopTools(topToolsData);
+
+      // Get system status
+      const statusData = await statisticsService.getSystemStatus();
+      setSystemStatus(statusData);
+    } catch (error) {
+      console.error('Error fetching real-time stats:', error);
     }
   };
 
@@ -325,15 +364,15 @@ function Dashboard({ setCurrentView }) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">New Cases</span>
-              <span className="font-medium text-gray-900 dark:text-white">8</span>
+              <span className="font-medium text-gray-900 dark:text-white">{weeklyStats.newCases}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">Completed</span>
-              <span className="font-medium text-green-600 dark:text-green-400">5</span>
+              <span className="font-medium text-green-600 dark:text-green-400">{weeklyStats.completed}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">In Progress</span>
-              <span className="font-medium text-blue-600 dark:text-blue-400">3</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400">{weeklyStats.inProgress}</span>
             </div>
           </div>
         </div>
@@ -345,33 +384,23 @@ function Dashboard({ setCurrentView }) {
             <Star className="w-5 h-5 text-yellow-500" />
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Social Analyzer</span>
-              <div className="flex items-center gap-1">
-                <div className="w-8 h-2 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
-                  <div className="w-6 h-full bg-blue-500 rounded-full"></div>
+            {topTools.map((tool, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">{tool.name}</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-8 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full ${
+                        index === 0 ? 'bg-blue-500' : 
+                        index === 1 ? 'bg-green-500' : 'bg-purple-500'
+                      }`}
+                      style={{ width: `${Math.min(tool.usage, 100)}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-xs text-gray-500">{tool.usage}%</span>
                 </div>
-                <span className="text-xs text-gray-500">75%</span>
               </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Username Hunter</span>
-              <div className="flex items-center gap-1">
-                <div className="w-8 h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden">
-                  <div className="w-5 h-full bg-green-500 rounded-full"></div>
-                </div>
-                <span className="text-xs text-gray-500">62%</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Email Validator</span>
-              <div className="flex items-center gap-1">
-                <div className="w-8 h-2 bg-purple-200 dark:bg-purple-800 rounded-full overflow-hidden">
-                  <div className="w-4 h-full bg-purple-500 rounded-full"></div>
-                </div>
-                <span className="text-xs text-gray-500">50%</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -380,22 +409,39 @@ function Dashboard({ setCurrentView }) {
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-semibold text-gray-900 dark:text-white">System Status</h4>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-600 dark:text-green-400">Operational</span>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${
+                systemStatus.overall === 'operational' ? 'bg-green-500' : 
+                systemStatus.overall === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+              }`}></div>
+              <span className={`text-xs capitalize ${
+                systemStatus.overall === 'operational' ? 'text-green-600 dark:text-green-400' :
+                systemStatus.overall === 'degraded' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
+              }`}>{systemStatus.overall}</span>
             </div>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">API Services</span>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">Online</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                systemStatus.apiServices === 'online' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
+                'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+              }`}>{systemStatus.apiServices}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">Database</span>
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">Healthy</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                systemStatus.database === 'healthy' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
+                systemStatus.database === 'degraded' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' :
+                'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+              }`}>{systemStatus.database}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-400">Response Time</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">123ms</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{systemStatus.responseTime}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Last Updated</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{systemStatus.lastUpdated}</span>
             </div>
           </div>
         </div>

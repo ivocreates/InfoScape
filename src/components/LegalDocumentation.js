@@ -11,17 +11,21 @@ import {
   AlertTriangle,
   CheckCircle,
   X,
-  Info
+  Info,
+  Menu,
+  ChevronLeft
 } from 'lucide-react';
 
 const LegalDocumentation = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const tabs = [
     { id: 'overview', label: 'Legal Overview', icon: Shield },
     { id: 'license', label: 'License', icon: FileText },
     { id: 'privacy', label: 'Privacy Policy', icon: Lock },
     { id: 'terms', label: 'Terms of Service', icon: Scale },
+    { id: 'conditions', label: 'Terms & Conditions', icon: Users },
     { id: 'compliance', label: 'Compliance', icon: CheckCircle },
     { id: 'disclaimer', label: 'Disclaimer', icon: AlertTriangle }
   ];
@@ -30,23 +34,23 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
 
   const renderOverview = () => (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
             <Info className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-blue-900 mb-2">InfoScope Legal Framework</h3>
-            <p className="text-blue-800 mb-4">
+            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">InfoScope Legal Framework</h3>
+            <p className="text-blue-800 dark:text-blue-200 mb-4">
               InfoScope is committed to providing a legally compliant, ethical, and transparent OSINT platform. 
               This documentation outlines our legal framework, user responsibilities, and compliance requirements.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2 text-blue-700">
+              <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
                 <CheckCircle className="w-4 h-4" />
                 <span>Open Source License (CC BY-SA 4.0)</span>
               </div>
-              <div className="flex items-center gap-2 text-blue-700">
+              <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
                 <CheckCircle className="w-4 h-4" />
                 <span>Privacy-First Design</span>
               </div>
@@ -64,98 +68,98 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <FileText className="w-6 h-6 text-green-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Open Source License</h3>
+            <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Open Source License</h3>
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             InfoScope is licensed under Creative Commons Attribution-ShareAlike 4.0 International License, 
             promoting transparency and community collaboration.
           </p>
           <button
             onClick={() => setActiveTab('license')}
-            className="text-green-600 hover:text-green-700 font-medium flex items-center gap-2"
+            className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center gap-2"
           >
             View License Details <ExternalLink className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Lock className="w-6 h-6 text-purple-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Privacy Protection</h3>
+            <Lock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Privacy Protection</h3>
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             We implement privacy-by-design principles, minimal data collection, and strong user control 
             over personal information.
           </p>
           <button
             onClick={() => setActiveTab('privacy')}
-            className="text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2"
+            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium flex items-center gap-2"
           >
             View Privacy Policy <ExternalLink className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Scale className="w-6 h-6 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Terms of Service</h3>
+            <Scale className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Terms of Service</h3>
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Clear guidelines for acceptable use, user responsibilities, and service limitations 
             to ensure ethical OSINT practices.
           </p>
           <button
             onClick={() => setActiveTab('terms')}
-            className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-2"
           >
             View Terms <ExternalLink className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <AlertTriangle className="w-6 h-6 text-orange-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Legal Disclaimer</h3>
+            <AlertTriangle className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Legal Disclaimer</h3>
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Important disclaimers regarding tool usage, liability limitations, and user responsibilities 
             in OSINT investigations.
           </p>
           <button
             onClick={() => setActiveTab('disclaimer')}
-            className="text-orange-600 hover:text-orange-700 font-medium flex items-center gap-2"
+            className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium flex items-center gap-2"
           >
             View Disclaimer <ExternalLink className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Principles</h3>
+      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Key Principles</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="text-center p-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Eye className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Eye className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">Transparency</h4>
-            <p className="text-sm text-gray-600">Open source, auditable code and clear documentation</p>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Transparency</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Open source, auditable code and clear documentation</p>
           </div>
           <div className="text-center p-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Shield className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">Ethics</h4>
-            <p className="text-sm text-gray-600">Responsible OSINT practices and user guidelines</p>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Ethics</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Responsible OSINT practices and user guidelines</p>
           </div>
           <div className="text-center p-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <h4 className="font-medium text-gray-900 mb-2">Community</h4>
-            <p className="text-sm text-gray-600">Collaborative development and shared knowledge</p>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Community</h4>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Collaborative development and shared knowledge</p>
           </div>
         </div>
       </div>
@@ -164,14 +168,14 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
 
   const renderLicense = () => (
     <div className="space-y-6">
-      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-green-600 dark:bg-green-700 rounded-lg flex items-center justify-center">
             <FileText className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-green-900">Creative Commons License</h3>
-            <p className="text-green-700">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
+            <h3 className="text-xl font-bold text-green-900 dark:text-green-100">Creative Commons License</h3>
+            <p className="text-green-700 dark:text-green-300">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</p>
           </div>
         </div>
         
@@ -491,6 +495,108 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
     </div>
   );
 
+  const renderConditions = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+            <Users className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">Terms & Conditions</h3>
+            <p className="text-blue-700 dark:text-blue-300">User Agreement and Conditions of Use</p>
+          </div>
+        </div>
+        
+        <div className="prose dark:prose-invert max-w-none">
+          <p className="text-blue-800 dark:text-blue-200">
+            By using InfoScope OSINT Platform, you agree to the following terms and conditions. 
+            Please read carefully before proceeding with your investigation activities.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Agreement</h4>
+        <div className="space-y-4 text-gray-700 dark:text-gray-300">
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Acceptance of Terms</h5>
+            <p>By accessing and using this platform, you acknowledge that you have read, understood, and agree to be bound by these terms and conditions.</p>
+          </div>
+          
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Intended Use</h5>
+            <ul className="list-disc ml-6 space-y-1">
+              <li>InfoScope is designed for legitimate OSINT investigations only</li>
+              <li>Users must comply with all applicable laws and regulations</li>
+              <li>Platform must not be used for illegal activities or harassment</li>
+              <li>Respect privacy rights and data protection laws</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">User Responsibilities</h5>
+            <ul className="list-disc ml-6 space-y-1">
+              <li>Verify accuracy of information obtained through investigations</li>
+              <li>Maintain confidentiality of sensitive investigation data</li>
+              <li>Report any security vulnerabilities or bugs discovered</li>
+              <li>Use the platform ethically and professionally</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Prohibited Activities</h5>
+            <ul className="list-disc ml-6 space-y-1">
+              <li>Attempting to bypass security measures or rate limits</li>
+              <li>Using the platform for stalking, harassment, or illegal surveillance</li>
+              <li>Sharing credentials or unauthorized access to accounts</li>
+              <li>Reverse engineering or attempting to extract proprietary code</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Data Protection</h5>
+            <ul className="list-disc ml-6 space-y-1">
+              <li>Users are responsible for protecting sensitive investigation data</li>
+              <li>Platform data should not be shared with unauthorized parties</li>
+              <li>Users must comply with GDPR, CCPA, and local privacy laws</li>
+              <li>Delete unnecessary data when investigations are complete</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Limitation of Liability</h5>
+            <p>InfoScope OSINT Platform is provided "as is" without warranties. Users assume full responsibility for their investigation activities and any consequences thereof.</p>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Termination</h5>
+            <p>We reserve the right to terminate access for users who violate these terms or engage in activities that compromise the platform's security or integrity.</p>
+          </div>
+
+          <div>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Updates to Terms</h5>
+            <p>These terms may be updated periodically. Users will be notified of significant changes and continued use constitutes acceptance of updated terms.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-6">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Important Notice</h4>
+            <p className="text-yellow-800 dark:text-yellow-200">
+              These terms and conditions are legally binding. If you do not agree with any part of these terms, 
+              please discontinue use of the platform immediately. For questions about these terms, 
+              please contact our legal team.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderCompliance = () => (
     <div className="space-y-6">
       <div className="bg-green-50 border border-green-200 rounded-xl p-6">
@@ -717,6 +823,8 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
         return renderPrivacy();
       case 'terms':
         return renderTerms();
+      case 'conditions':
+        return renderConditions();
       case 'compliance':
         return renderCompliance();
       case 'disclaimer':
@@ -727,42 +835,78 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between p-3 sm:p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="md:hidden p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-600 dark:text-gray-400"
+              title="Toggle Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="w-6 sm:w-8 lg:w-10 h-6 sm:h-8 lg:h-10 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+              <Shield className="w-3 sm:w-4 lg:w-5 h-3 sm:h-4 lg:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Legal Documentation</h2>
-              <p className="text-sm text-gray-600">InfoScope compliance and legal framework</p>
+              <h2 className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white">Legal Documentation</h2>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hidden sm:block">InfoScope compliance and legal framework</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+            className="p-2 sm:p-2.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 border border-transparent hover:border-red-200 dark:hover:border-red-800 shadow-lg hover:shadow-xl"
+            title="Close Legal Documentation"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="flex h-[calc(90vh-88px)]">
+        <div className="flex h-[calc(95vh-60px)] sm:h-[calc(90vh-80px)] lg:h-[calc(90vh-88px)] relative">
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div 
+              className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
           {/* Sidebar */}
-          <div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
+          <div className={`
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+            fixed md:relative left-0 top-0 w-64 h-full md:w-64 bg-gray-50 dark:bg-gray-900 
+            border-r border-gray-200 dark:border-gray-700 p-3 sm:p-4 overflow-y-auto 
+            transition-transform duration-300 ease-in-out z-20 md:z-0
+          `}>
+            {/* Mobile close button */}
+            <div className="md:hidden flex justify-between items-center mb-4">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Menu</h3>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
+
             <div className="space-y-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setSidebarOpen(false); // Close sidebar on mobile after selection
+                  }}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors w-full ${
                     activeTab === tab.id
-                      ? 'bg-gray-900 text-white'
-                      : 'text-gray-600 hover:bg-gray-200'
+                      ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-md'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200'
                   }`}
                 >
-                  <tab.icon className="w-4 h-4" />
+                  <tab.icon className="w-4 h-4 flex-shrink-0" />
                   <span className="text-sm font-medium">{tab.label}</span>
                 </button>
               ))}
@@ -770,7 +914,7 @@ const LegalDocumentation = ({ isOpen, onClose }) => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6 popup-scrollbar">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 popup-scrollbar bg-white dark:bg-gray-800">
             {renderContent()}
           </div>
         </div>

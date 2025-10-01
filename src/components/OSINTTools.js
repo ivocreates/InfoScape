@@ -1072,7 +1072,7 @@ function OSINTTools() {
       },
       {
         name: 'Breach Directory',
-        description: 'Free breach data search engine',
+        description: 'Free breach data search engine (may require manual access)',
         url: 'https://breachdirectory.org',
         icon: Database,
         color: 'bg-orange-600',
@@ -1080,7 +1080,20 @@ function OSINTTools() {
         rating: 4.3,
         free: true,
         integration: 'external',
-        tags: ['breach', 'directory', 'search', 'data']
+        tags: ['breach', 'directory', 'search', 'data'],
+        warning: 'Site may block automated requests - manual access recommended'
+      },
+      {
+        name: 'BreachChecker',
+        description: 'Alternative breach checking service',
+        url: 'https://breachcheck.com',
+        icon: Shield,
+        color: 'bg-purple-600',
+        category: 'Breach Analysis',
+        rating: 4.1,
+        free: true,
+        integration: 'external',
+        tags: ['breach', 'check', 'alternative', 'search']
       },
       // Paid Tools
       {

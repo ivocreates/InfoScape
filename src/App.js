@@ -18,6 +18,8 @@ import Investigation from './components/Investigation';
 import Profile from './components/Profile';
 import About from './components/About';
 import DesktopAppPromotion from './components/DesktopAppPromotion';
+import SystemInfoToggle from './components/SystemInfoToggle';
+import WeeklyTips from './components/WeeklyTips';
 
 // Performance utilities only
 import { 
@@ -42,6 +44,7 @@ function App() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showWeeklyTips, setShowWeeklyTips] = useState(false);
 
   useEffect(() => {
     // Initialize performance monitoring
@@ -93,6 +96,16 @@ function App() {
             setShowWeeklySupport(true);
             analyticsManager.trackFeatureUsage('weekly_support_shown', { user_type: 'returning' });
           }, 3000);
+          
+          // Check if we should show weekly tips (once per week)
+          const lastTipsShown = localStorage.getItem('lastWeeklyTipsShown');
+          const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+          
+          if (!lastTipsShown || parseInt(lastTipsShown) < oneWeekAgo) {
+            setTimeout(() => {
+              setShowWeeklyTips(true);
+            }, 5000); // Show after weekly support popup
+          }
         }
       }
 
@@ -217,6 +230,7 @@ function App() {
           onOpenChat={() => setIsChatOpen(true)}
           onOpenFavorites={() => setShowFavorites(true)}
           onOpenFeedback={() => setShowFeedback(true)}
+          onShowLanding={() => setShowLanding(true)}
         />
       
       <main className="transition-all duration-200">
@@ -259,6 +273,12 @@ function App() {
         onOpenChat={handleOpenChatWithMessage}
       />
 
+      {/* Weekly Tips Component */}
+      <WeeklyTips
+        isOpen={showWeeklyTips}
+        onClose={() => setShowWeeklyTips(false)}
+      />
+
       {/* Onboarding Component */}
       {showOnboarding && (
         <Onboarding
@@ -269,6 +289,9 @@ function App() {
 
       {/* Desktop App Promotion - Only show in web version */}
       <DesktopAppPromotion />
+
+      {/* System Info Toggle - Floating component for OSINT context */}
+      <SystemInfoToggle />
       </div>
     </ThemeProvider>
   );

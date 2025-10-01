@@ -7,7 +7,7 @@ import BrowserSelector from './BrowserSelector';
 import BrowserManager from './BrowserManager';
 import InfoScopeIcon from './InfoScopeIcon';
 
-function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback }) {
+function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback, onShowLanding }) {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
   const [showBrowserManager, setShowBrowserManager] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -50,16 +50,20 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
   ];
 
   const handleNavClick = (viewId) => {
-    setCurrentView(viewId);
+    if (viewId === 'landing') {
+      onShowLanding?.();
+    } else {
+      setCurrentView(viewId);
+    }
     setIsMobileMenuOpen(false);
   };
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 transition-colors relative">
       <div className="flex items-center justify-between">
-        {/* Logo and Title - Clickable to open About page */}
+        {/* Logo and Title - Clickable to go to landing page */}
         <button 
-          onClick={() => handleNavClick('about')}
+          onClick={() => handleNavClick('landing')}
           className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 rounded-lg transition-all duration-200 group"
           title="InfoScope OSINT - Professional Intelligence Platform"
         >

@@ -395,7 +395,7 @@ I'm currently operating in offline mode but can still help with:
   }
 
   // Main method to generate response with fallback
-  async generateResponse(userMessage, conversationHistory = []) {
+  async generateResponse(userMessage, conversationHistory = [], preferredAgent = null) {
     const availability = await this.checkAvailability();
     
     // If no APIs available, use offline mode
@@ -411,7 +411,11 @@ I'm currently operating in offline mode but can still help with:
       };
     }
 
-    const provider = await this.getBestProvider();
+    // Use preferred agent if specified and available
+    let provider = await this.getBestProvider();
+    if (preferredAgent && availability[preferredAgent]) {
+      provider = preferredAgent;
+    }
     
     try {
       let response;

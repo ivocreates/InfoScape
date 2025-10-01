@@ -1,7 +1,7 @@
 {
   "name": "infoscope-osint",
-  "version": "1.1.0",
-  "description": "Professional OSINT Investigation Platform - Desktop and Web application for comprehensive intelligence gathering with built-in browser, Google dorking, and 48+ OSINT tools. Features enhanced UI/UX, password toggles, dark mode, legal framework, and improved stability.",
+  "version": "2.2.0",
+  "description": "Professional OSINT Investigation Platform v2.2.0 - Advanced desktop and web application with mobile-responsive design, floating system info toggle, masked AI agents, weekly tips generation, and enhanced tutorial system. Features 48+ OSINT tools, dark mode, Firebase integration, and dual AI assistance.",
   "author": {
     "name": "Ivo Pereira",
     "email": "ivo@ivocreates.gmail.com",
@@ -100,6 +100,7 @@
     "axios": "^1.12.2",
     "dompurify": "^3.2.7",
     "electron-is-dev": "^2.0.0",
+    "electron-updater": "^6.6.2",
     "firebase": "^10.7.1",
     "lucide-react": "^0.303.0",
     "react": "^18.2.0",
@@ -114,7 +115,6 @@
     "cross-env": "^10.1.0",
     "electron": "^28.3.3",
     "electron-builder": "^24.13.3",
-    "electron-updater": "^6.6.2",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.1",
     "wait-on": "^7.2.0"
