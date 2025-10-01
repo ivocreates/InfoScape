@@ -17,11 +17,11 @@ import {
   Zap, 
   AlertTriangle, 
   TrendingUp, 
-  Filter, 
+  Filter,
+  CheckCircle,
+  Clock, 
   Download,
   Eye, 
-  Clock, 
-  CheckCircle, 
   X, 
   RefreshCw, 
   Database, 
@@ -366,6 +366,8 @@ function Investigation() {
   const [preset, setPreset] = useState(null);
   const [useAND, setUseAND] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const [investigationStatus, setInvestigationStatus] = useState('active'); // 'active', 'completed', 'archived'
   const [investigationName, setInvestigationName] = useState("");
   const [investigationDescription, setInvestigationDescription] = useState("");
   const [investigationNotes, setInvestigationNotes] = useState("");
@@ -577,6 +579,60 @@ function Investigation() {
       alert('Failed to save investigation. Please try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const completeInvestigation = async () => {
+    if (!investigationName.trim()) {
+      alert('Please provide a name for this investigation before completing it');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to mark this investigation as completed? This action cannot be undone.')) {
+      return;
+    }
+
+    setCompleting(true);
+    try {
+      if (!auth.currentUser) {
+        alert('You must be logged in to complete investigations.');
+        setCompleting(false);
+        return;
+      }
+
+      const investigationData = {
+        name: investigationName,
+        description: investigationDescription,
+        notes: investigationNotes,
+        targetName: values.fullName || values.username || values.email || 'Unknown',
+        searchParameters: values,
+        query: query,
+        preset: preset,
+        engine: engine,
+        useAND: useAND,
+        riskLevel: riskLevel,
+        searchHistory: searchHistory,
+        results: results,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        completedAt: serverTimestamp(),
+        status: 'completed',
+        userId: auth.currentUser.uid
+      };
+
+      await addDoc(collection(db, `users/${auth.currentUser.uid}/investigations`), investigationData);
+      setInvestigationStatus('completed');
+      alert('Investigation completed and saved successfully!');
+      
+      // Optionally clear the form
+      setInvestigationName('');
+      setInvestigationDescription('');
+      setInvestigationNotes('');
+    } catch (error) {
+      console.error('Error completing investigation:', error);
+      alert('Failed to complete investigation. Please try again.');
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -1235,14 +1291,34 @@ function Investigation() {
                   </EnhancedField>
                 </div>
                 
-                <button
-                  className="btn-primary w-full mt-4 flex items-center justify-center gap-2 py-3 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-                  onClick={saveInvestigation}
-                  disabled={saving || !investigationName.trim()}
-                >
-                  {saving ? <LoadingSpinner size="small" /> : <Save className="w-4 h-4" />}
-                  {saving ? 'Saving Investigation...' : 'Save Investigation'}
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                    onClick={saveInvestigation}
+                    disabled={saving || completing || !investigationName.trim()}
+                  >
+                    {saving ? <LoadingSpinner size="small" /> : <Save className="w-4 h-4" />}
+                    {saving ? 'Saving...' : 'Save Investigation'}
+                  </button>
+                  
+                  <button
+                    className="bg-green-600 hover:bg-green-700 text-white flex-1 flex items-center justify-center gap-2 py-3 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={completeInvestigation}
+                    disabled={saving || completing || !investigationName.trim()}
+                  >
+                    {completing ? <LoadingSpinner size="small" /> : <CheckCircle className="w-4 h-4" />}
+                    {completing ? 'Completing...' : 'Complete Investigation'}
+                  </button>
+                </div>
+                
+                {investigationStatus === 'completed' && (
+                  <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+                    <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-sm font-medium">Investigation completed successfully!</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Ethics & Legal Notice */}

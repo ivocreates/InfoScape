@@ -18,32 +18,44 @@ import {
   HelpCircle,
   Wifi,
   WifiOff,
-  RotateCcw
+  RotateCcw,
+  Zap,
+  Brain
 } from 'lucide-react';
-import googleAIService from '../services/googleAI';
+import aiService from '../services/aiService';
 
 const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = null }) => {
   const [messages, setMessages] = useState([
     {
       id: '1',
       type: 'bot',
-      content: 'Hello! I\'m your OSINT AI assistant. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
+      content: 'Hello! I\'m your OSINT AI assistant powered by Google Gemini and OpenAI. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
       timestamp: new Date(),
-      suggestions: [
-        'How do I start an OSINT investigation?',
-        'What are the best Google dorking techniques?',
-        'How can I verify social media profiles?',
-        'What legal considerations should I keep in mind?'
-      ]
+      suggestions: aiService.getOSINTSuggestions().slice(0, 4)
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState(
-    googleAIService.isConfigured() ? 'connected' : 'offline'
-  );
+  const [connectionStatus, setConnectionStatus] = useState('checking');
+  const [currentProvider, setCurrentProvider] = useState('auto');
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Check AI service status on component mount
+  useEffect(() => {
+    const checkAIStatus = async () => {
+      try {
+        const status = await aiService.getStatus();
+        setConnectionStatus(status.available ? 'connected' : 'offline');
+        setCurrentProvider(status.currentProvider);
+      } catch (error) {
+        console.error('Failed to check AI status:', error);
+        setConnectionStatus('offline');
+      }
+    };
+    
+    checkAIStatus();
+  }, []);
 
   // Handle initial message from weekly support popup
   useEffect(() => {
@@ -70,41 +82,39 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
     }
   }, [isOpen, isMinimized]);
 
-  // Enhanced AI response generator with Google AI integration
+  // Enhanced AI response generator with dual API support
   const generateAIResponse = async (userMessage) => {
     setIsLoading(true);
     setConnectionStatus('connecting');
     
     try {
-      let response;
+      const result = await aiService.generateResponse(userMessage, messages);
+      setConnectionStatus('connected');
+      setCurrentProvider(result.provider);
       
-      // Try Google AI service first if configured
-      if (googleAIService.isConfigured()) {
-        try {
-          response = await googleAIService.generateResponse(userMessage, messages);
-          setConnectionStatus('connected');
-        } catch (error) {
-          console.warn('Google AI failed, falling back to local responses:', error);
-          setConnectionStatus('offline');
-          response = await getFallbackResponse(userMessage);
-        }
-      } else {
-        // Use fallback responses when Google AI is not configured
-        setConnectionStatus('offline');
-        response = await getFallbackResponse(userMessage);
-      }
-
-      return response;
+      return {
+        content: result.content,
+        provider: result.provider,
+        usedFallback: result.usedFallback
+      };
       
     } catch (error) {
-      setConnectionStatus('error');
-      return "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again in a moment, or check your internet connection.";
+      console.error('AI service failed:', error);
+      setConnectionStatus('offline');
+      
+      // Use local fallback responses
+      const fallbackResponse = await getFallbackResponse(userMessage);
+      return {
+        content: fallbackResponse,
+        provider: 'fallback',
+        usedFallback: true
+      };
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fallback response system (original mock responses)
+  // Fallback response system for when AI APIs are unavailable
   const getFallbackResponse = async (userMessage) => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -158,8 +168,10 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
     const botMessage = {
       id: (Date.now() + 1).toString(),
       type: 'bot',
-      content: aiResponse,
-      timestamp: new Date()
+      content: aiResponse.content,
+      timestamp: new Date(),
+      provider: aiResponse.provider,
+      usedFallback: aiResponse.usedFallback
     };
 
     setMessages(prev => [...prev, botMessage]);
@@ -175,14 +187,9 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
       {
         id: '1',
         type: 'bot',
-        content: 'Hello! I\'m your OSINT AI assistant. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
+        content: 'Hello! I\'m your OSINT AI assistant powered by Google Gemini and OpenAI. I can help you with investigation techniques, search strategies, data analysis, and legal compliance. What would you like to know?',
         timestamp: new Date(),
-        suggestions: [
-          'How do I start an OSINT investigation?',
-          'What are the best Google dorking techniques?',
-          'How can I verify social media profiles?',
-          'What legal considerations should I keep in mind?'
-        ]
+        suggestions: aiService.getOSINTSuggestions().slice(0, 4)
       }
     ]);
   };
@@ -205,15 +212,18 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
   const getStatusText = () => {
     switch (connectionStatus) {
       case 'connected':
-        return 'AI Assistant Online';
+        const providerName = currentProvider === 'gemini' ? 'Gemini' : currentProvider === 'openai' ? 'OpenAI' : 'AI';
+        return `${providerName} Assistant Online`;
       case 'connecting':
         return 'Connecting...';
+      case 'checking':
+        return 'Checking Status...';
       case 'offline':
         return 'Offline Mode';
       case 'error':
         return 'Connection Error';
       default:
-        return 'Unknown Status';
+        return 'AI Assistant';
     }
   };
 
@@ -295,10 +305,21 @@ const AIChat = ({ isOpen, onClose, onMinimize, isMinimized, initialMessage = nul
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-none'
               }`}>
                 <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                <div className={`text-xs mt-2 opacity-70 ${
+                <div className={`text-xs mt-2 flex items-center justify-between opacity-70 ${
                   message.type === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                 }`}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <span>{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  {message.type === 'bot' && message.provider && message.provider !== 'fallback' && (
+                    <span className="flex items-center gap-1">
+                      {message.provider === 'gemini' ? (
+                        <Brain className="w-3 h-3" />
+                      ) : message.provider === 'openai' ? (
+                        <Zap className="w-3 h-3" />
+                      ) : null}
+                      {message.provider === 'gemini' ? 'Gemini' : message.provider === 'openai' ? 'OpenAI' : message.provider}
+                      {message.usedFallback && <span className="text-orange-400">*</span>}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

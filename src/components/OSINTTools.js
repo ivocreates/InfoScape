@@ -837,6 +837,18 @@ function OSINTTools() {
     'people-search': [
       // Free Tools
       {
+        name: 'DaProfiler',
+        description: 'OSINT tool to collect personal information (addresses, social media, emails, jobs)',
+        url: 'https://github.com/daprofiler/DaProfiler',
+        icon: Target,
+        color: 'bg-indigo-600',
+        category: 'People Search',
+        rating: 4.7,
+        free: true,
+        integration: 'external',
+        tags: ['osint', 'profile', 'social', 'email', 'address', 'jobs']
+      },
+      {
         name: 'TruePeopleSearch',
         description: 'Free comprehensive people search with address history and relatives',
         url: 'https://truepeoplesearch.com',
@@ -1117,6 +1129,42 @@ function OSINTTools() {
     'email-analysis': [
       // Free Tools
       {
+        name: 'Holehe',
+        description: 'Check if email is used on different platforms (Twitter, Instagram, etc.)',
+        url: 'https://github.com/megadose/holehe',
+        icon: Search,
+        color: 'bg-purple-600',
+        category: 'Email Analysis',
+        rating: 4.8,
+        free: true,
+        integration: 'external',
+        tags: ['email', 'platforms', 'social', 'osint', 'checker']
+      },
+      {
+        name: 'Eyes',
+        description: 'Advanced email OSINT tool for investigation',
+        url: 'https://github.com/N0rz3/Eyes',
+        icon: Eye,
+        color: 'bg-green-600',
+        category: 'Email Analysis',
+        rating: 4.7,
+        free: true,
+        integration: 'external',
+        tags: ['email', 'osint', 'investigation', 'github', 'accounts']
+      },
+      {
+        name: 'Zehef',
+        description: 'Email tracking and OSINT investigation tool',
+        url: 'https://github.com/N0rz3/Zehef',
+        icon: Target,
+        color: 'bg-blue-600',
+        category: 'Email Analysis',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['email', 'tracking', 'osint', 'breach', 'check']
+      },
+      {
         name: 'EmailRep',
         description: 'Email reputation and intelligence lookup',
         url: 'https://emailrep.io',
@@ -1186,6 +1234,30 @@ function OSINTTools() {
     'social-media': [
       // Free Tools
       {
+        name: 'Toutatis',
+        description: 'Extract information from Instagram accounts (emails, phone numbers)',
+        url: 'https://github.com/megadose/toutatis',
+        icon: Instagram,
+        color: 'bg-pink-600',
+        category: 'Social Media Analysis',
+        rating: 4.7,
+        free: true,
+        integration: 'external',
+        tags: ['instagram', 'extraction', 'email', 'phone', 'osint']
+      },
+      {
+        name: 'YesItsMe',
+        description: 'Find Instagram profiles by name and email/phone',
+        url: 'https://github.com/0x0be/yesitsme',
+        icon: Search,
+        color: 'bg-purple-600',
+        category: 'Social Media Analysis',
+        rating: 4.5,
+        free: true,
+        integration: 'external',
+        tags: ['instagram', 'profiles', 'name', 'email', 'phone']
+      },
+      {
         name: 'Sherlock',
         description: 'Hunt usernames across platforms (CLI tool)',
         url: 'https://github.com/sherlock-project/sherlock',
@@ -1196,6 +1268,18 @@ function OSINTTools() {
         free: true,
         integration: 'external',
         tags: ['username', 'hunt', 'platforms', 'cli']
+      },
+      {
+        name: 'Tookie OSINT',
+        description: 'Advanced OSINT tool for finding social media accounts',
+        url: 'https://github.com/Alfredredbird/tookie-osint',
+        icon: Target,
+        color: 'bg-orange-600',
+        category: 'Social Media Analysis',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['social', 'accounts', 'osint', 'advanced', 'finder']
       },
       {
         name: 'Namechk',
@@ -1253,6 +1337,18 @@ function OSINTTools() {
     'ethical-hacking': [
       // Free Tools
       {
+        name: 'Google Hacking Database',
+        description: 'Exploit-DB\'s comprehensive collection of Google dorks and advanced search operators',
+        url: 'https://www.exploit-db.com/google-hacking-database',
+        icon: Search,
+        color: 'bg-blue-600',
+        category: 'Ethical Hacking / Security',
+        rating: 4.9,
+        free: true,
+        integration: 'external',
+        tags: ['google', 'dorks', 'search', 'operators', 'recon', 'vulnerability']
+      },
+      {
         name: 'VirusTotal',
         description: 'Malware/file/URL analysis',
         url: 'https://virustotal.com',
@@ -1287,6 +1383,30 @@ function OSINTTools() {
         free: true,
         integration: 'external',
         tags: ['archive', 'historical', 'recon', 'sites']
+      },
+      {
+        name: 'OnionSearch',
+        description: 'Dark web search engine scraper for .onion sites',
+        url: 'https://github.com/megadose/OnionSearch',
+        icon: Eye,
+        color: 'bg-purple-600',
+        category: 'Ethical Hacking / Security',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['dark web', 'onion', 'scraper', 'search', 'tor']
+      },
+      {
+        name: 'xurlfind3r',
+        description: 'Passive URL discovery tool for reconnaissance',
+        url: 'https://github.com/hueristiq/xurlfind3r',
+        icon: LinkIcon,
+        color: 'bg-cyan-600',
+        category: 'Ethical Hacking / Security',
+        rating: 4.5,
+        free: true,
+        integration: 'external',
+        tags: ['url', 'discovery', 'reconnaissance', 'passive', 'recon']
       },
       // Paid Tools
       {
@@ -1457,6 +1577,175 @@ function OSINTTools() {
         price: '$$$$',
         integration: 'external',
         tags: ['professional', 'training', 'certification', 'sans']
+      }
+    ],
+
+    // NEW SPECIALIZED CATEGORIES
+    'dark-web-intelligence': [
+      {
+        name: 'OnionSearch',
+        description: 'Dark web search engine scraper for .onion sites',
+        url: 'https://github.com/megadose/OnionSearch',
+        icon: Eye,
+        color: 'bg-purple-600',
+        category: 'Dark Web Intelligence',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['dark web', 'onion', 'scraper', 'search', 'tor']
+      },
+      {
+        name: 'Prying Deep',
+        description: 'OSINT tool to collect intelligence on the dark web',
+        url: 'https://github.com/iudicium/pryingdeep',
+        icon: Database,
+        color: 'bg-gray-600',
+        category: 'Dark Web Intelligence',
+        rating: 4.4,
+        free: true,
+        integration: 'external',
+        tags: ['dark web', 'intelligence', 'crawler', 'osint']
+      },
+      {
+        name: 'Dark Web OSINT Tools Collection',
+        description: 'Comprehensive collection of dark web research tools',
+        url: 'https://github.com/apurvsinghgautam/dark-web-osint-tools',
+        icon: BookOpen,
+        color: 'bg-indigo-600',
+        category: 'Dark Web Intelligence',
+        rating: 4.2,
+        free: true,
+        integration: 'external',
+        tags: ['collection', 'dark web', 'tools', 'research']
+      }
+    ],
+
+    'username-research': [
+      {
+        name: 'Sherlock',
+        description: 'Hunt usernames across 400+ social platforms',
+        url: 'https://github.com/sherlock-project/sherlock',
+        icon: Users,
+        color: 'bg-green-600',
+        category: 'Username Research',
+        rating: 4.8,
+        free: true,
+        integration: 'external',
+        tags: ['username', 'hunt', 'platforms', 'cli', 'social']
+      },
+      {
+        name: 'Emora Project',
+        description: 'Username search with GUI across social networks',
+        url: 'https://github.com/IdefaSoft/Emora-Project',
+        icon: UserCheck,
+        color: 'bg-blue-600',
+        category: 'Username Research',
+        rating: 4.5,
+        free: true,
+        integration: 'external',
+        tags: ['username', 'gui', 'social', 'search', 'windows']
+      },
+      {
+        name: 'Tookie OSINT',
+        description: 'Advanced username and social media account finder',
+        url: 'https://github.com/Alfredredbird/tookie-osint',
+        icon: Target,
+        color: 'bg-orange-600',
+        category: 'Username Research',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['username', 'social', 'advanced', 'finder', 'osint']
+      }
+    ],
+
+    'complete-osint-frameworks': [
+      {
+        name: 'Mr. Holmes',
+        description: 'Complete OSINT toolkit with multiple investigation modules',
+        url: 'https://github.com/Lucksi/Mr.Holmes',
+        icon: Eye,
+        color: 'bg-yellow-600',
+        category: 'Complete OSINT Frameworks',
+        rating: 4.7,
+        free: true,
+        integration: 'external',
+        tags: ['complete', 'framework', 'investigation', 'toolkit', 'osint']
+      },
+      {
+        name: 'Seekr',
+        description: 'Multi-purpose OSINT toolkit with web interface',
+        url: 'https://github.com/seekr-osint/seekr',
+        icon: Globe,
+        color: 'bg-teal-600',
+        category: 'Complete OSINT Frameworks',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['multi-purpose', 'web', 'interface', 'toolkit', 'osint']
+      },
+      {
+        name: 'Ominis OSINT',
+        description: 'Web hunter for comprehensive online information gathering',
+        url: 'https://github.com/AnonCatalyst/Ominis-OSINT',
+        icon: Search,
+        color: 'bg-red-600',
+        category: 'Complete OSINT Frameworks',
+        rating: 4.4,
+        free: true,
+        integration: 'external',
+        tags: ['web', 'hunter', 'gathering', 'comprehensive', 'osint']
+      }
+    ],
+
+    'image-analysis': [
+      {
+        name: 'Google Images',
+        description: 'Reverse image search and analysis',
+        url: 'https://images.google.com',
+        icon: Image,
+        color: 'bg-blue-600',
+        category: 'Image Analysis',
+        rating: 4.8,
+        free: true,
+        integration: 'external',
+        tags: ['reverse', 'image', 'search', 'google']
+      },
+      {
+        name: 'TinEye',
+        description: 'Reverse image search engine',
+        url: 'https://tineye.com',
+        icon: Eye,
+        color: 'bg-green-600',
+        category: 'Image Analysis',
+        rating: 4.7,
+        free: true,
+        integration: 'external',
+        tags: ['reverse', 'image', 'search', 'engine']
+      },
+      {
+        name: 'Yandex Images',
+        description: 'Powerful reverse image search',
+        url: 'https://yandex.com/images',
+        icon: Image,
+        color: 'bg-red-600',
+        category: 'Image Analysis',
+        rating: 4.6,
+        free: true,
+        integration: 'external',
+        tags: ['reverse', 'image', 'yandex', 'powerful']
+      },
+      {
+        name: 'InVID WeVerify',
+        description: 'Video and image verification toolkit',
+        url: 'https://www.invid-project.eu/tools-and-services/invid-verification-plugin/',
+        icon: FileText,
+        color: 'bg-purple-600',
+        category: 'Image Analysis',
+        rating: 4.5,
+        free: true,
+        integration: 'external',
+        tags: ['verification', 'video', 'image', 'toolkit']
       }
     ],
 
@@ -1965,6 +2254,34 @@ function OSINTTools() {
       icon: BookOpen, 
       description: 'Training, frameworks, and community resources',
       count: osintTools['osint-resources']?.length || 0
+    },
+    { 
+      id: 'dark-web-intelligence', 
+      name: 'Dark Web Intelligence', 
+      icon: Eye, 
+      description: 'Dark web research and .onion site investigation tools',
+      count: osintTools['dark-web-intelligence']?.length || 0
+    },
+    { 
+      id: 'username-research', 
+      name: 'Username Research', 
+      icon: UserCheck, 
+      description: 'Username hunting and social account discovery tools',
+      count: osintTools['username-research']?.length || 0
+    },
+    { 
+      id: 'complete-osint-frameworks', 
+      name: 'Complete OSINT Frameworks', 
+      icon: Layers, 
+      description: 'All-in-one OSINT toolkits and comprehensive frameworks',
+      count: osintTools['complete-osint-frameworks']?.length || 0
+    },
+    { 
+      id: 'image-analysis', 
+      name: 'Image Analysis', 
+      icon: Image, 
+      description: 'Reverse image search and image verification tools',
+      count: osintTools['image-analysis']?.length || 0
     },
     // Legacy categories for backward compatibility
     { 

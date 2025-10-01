@@ -7,7 +7,7 @@
     "email": "ivo@ivocreates.gmail.com",
     "url": "https://ivocreates.site"
   },
-  "main": "public/electron.js",
+  "main": "main.js",
   "homepage": "https://infoscope-osint.web.app",
   "scripts": {
     "start": "react-scripts start",
@@ -26,45 +26,72 @@
     "deploy-github": "npm run build && echo 'Deploy to GitHub Pages or releases'",
     "serve": "npm run build && npx serve -s build -p 3000",
     "package": "npm run electron-pack-all",
-    "release": "npm run electron-pack-all"
+    "release": "npm run electron-pack-all",
+    "dist": "npm run build && electron-builder --publish=never"
   },
   "build": {
     "appId": "com.infoscope.osint",
-    "productName": "InfoScope OSINT",
+    "productName": "InfoScope OSINT Platform",
     "copyright": "Copyright © 2025 @ivocreates - Licensed under CC BY-SA 4.0",
     "directories": {
-      "buildResources": "assets",
+      "buildResources": "build-resources",
       "output": "dist"
     },
     "files": [
       "build/**/*",
-      "node_modules/**/*",
-      "public/electron.js",
-      "public/preload.js"
+      "main.js",
+      "preload.js",
+      "node_modules/**/*"
     ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ]
     },
     "mac": {
-      "target": "dmg",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "category": "public.app-category.productivity"
     },
     "linux": {
-      "target": "AppImage",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64", "arm64"]
+        }
+      ],
       "category": "Utility"
     },
-    "extraResources": [
-      {
-        "from": "build",
-        "to": "build",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "InfoScope OSINT Platform"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ivocreates",
+      "repo": "InfoScape"
     }
   },
   "dependencies": {
@@ -84,8 +111,10 @@
   "devDependencies": {
     "autoprefixer": "^10.4.16",
     "concurrently": "^7.6.0",
-    "electron": "^28.1.0",
+    "cross-env": "^10.1.0",
+    "electron": "^28.3.3",
     "electron-builder": "^24.13.3",
+    "electron-updater": "^6.6.2",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.1",
     "wait-on": "^7.2.0"
