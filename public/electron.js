@@ -37,18 +37,20 @@ class InfoScopeElectronApp {
     });
 
     // App event handlers
-    app.whenReady().then(() => this.createMainWindow());
+    app.whenReady().then(() => {
+      // Security configurations must be set after app is ready
+      this.setupSecurity();
+      
+      // Auto-updater setup
+      if (!isDev) {
+        this.setupAutoUpdater();
+      }
+      
+      this.createMainWindow();
+    });
     app.on('window-all-closed', () => this.handleWindowAllClosed());
     app.on('activate', () => this.handleActivate());
     app.on('before-quit', () => this.handleBeforeQuit());
-
-    // Security configurations
-    this.setupSecurity();
-    
-    // Auto-updater setup
-    if (!isDev) {
-      this.setupAutoUpdater();
-    }
   }
 
   createMainWindow() {
@@ -1117,10 +1119,6 @@ ipcMain.handle('get-available-browsers', async () => {
   return browsers;
 });
 
-ipcMain.handle('open-external', async (event, url) => {
-  shell.openExternal(url);
-});
-
 ipcMain.handle('get-app-version', async () => {
   return app.getVersion();
 });
@@ -1170,25 +1168,5 @@ ipcMain.handle('close-all-browsers', async () => {
   }
 });
 
-// App event handlers
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-// Security: Prevent new window creation
-app.on('web-contents-created', (event, contents) => {
-  contents.on('new-window', (event, navigationUrl) => {
-    event.preventDefault();
-    shell.openExternal(navigationUrl);
-  });
-});
+// Initialize the InfoScope Electron App
+new InfoScopeElectronApp();
