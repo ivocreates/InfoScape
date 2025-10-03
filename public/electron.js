@@ -260,8 +260,8 @@ class InfoScopeElectronApp {
           ...details.responseHeaders,
           'Content-Security-Policy': [
             "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; " +
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-            "connect-src 'self' https: wss: ws:; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+            "connect-src 'self' https: wss: ws: ws://localhost:*; " +
             "img-src 'self' data: https:; " +
             "style-src 'self' 'unsafe-inline' https:;"
           ]

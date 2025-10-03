@@ -150,20 +150,30 @@ function App() {
 
   useEffect(() => {
     // Listen to Electron menu events
-    if (window.electronAPI) {
-      window.electronAPI.onNewInvestigation(() => {
+    if (window.electronAPI && typeof window.electronAPI.onNewInvestigation === 'function') {
+      const newInvestigationHandler = () => {
         setCurrentView('investigation');
-      });
+      };
 
-      window.electronAPI.onSaveInvestigation(() => {
+      const saveInvestigationHandler = () => {
         // Trigger save in current component
         // This would be handled by the active component
-      });
+      };
+
+      window.electronAPI.onNewInvestigation(newInvestigationHandler);
+      
+      if (typeof window.electronAPI.onSaveInvestigation === 'function') {
+        window.electronAPI.onSaveInvestigation(saveInvestigationHandler);
+      }
 
       // Cleanup
       return () => {
-        window.electronAPI.removeAllListeners('new-investigation');
-        window.electronAPI.removeAllListeners('save-investigation');
+        if (typeof window.electronAPI.removeNewInvestigationListener === 'function') {
+          window.electronAPI.removeNewInvestigationListener(newInvestigationHandler);
+        }
+        if (typeof window.electronAPI.removeSaveInvestigationListener === 'function') {
+          window.electronAPI.removeSaveInvestigationListener(saveInvestigationHandler);
+        }
       };
     }
 

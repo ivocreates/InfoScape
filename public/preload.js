@@ -253,6 +253,39 @@ class InfoScopeElectronAPI {
     getArch: () => process.arch,
     getPlatform: () => process.platform
   };
+
+  // IPC Event Listeners
+  onNewInvestigation(callback) {
+    ipcRenderer.on('new-investigation', callback);
+  }
+
+  removeNewInvestigationListener(callback) {
+    ipcRenderer.removeListener('new-investigation', callback);
+  }
+
+  onSaveInvestigation(callback) {
+    ipcRenderer.on('save-investigation', callback);
+  }
+
+  removeSaveInvestigationListener(callback) {
+    ipcRenderer.removeListener('save-investigation', callback);
+  }
+
+  onAppUpdate(callback) {
+    ipcRenderer.on('app-update', callback);
+  }
+
+  removeAppUpdateListener(callback) {
+    ipcRenderer.removeListener('app-update', callback);
+  }
+
+  onBrowserReady(callback) {
+    ipcRenderer.on('browser-ready', callback);
+  }
+
+  removeBrowserReadyListener(callback) {
+    ipcRenderer.removeListener('browser-ready', callback);
+  }
 }
 
 // Create API instance

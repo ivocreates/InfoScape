@@ -289,31 +289,31 @@
       // Core Web Vitals tracking
       function getCLS(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getCLS }) => getCLS(onPerfEntry));
+          import('web-vitals').then(({ getCLS }) => getCLS(onPerfEntry)).catch(() => {});
         }
       }
       
       function getFID(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getFID }) => getFID(onPerfEntry));
+          import('web-vitals').then(({ getFID }) => getFID(onPerfEntry)).catch(() => {});
         }
       }
       
       function getFCP(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getFCP }) => getFCP(onPerfEntry));
+          import('web-vitals').then(({ getFCP }) => getFCP(onPerfEntry)).catch(() => {});
         }
       }
       
       function getLCP(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getLCP }) => getLCP(onPerfEntry));
+          import('web-vitals').then(({ getLCP }) => getLCP(onPerfEntry)).catch(() => {});
         }
       }
       
       function getTTFB(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getTTFB }) => getTTFB(onPerfEntry));
+          import('web-vitals').then(({ getTTFB }) => getTTFB(onPerfEntry)).catch(() => {});
         }
       }
       
