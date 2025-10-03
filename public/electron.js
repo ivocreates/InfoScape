@@ -1,52 +1,415 @@
-const { app, BrowserWindow, ipcMain, shell, Menu, session } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, shell, session, dialog } = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
+const { autoUpdater } = require('electron-updater');
+const windowStateKeeper = require('electron-window-state');
 
-// Track launched browser processes for cancellation
-const launchedBrowsers = new Map();
-
-let mainWindow;
-let browserWindow;
-
-function createWindow() {
-  // Create the browser window
-  mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 1000,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js')
-    },
-    titleBarStyle: 'default',
-    show: false
+// Enable live reload for Electron in development
+if (isDev) {
+  require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
+    hardResetMethod: 'exit'
   });
+}
 
-  // Load the app
-  const startUrl = isDev 
-    ? 'http://localhost:3000' 
-    : `file://${path.join(__dirname, '../build/index.html')}`;
-  
-  mainWindow.loadURL(startUrl);
+class InfoScopeElectronApp {
+  constructor() {
+    this.mainWindow = null;
+    this.isQuitting = false;
+    this.appConfig = {
+      name: 'InfoScope OSINT Platform',
+      version: '2.3.0',
+      description: 'Professional Desktop OSINT Investigation Tool'
+    };
+  }
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+  init() {
+    // Configure app properties
+    app.setName(this.appConfig.name);
+    app.setVersion(this.appConfig.version);
+    
+    // Security: Prevent new window creation
+    app.on('web-contents-created', (event, contents) => {
+      contents.on('new-window', (event, navigationUrl) => {
+        event.preventDefault();
+        shell.openExternal(navigationUrl);
+      });
+    });
+
+    // App event handlers
+    app.whenReady().then(() => this.createMainWindow());
+    app.on('window-all-closed', () => this.handleWindowAllClosed());
+    app.on('activate', () => this.handleActivate());
+    app.on('before-quit', () => this.handleBeforeQuit());
+
+    // Security configurations
+    this.setupSecurity();
+    
+    // Auto-updater setup
+    if (!isDev) {
+      this.setupAutoUpdater();
+    }
+  }
+
+  createMainWindow() {
+    // Load window state
+    let mainWindowState = windowStateKeeper({
+      defaultWidth: 1400,
+      defaultHeight: 900
+    });
+
+    // Create the browser window
+    this.mainWindow = new BrowserWindow({
+      x: mainWindowState.x,
+      y: mainWindowState.y,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
+      minWidth: 1000,
+      minHeight: 700,
+      show: false, // Don't show until ready
+      icon: path.join(__dirname, '../assets/icons/icon.png'),
+      titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        enableRemoteModule: false,
+        preload: path.join(__dirname, 'preload.js'),
+        webSecurity: true,
+        allowRunningInsecureContent: false,
+        experimentalFeatures: false
+      }
+    });
+
+    // Let windowStateKeeper manage the window
+    mainWindowState.manage(this.mainWindow);
+
+    // Load the application
+    const startUrl = isDev 
+      ? 'http://localhost:3000' 
+      : `file://${path.join(__dirname, '../build/index.html')}`;
+    
+    this.mainWindow.loadURL(startUrl);
+
+    // Show window when ready
+    this.mainWindow.once('ready-to-show', () => {
+      this.mainWindow.show();
+      
+      // Focus window on creation
+      if (isDev) {
+        this.mainWindow.webContents.openDevTools();
+      }
+    });
+
+    // Handle window closed
+    this.mainWindow.on('closed', () => {
+      this.mainWindow = null;
+    });
+
+    // Prevent external navigation
+    this.mainWindow.webContents.on('will-navigate', (event, url) => {
+      if (url !== this.mainWindow.webContents.getURL()) {
+        event.preventDefault();
+        shell.openExternal(url);
+      }
+    });
+
+    // Set up application menu
+    this.createApplicationMenu();
+
+    // Set up IPC handlers
+    this.setupIPC();
+  }
+
+  createApplicationMenu() {
+    const template = [
+      {
+        label: 'InfoScope',
+        submenu: [
+          {
+            label: 'About InfoScope',
+            click: () => this.showAboutDialog()
+          },
+          { type: 'separator' },
+          {
+            label: 'Preferences...',
+            accelerator: 'CmdOrCtrl+,',
+            click: () => this.openPreferences()
+          },
+          { type: 'separator' },
+          {
+            label: 'Hide InfoScope',
+            accelerator: 'CmdOrCtrl+H',
+            role: 'hide'
+          },
+          {
+            label: 'Hide Others',
+            accelerator: 'CmdOrCtrl+Shift+H',
+            role: 'hideothers'
+          },
+          {
+            label: 'Show All',
+            role: 'unhide'
+          },
+          { type: 'separator' },
+          {
+            label: 'Quit InfoScope',
+            accelerator: 'CmdOrCtrl+Q',
+            click: () => app.quit()
+          }
+        ]
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          { label: 'Undo', accelerator: 'CmdOrCtrl+Z', role: 'undo' },
+          { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', role: 'redo' },
+          { type: 'separator' },
+          { label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' },
+          { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
+          { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
+          { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectall' }
+        ]
+      },
+      {
+        label: 'Tools',
+        submenu: [
+          {
+            label: 'OSINT Framework',
+            click: () => this.sendToRenderer('navigate-to', 'osint-tools')
+          },
+          {
+            label: 'Domain Analysis',
+            click: () => this.sendToRenderer('navigate-to', 'domain-analyzer')
+          },
+          {
+            label: 'People Search',
+            click: () => this.sendToRenderer('navigate-to', 'profile-analyzer')
+          },
+          { type: 'separator' },
+          {
+            label: 'API Configuration',
+            click: () => this.sendToRenderer('navigate-to', 'api-config')
+          },
+          {
+            label: 'Built-in Browser',
+            click: () => this.openBuiltinBrowser()
+          }
+        ]
+      },
+      {
+        label: 'View',
+        submenu: [
+          { label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' },
+          { label: 'Force Reload', accelerator: 'CmdOrCtrl+Shift+R', role: 'forceReload' },
+          { label: 'Toggle Developer Tools', accelerator: 'F12', role: 'toggleDevTools' },
+          { type: 'separator' },
+          { label: 'Actual Size', accelerator: 'CmdOrCtrl+0', role: 'resetZoom' },
+          { label: 'Zoom In', accelerator: 'CmdOrCtrl+Plus', role: 'zoomIn' },
+          { label: 'Zoom Out', accelerator: 'CmdOrCtrl+-', role: 'zoomOut' },
+          { type: 'separator' },
+          { label: 'Toggle Fullscreen', accelerator: 'F11', role: 'togglefullscreen' }
+        ]
+      },
+      {
+        label: 'Window',
+        submenu: [
+          { label: 'Minimize', accelerator: 'CmdOrCtrl+M', role: 'minimize' },
+          { label: 'Close', accelerator: 'CmdOrCtrl+W', role: 'close' }
+        ]
+      },
+      {
+        label: 'Help',
+        submenu: [
+          {
+            label: 'InfoScope Documentation',
+            click: () => shell.openExternal('https://github.com/ivocreates/InfoScope/wiki')
+          },
+          {
+            label: 'Report Issue',
+            click: () => shell.openExternal('https://github.com/ivocreates/InfoScope/issues')
+          },
+          { type: 'separator' },
+          {
+            label: 'Check for Updates',
+            click: () => this.checkForUpdates()
+          }
+        ]
+      }
+    ];
+
+    // macOS specific menu adjustments
+    if (process.platform === 'darwin') {
+      template[0].submenu.unshift({
+        label: 'Services',
+        role: 'services',
+        submenu: []
+      });
+    }
+
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+  }
+
+  setupSecurity() {
+    // Content Security Policy
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+            "connect-src 'self' https: wss: ws:; " +
+            "img-src 'self' data: https:; " +
+            "style-src 'self' 'unsafe-inline' https:;"
+          ]
+        }
+      });
+    });
+
+    // Disable node integration globally
+    app.on('web-contents-created', (event, contents) => {
+      contents.on('will-attach-webview', (event, webPreferences, params) => {
+        delete webPreferences.preload;
+        webPreferences.nodeIntegration = false;
+        webPreferences.contextIsolation = true;
+      });
+    });
+  }
+
+  setupIPC() {
+    // Handle application info requests
+    ipcMain.handle('get-app-info', () => {
+      return {
+        name: this.appConfig.name,
+        version: this.appConfig.version,
+        platform: process.platform,
+        arch: process.arch,
+        electronVersion: process.versions.electron,
+        nodeVersion: process.versions.node
+      };
+    });
+
+    // Handle external link opening
+    ipcMain.handle('open-external', (event, url) => {
+      shell.openExternal(url);
+    });
+
+    // Handle file dialog
+    ipcMain.handle('show-open-dialog', async (event, options) => {
+      const result = await dialog.showOpenDialog(this.mainWindow, options);
+      return result;
+    });
+
+    // Handle save dialog
+    ipcMain.handle('show-save-dialog', async (event, options) => {
+      const result = await dialog.showSaveDialog(this.mainWindow, options);
+      return result;
+    });
+
+    // Handle navigation
+    ipcMain.on('navigate-to', (event, view) => {
+      this.sendToRenderer('navigate-to', view);
+    });
+  }
+
+  setupAutoUpdater() {
+    autoUpdater.checkForUpdatesAndNotify();
+    
+    autoUpdater.on('update-available', () => {
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'info',
+        title: 'Update available',
+        message: 'A new version of InfoScope is available. It will be downloaded in the background.',
+        buttons: ['OK']
+      });
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'info',
+        title: 'Update ready',
+        message: 'Update downloaded. InfoScope will restart to apply the update.',
+        buttons: ['Restart Now', 'Later']
+      }).then((result) => {
+        if (result.response === 0) {
+          autoUpdater.quitAndInstall();
+        }
+      });
+    });
+  }
+
+  sendToRenderer(channel, data) {
+    if (this.mainWindow && this.mainWindow.webContents) {
+      this.mainWindow.webContents.send(channel, data);
+    }
+  }
+
+  showAboutDialog() {
+    dialog.showMessageBox(this.mainWindow, {
+      type: 'info',
+      title: 'About InfoScope',
+      message: this.appConfig.name,
+      detail: `Version: ${this.appConfig.version}\n${this.appConfig.description}\n\nBuilt with Electron and React\nCopyright © 2024 InfoScope Team`,
+      buttons: ['OK']
+    });
+  }
+
+  openPreferences() {
+    this.sendToRenderer('navigate-to', 'api-config');
+  }
+
+  openBuiltinBrowser() {
+    this.sendToRenderer('navigate-to', 'browser');
+  }
+
+  checkForUpdates() {
     if (isDev) {
-      mainWindow.webContents.openDevTools();
+      dialog.showMessageBox(this.mainWindow, {
+        type: 'info',
+        title: 'Updates',
+        message: 'Update checking is disabled in development mode.',
+        buttons: ['OK']
+      });
+    } else {
+      autoUpdater.checkForUpdatesAndNotify();
+    }
+  }
+
+  handleWindowAllClosed() {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  }
+
+  handleActivate() {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      this.createMainWindow();
+    }
+  }
+
+  handleBeforeQuit() {
+    this.isQuitting = true;
+  }
+}
+
+// Initialize the application
+const infoScopeApp = new InfoScopeElectronApp();
+infoScopeApp.init();
+
+// Prevent multiple instances
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    // Someone tried to run a second instance, focus our window instead
+    if (infoScopeApp.mainWindow) {
+      if (infoScopeApp.mainWindow.isMinimized()) infoScopeApp.mainWindow.restore();
+      infoScopeApp.mainWindow.focus();
     }
   });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-    if (browserWindow) {
-      browserWindow.close();
-      browserWindow = null;
-    }
-  });
-
-  // Create application menu
-  createMenu();
 }
 
 function createBrowserWindow(url) {

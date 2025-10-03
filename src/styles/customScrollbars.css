@@ -1,0 +1,305 @@
+/* Custom Scrollbar Styles for InfoScope OSINT Platform */
+/* Provides aesthetic, smooth scrolling across all components */
+
+/* Global Custom Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #6366f1 #f1f5f9;
+}
+
+/* Webkit-based browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+  margin: 2px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%);
+  transform: scale(1.1);
+}
+
+*::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+/* Dark mode scrollbars */
+.dark *::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark * {
+  scrollbar-color: #6366f1 #1e293b;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+/* Special scrollbars for different contexts */
+
+/* Terminal/Code areas */
+.terminal-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.terminal-scroll::-webkit-scrollbar-track {
+  background: #0f172a;
+  border-radius: 3px;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 3px;
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+}
+
+/* Chat/Messages areas */
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.6);
+  border-radius: 3px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.8);
+}
+
+/* Data tables */
+.table-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+/* Horizontal scrollbars for wide content */
+.horizontal-scroll::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track:horizontal {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 4px;
+}
+
+/* Invisible scrollbars (for custom scroll implementations) */
+.invisible-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.invisible-scroll::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+/* Thin scrollbars for sidebars */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
+}
+
+/* Modal/Dialog scrollbars */
+.modal-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Results/Output areas */
+.results-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.results-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 5px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.results-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.results-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
+}
+
+/* Custom scrollbar animations */
+@keyframes scrollbar-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animated-scroll::-webkit-scrollbar-thumb {
+  animation: scrollbar-appear 0.3s ease-in-out;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  *::-webkit-scrollbar-track {
+    background: #ffffff;
+    border: 2px solid #000000;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #000000;
+    border: 1px solid #ffffff;
+  }
+
+  .dark *::-webkit-scrollbar-track {
+    background: #000000;
+    border: 2px solid #ffffff;
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background: #ffffff;
+    border: 1px solid #000000;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    transform: none;
+  }
+}
+
+/* Utility classes for specific scrollbar styles */
+.scrollbar-primary {
+  scrollbar-color: #6366f1 #f1f5f9;
+}
+
+.scrollbar-primary::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.scrollbar-success {
+  scrollbar-color: #22c55e #f1f5f9;
+}
+
+.scrollbar-success::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
+
+.scrollbar-warning {
+  scrollbar-color: #f59e0b #f1f5f9;
+}
+
+.scrollbar-warning::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+}
+
+.scrollbar-danger {
+  scrollbar-color: #ef4444 #f1f5f9;
+}
+
+.scrollbar-danger::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Responsive scrollbar sizes */
+@media (max-width: 768px) {
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .table-scroll::-webkit-scrollbar,
+  .results-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .table-scroll::-webkit-scrollbar,
+  .results-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}

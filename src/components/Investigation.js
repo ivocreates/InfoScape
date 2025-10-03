@@ -33,6 +33,104 @@ import {
   Settings
 } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
+import aiService from '../services/aiService';
+
+// Smart Input Field Component
+function SmartInputField({ onParsed }) {
+  const [inputValue, setInputValue] = useState('');
+  const [parsedData, setParsedData] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    
+    if (value.trim()) {
+      setIsProcessing(true);
+      // Debounce parsing
+      setTimeout(() => {
+        const parsed = parseSmartInput(value);
+        setParsedData(parsed);
+        setIsProcessing(false);
+        onParsed?.(parsed);
+      }, 500);
+    } else {
+      setParsedData(null);
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="relative">
+        <textarea
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="Paste or type: John Smith, john@email.com, 123 Main St, @johndoe, +1-555-123-4567..."
+          className="w-full h-24 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none"
+          rows={3}
+        />
+        {isProcessing && (
+          <div className="absolute right-3 top-3">
+            <LoadingSpinner size="sm" />
+          </div>
+        )}
+      </div>
+
+      {parsedData && Object.keys(parsedData.detected).length > 0 && (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            Detected Information
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {Object.entries(parsedData.detected).map(([type, values]) => (
+              <div key={type} className="space-y-1">
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  {type.replace(/([A-Z])/g, ' $1').trim()}
+                </span>
+                <div className="space-y-1">
+                  {values.map((value, index) => (
+                    <div 
+                      key={index} 
+                      className="text-sm bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded border text-gray-900 dark:text-white"
+                    >
+                      {typeof value === 'object' ? JSON.stringify(value) : value}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {parsedData.variations.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 block">
+                Generated Search Variations
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {parsedData.variations.slice(0, 8).map((variation, index) => (
+                  <span 
+                    key={index}
+                    className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-700"
+                  >
+                    {variation}
+                  </span>
+                ))}
+                {parsedData.variations.length > 8 && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                    +{parsedData.variations.length - 8} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Advanced OSINT Search Engine utilities
 const osintEngines = {
@@ -85,16 +183,266 @@ const riskLevels = {
   critical: { color: 'purple', label: 'Critical Risk' }
 };
 
-// Utility functions
+// Advanced text parsing for addresses and structured data
+function parseAddressComponents(address) {
+  if (!address) return {};
+  
+  const components = {};
+  const patterns = {
+    streetNumber: /^\d+[a-z]?\s/i,
+    zipCode: /\b\d{5}(-\d{4})?\b/,
+    state: /\b[A-Z]{2}\b/,
+    country: /\b(USA|US|United States|Canada|CA|UK|United Kingdom)\b/i,
+    aptUnit: /\b(apt|apartment|unit|suite|ste)\s*#?\s*\w+/i,
+    poBox: /\bP\.?O\.?\s*Box\s+\d+/i
+  };
+  
+  // Extract components
+  const streetNumberMatch = address.match(patterns.streetNumber);
+  if (streetNumberMatch) components.streetNumber = streetNumberMatch[0].trim();
+  
+  const zipMatch = address.match(patterns.zipCode);
+  if (zipMatch) components.zipCode = zipMatch[0];
+  
+  const stateMatch = address.match(patterns.state);
+  if (stateMatch) components.state = stateMatch[0];
+  
+  const countryMatch = address.match(patterns.country);
+  if (countryMatch) components.country = countryMatch[0];
+  
+  const aptMatch = address.match(patterns.aptUnit);
+  if (aptMatch) components.unit = aptMatch[0];
+  
+  const poBoxMatch = address.match(patterns.poBox);
+  if (poBoxMatch) components.poBox = poBoxMatch[0];
+  
+  // Extract street name (remove number and common suffixes)
+  let streetName = address
+    .replace(patterns.streetNumber, '')
+    .replace(patterns.zipCode, '')
+    .replace(patterns.state, '')
+    .replace(patterns.country, '')
+    .replace(patterns.aptUnit, '')
+    .replace(patterns.poBox, '')
+    .replace(/\b(street|st|avenue|ave|road|rd|drive|dr|lane|ln|court|ct|place|pl|boulevard|blvd|way|circle|cir)\b/gi, '')
+    .trim();
+  
+  if (streetName) components.streetName = streetName;
+  
+  return components;
+}
+
+// Enhanced smart input parser that handles various data types
+function parseSmartInput(input) {
+  if (!input) return {};
+  
+  const result = {
+    raw: input,
+    tokens: [],
+    detected: {},
+    variations: []
+  };
+  
+  // Tokenize input intelligently
+  const tokens = input
+    .split(/[\s,;|\n]+/)
+    .map(token => token.trim())
+    .filter(Boolean);
+  
+  result.tokens = tokens;
+  
+  // Pattern matching for different data types
+  const patterns = {
+    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    phone: /^[\+]?[1-9]?[\s\-\(\)]?[\d\s\-\(\)]{7,15}$/,
+    ip: /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/,
+    url: /^https?:\/\/[^\s]+$/,
+    username: /^@?[a-zA-Z0-9_]{3,30}$/,
+    zipCode: /^\d{5}(-\d{4})?$/,
+    ssn: /^\d{3}-?\d{2}-?\d{4}$/,
+    creditCard: /^\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}$/,
+    coordinates: /^-?\d+\.?\d*\s*,\s*-?\d+\.?\d*$/
+  };
+  
+  // Detect data types for each token
+  tokens.forEach(token => {
+    for (const [type, pattern] of Object.entries(patterns)) {
+      if (pattern.test(token)) {
+        if (!result.detected[type]) result.detected[type] = [];
+        result.detected[type].push(token);
+      }
+    }
+  });
+  
+  // Special handling for names (multiple words)
+  const namePattern = /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$/;
+  if (namePattern.test(input)) {
+    result.detected.fullName = [input];
+  }
+  
+  // Address detection (contains numbers and common address words)
+  const addressKeywords = ['street', 'st', 'avenue', 'ave', 'road', 'rd', 'drive', 'dr', 'lane', 'ln', 'apt', 'suite'];
+  const hasAddressKeywords = addressKeywords.some(keyword => 
+    input.toLowerCase().includes(keyword)
+  );
+  const hasNumbers = /\d/.test(input);
+  
+  if (hasAddressKeywords && hasNumbers) {
+    result.detected.address = [input];
+    result.detected.addressComponents = parseAddressComponents(input);
+  }
+  
+  // Generate search variations
+  Object.entries(result.detected).forEach(([type, values]) => {
+    values.forEach(value => {
+      switch (type) {
+        case 'email':
+          const domain = value.split('@')[1];
+          result.variations.push(`"${value}"`);
+          result.variations.push(`site:${domain}`);
+          result.variations.push(`intext:${value}`);
+          break;
+        case 'phone':
+          const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
+          result.variations.push(`"${value}"`);
+          result.variations.push(`"${cleanPhone}"`);
+          result.variations.push(`intext:"${value}"`);
+          break;
+        case 'fullName':
+          const nameParts = value.split(' ').filter(p => p.trim());
+          result.variations.push(`"${value}"`);
+          if (nameParts.length >= 2) {
+            result.variations.push(`"${nameParts[0]} ${nameParts[nameParts.length - 1]}"`);
+            result.variations.push(`"${nameParts[0][0]}. ${nameParts[nameParts.length - 1]}"`);
+          }
+          break;
+        case 'address':
+          result.variations.push(`"${value}"`);
+          const components = result.detected.addressComponents;
+          if (components) {
+            if (components.streetName) result.variations.push(`"${components.streetName}"`);
+            if (components.zipCode) result.variations.push(`"${components.zipCode}"`);
+            if (components.state) result.variations.push(`"${components.state}"`);
+          }
+          break;
+        case 'username':
+          const cleanUsername = value.replace('@', '');
+          result.variations.push(`"${cleanUsername}"`);
+          result.variations.push(`"@${cleanUsername}"`);
+          result.variations.push(`inurl:${cleanUsername}`);
+          break;
+        default:
+          result.variations.push(`"${value}"`);
+          result.variations.push(`intext:"${value}"`);
+      }
+    });
+  });
+  
+  // Remove duplicates
+  result.variations = [...new Set(result.variations)];
+  
+  return result;
+}
+
+// Enhanced utility functions with comprehensive validation
 function validateQuery(query, engineKey) {
   const engine = osintEngines[engineKey];
   if (!engine) return { valid: false, error: 'Unknown search engine' };
+  
+  if (!query || query.trim().length === 0) {
+    return { valid: false, error: 'Query cannot be empty' };
+  }
   
   if (query.length > engine.maxQueryLength) {
     return { valid: false, error: `Query too long (max: ${engine.maxQueryLength} chars)` };
   }
   
-  return { valid: true };
+  // Check for potentially dangerous operators
+  const dangerousPatterns = [
+    /password\s*[:=]/i,
+    /admin\s*[:=]/i,
+    /secret\s*[:=]/i,
+    /api[_-]?key\s*[:=]/i,
+    /token\s*[:=]/i
+  ];
+  
+  const hasDangerousContent = dangerousPatterns.some(pattern => pattern.test(query));
+  if (hasDangerousContent) {
+    return { 
+      valid: true, 
+      warning: 'Query contains potentially sensitive search terms. Use caution.',
+      risk: 'high'
+    };
+  }
+  
+  // Validate engine-specific syntax
+  if (engineKey === 'google') {
+    const maxOperators = 32; // Google limits number of operators
+    const operatorCount = (query.match(/\b(site|inurl|intitle|intext|filetype|cache|link|before|after):/g) || []).length;
+    if (operatorCount > maxOperators) {
+      return { valid: false, error: `Too many operators (max: ${maxOperators})` };
+    }
+  }
+  
+  return { valid: true, risk: assessRisk(query) };
+}
+
+// Enhanced search string formatter for different browsers
+function formatSearchString(query, engineKey, browserConfig = {}) {
+  if (!query) return '';
+  
+  const engine = osintEngines[engineKey];
+  if (!engine) return query;
+  
+  let formattedQuery = query.trim();
+  
+  // Engine-specific optimizations
+  switch (engineKey) {
+    case 'google':
+      // Google-specific optimizations
+      if (browserConfig.region) {
+        formattedQuery += ` &gl=${browserConfig.region}`;
+      }
+      if (browserConfig.language) {
+        formattedQuery += ` &hl=${browserConfig.language}`;
+      }
+      break;
+      
+    case 'bing':
+      // Bing-specific optimizations
+      if (browserConfig.market) {
+        formattedQuery += ` &mkt=${browserConfig.market}`;
+      }
+      break;
+      
+    case 'yandex':
+      // Yandex-specific optimizations (Cyrillic support)
+      if (browserConfig.region === 'ru') {
+        formattedQuery = encodeURIComponent(formattedQuery);
+      }
+      break;
+      
+    case 'duckduckgo':
+      // DuckDuckGo bang optimization
+      if (!formattedQuery.startsWith('!') && browserConfig.enableBangs) {
+        const commonBangs = {
+          'github': '!gh',
+          'reddit': '!r',
+          'stackoverflow': '!so',
+          'wikipedia': '!w'
+        };
+        
+        for (const [keyword, bang] of Object.entries(commonBangs)) {
+          if (formattedQuery.toLowerCase().includes(keyword)) {
+            formattedQuery = `${bang} ${formattedQuery}`;
+            break;
+          }
+        }
+      }
+      break;
+  }
+  
+  return formattedQuery;
 }
 
 function assessRisk(query) {
@@ -378,6 +726,125 @@ function Investigation() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [multiEngine, setMultiEngine] = useState(false);
   const [results, setResults] = useState([]);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [showAiPanel, setShowAiPanel] = useState(false);
+
+  // AI Analysis Functions
+  const analyzeInvestigationData = async () => {
+    if (!query || !values) {
+      alert('Please configure your investigation parameters first');
+      return;
+    }
+
+    setAiAnalyzing(true);
+    setShowAiPanel(true);
+    
+    try {
+      // Prepare investigation context for AI analysis
+      const investigationContext = {
+        query,
+        searchParameters: values,
+        preset,
+        engine,
+        riskLevel,
+        searchHistory: searchHistory.slice(0, 5), // Latest 5 searches
+        targetInfo: {
+          name: values.fullName,
+          email: values.email,
+          username: values.username,
+          phone: values.phone,
+          location: values.location,
+          company: values.company
+        }
+      };
+
+      // Get AI analysis
+      const analysis = await aiService.analyzeInvestigationData(investigationContext);
+      setAiAnalysis(analysis);
+      
+    } catch (error) {
+      console.error('AI Analysis Error:', error);
+      alert('Failed to analyze investigation data. Please try again.');
+    } finally {
+      setAiAnalyzing(false);
+    }
+  };
+
+  const generateSearchSuggestions = async () => {
+    if (!values.fullName && !values.email && !values.username) {
+      alert('Please provide at least a name, email, or username');
+      return;
+    }
+
+    setAiAnalyzing(true);
+    
+    try {
+      const suggestions = await aiService.generateSearchSuggestions({
+        fullName: values.fullName,
+        email: values.email,
+        username: values.username,
+        location: values.location,
+        company: values.company,
+        currentEngine: engine,
+        riskTolerance: riskLevel
+      });
+
+      // Apply suggestions to current investigation
+      if (suggestions.keywords) {
+        setValues(prev => ({
+          ...prev,
+          include: suggestions.keywords.join(', ')
+        }));
+      }
+      
+      if (suggestions.sites) {
+        setValues(prev => ({
+          ...prev,
+          sites: suggestions.sites.join(', ')
+        }));
+      }
+
+      setAiAnalysis(prev => ({
+        ...prev,
+        suggestions
+      }));
+      
+    } catch (error) {
+      console.error('Search Suggestions Error:', error);
+      alert('Failed to generate search suggestions. Please try again.');
+    } finally {
+      setAiAnalyzing(false);
+    }
+  };
+
+  const interpretSearchResults = async (searchData) => {
+    if (!searchData || searchData.length === 0) {
+      return null;
+    }
+
+    try {
+      const interpretation = await aiService.interpretSearchResults({
+        searchData,
+        query,
+        targetInfo: {
+          name: values.fullName,
+          email: values.email,
+          username: values.username
+        },
+        searchContext: {
+          preset,
+          engine,
+          riskLevel
+        }
+      });
+
+      return interpretation;
+    } catch (error) {
+      console.error('Results Interpretation Error:', error);
+      return null;
+    }
+  };
 
   const query = useMemo(() => {
     if (!values || typeof values !== 'object') return '';
@@ -907,6 +1374,38 @@ function Investigation() {
           </div>
         </header>
 
+        {/* Smart Input Section */}
+        <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-200 dark:border-blue-700 p-6 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/30">
+              <Type className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Smart Input Parser</h3>
+            <div className="flex-1 h-px bg-gradient-to-r from-blue-300 to-transparent dark:from-blue-600"></div>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Enter any data (names, emails, addresses, phone numbers, usernames)
+              </label>
+              <SmartInputField 
+                onParsed={(parsedData) => {
+                  // Auto-populate form fields based on parsed data
+                  const updates = {};
+                  if (parsedData.detected.fullName) updates.fullName = parsedData.detected.fullName[0];
+                  if (parsedData.detected.email) updates.email = parsedData.detected.email[0];
+                  if (parsedData.detected.phone) updates.phone = parsedData.detected.phone[0];
+                  if (parsedData.detected.username) updates.username = parsedData.detected.username[0];
+                  if (parsedData.detected.address) updates.location = parsedData.detected.address[0];
+                  
+                  setValues(prev => ({ ...prev, ...updates }));
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           {/* Identity & Context - Left Column */}
           <section className="xl:col-span-4">
@@ -1251,6 +1750,116 @@ function Investigation() {
                   </div>
                 </div>
               )}
+
+              {/* AI Analysis Panel */}
+              <div className="card p-6 shadow-md bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Intelligence Assistant</h3>
+                  </div>
+                  <button
+                    className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                    onClick={() => setShowAiPanel(!showAiPanel)}
+                  >
+                    {showAiPanel ? <X className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      className="btn-secondary flex items-center gap-2 text-sm font-semibold px-4 py-3 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-800/30 dark:to-blue-800/30 border-purple-200 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:shadow-lg transition-all duration-200"
+                      onClick={analyzeInvestigationData}
+                      disabled={aiAnalyzing || !query.trim()}
+                    >
+                      {aiAnalyzing ? <LoadingSpinner size="sm" /> : <Target className="w-4 h-4" />}
+                      Analyze Investigation
+                    </button>
+                    
+                    <button
+                      className="btn-secondary flex items-center gap-2 text-sm font-semibold px-4 py-3 bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-800/30 dark:to-cyan-800/30 border-blue-200 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:shadow-lg transition-all duration-200"
+                      onClick={generateSearchSuggestions}
+                      disabled={aiAnalyzing || (!values.fullName && !values.email && !values.username)}
+                    >
+                      {aiAnalyzing ? <LoadingSpinner size="sm" /> : <Search className="w-4 h-4" />}
+                      Generate Suggestions
+                    </button>
+                  </div>
+
+                  {showAiPanel && aiAnalysis && (
+                    <div className="mt-6 space-y-4">
+                      {aiAnalysis.analysis && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            Investigation Analysis
+                          </h4>
+                          <div className="prose dark:prose-invert text-sm">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {aiAnalysis.analysis}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {aiAnalysis.suggestions && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            AI Search Suggestions
+                          </h4>
+                          <div className="space-y-3">
+                            {aiAnalysis.suggestions.keywords && (
+                              <div>
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Keywords</span>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {aiAnalysis.suggestions.keywords.map((keyword, index) => (
+                                    <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-300 text-xs rounded-md">
+                                      {keyword}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {aiAnalysis.suggestions.sites && (
+                              <div>
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Suggested Sites</span>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {aiAnalysis.suggestions.sites.map((site, index) => (
+                                    <span key={index} className="px-2 py-1 bg-green-100 dark:bg-green-800/30 text-green-700 dark:text-green-300 text-xs rounded-md">
+                                      {site}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {aiAnalysis.risks && (
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-red-200 dark:border-red-700">
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-red-600 dark:text-red-400" />
+                            Risk Assessment
+                          </h4>
+                          <div className="space-y-2">
+                            {aiAnalysis.risks.map((risk, index) => (
+                              <div key={index} className="flex items-start gap-2">
+                                <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{risk}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Save Investigation */}
               <div className="card p-6 shadow-md">
