@@ -56,7 +56,6 @@
     
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" />
@@ -289,31 +288,36 @@
       // Core Web Vitals tracking
       function getCLS(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getCLS }) => getCLS(onPerfEntry)).catch(() => {});
+          // Web Vitals not available in Electron context
+          console.log('Web Vitals: CLS tracking skipped in Electron');
         }
       }
       
       function getFID(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getFID }) => getFID(onPerfEntry)).catch(() => {});
+          // Web Vitals not available in Electron context
+          console.log('Web Vitals: FID tracking skipped in Electron');
         }
       }
       
       function getFCP(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getFCP }) => getFCP(onPerfEntry)).catch(() => {});
+          // Web Vitals not available in Electron context
+          console.log('Web Vitals: FCP tracking skipped in Electron');
         }
       }
       
       function getLCP(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getLCP }) => getLCP(onPerfEntry)).catch(() => {});
+          // Web Vitals not available in Electron context
+          console.log('Web Vitals: LCP tracking skipped in Electron');
         }
       }
       
       function getTTFB(onPerfEntry) {
         if (onPerfEntry && onPerfEntry instanceof Function) {
-          import('web-vitals').then(({ getTTFB }) => getTTFB(onPerfEntry)).catch(() => {});
+          // Web Vitals not available in Electron context
+          console.log('Web Vitals: TTFB tracking skipped in Electron');
         }
       }
       

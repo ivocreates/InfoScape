@@ -7,7 +7,7 @@ class InfoScopeElectronAPI {
   constructor() {
     this.validChannels = {
       send: ['navigate-to', 'browser-action', 'proxy-config'],
-      receive: ['navigate-to', 'app-update', 'browser-ready'],
+      receive: ['navigate-to', 'app-update', 'browser-ready', 'new-investigation', 'save-investigation'],
       invoke: [
         'get-app-info',
         'open-external',

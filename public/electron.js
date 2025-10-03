@@ -78,7 +78,8 @@ class InfoScopeElectronApp {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: true,
         allowRunningInsecureContent: false,
-        experimentalFeatures: false
+        experimentalFeatures: false,
+        additionalArguments: ['--disable-web-security'] // Only for development
       }
     });
 
@@ -253,18 +254,45 @@ class InfoScopeElectronApp {
   }
 
   setupSecurity() {
-    // Content Security Policy
+    // Content Security Policy - Secure configuration
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      const isDev = process.env.NODE_ENV === 'development' || details.url.includes('localhost');
+      
+      // Different CSP for development vs production
+      let cspPolicy;
+      
+      if (isDev) {
+        // More permissive CSP for development
+        cspPolicy = "default-src 'self' 'unsafe-inline' data: https: ws: wss:; " +
+                   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+                   "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+                   "connect-src 'self' https: wss: ws: ws://localhost:* http://localhost:*; " +
+                   "img-src 'self' data: https: blob:; " +
+                   "style-src 'self' 'unsafe-inline' https:; " +
+                   "font-src 'self' data: https:; " +
+                   "object-src 'none'; " +
+                   "base-uri 'self';";
+      } else {
+        // Stricter CSP for production
+        cspPolicy = "default-src 'self' data: https:; " +
+                   "script-src 'self' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+                   "script-src-elem 'self' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+                   "connect-src 'self' https:; " +
+                   "img-src 'self' data: https:; " +
+                   "style-src 'self' 'unsafe-inline' https:; " +
+                   "font-src 'self' data: https:; " +
+                   "object-src 'none'; " +
+                   "base-uri 'self';";
+      }
+
       callback({
         responseHeaders: {
           ...details.responseHeaders,
-          'Content-Security-Policy': [
-            "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https:; " +
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://checkout.razorpay.com; " +
-            "connect-src 'self' https: wss: ws: ws://localhost:*; " +
-            "img-src 'self' data: https:; " +
-            "style-src 'self' 'unsafe-inline' https:;"
-          ]
+          'Content-Security-Policy': [cspPolicy],
+          'X-Content-Type-Options': ['nosniff'],
+          'X-Frame-Options': ['DENY'],
+          'X-XSS-Protection': ['1; mode=block'],
+          'Referrer-Policy': ['strict-origin-when-cross-origin']
         }
       });
     });

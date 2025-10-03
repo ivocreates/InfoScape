@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { BrowserAlertProvider } from './hooks/useBrowserAlert';
+import ErrorBoundary from './components/ErrorBoundary';
 import BrowserAlertContainer from './components/BrowserAlertContainer';
 import LandingPage from './components/LandingPage';
 import AuthScreen from './components/AuthScreen';
@@ -200,20 +201,23 @@ function App() {
 
   if (!user) {
     return (
-      <ThemeProvider>
-        {showLanding ? (
-          <LandingPage onGetStarted={handleGetStarted} />
-        ) : (
-          <AuthScreen />
-        )}
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          {showLanding ? (
+            <LandingPage onGetStarted={handleGetStarted} />
+          ) : (
+            <AuthScreen />
+          )}
+        </ThemeProvider>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <BrowserAlertProvider>
-      <ThemeProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <ErrorBoundary>
+      <BrowserAlertProvider>
+        <ThemeProvider>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
           <Navigation 
             currentView={currentView} 
             setCurrentView={setCurrentView} 
@@ -294,6 +298,7 @@ function App() {
       </div>
     </ThemeProvider>
   </BrowserAlertProvider>
+  </ErrorBoundary>
   );
 }
 
