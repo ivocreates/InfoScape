@@ -321,7 +321,7 @@
         }
       }
       
-      // Track Core Web Vitals
+      // Track Core Web Vitals (only in browser, not Electron)
       function sendToAnalytics(metric) {
         if (typeof gtag !== 'undefined') {
           gtag('event', metric.name, {
@@ -333,15 +333,26 @@
         }
       }
       
-      getCLS(sendToAnalytics);
-      getFID(sendToAnalytics);
-      getFCP(sendToAnalytics);
-      getLCP(sendToAnalytics);
-      getTTFB(sendToAnalytics);
+      // Only track web vitals in browser environment, not Electron
+      if (typeof window !== 'undefined' && !window.electronAPI) {
+        getCLS(sendToAnalytics);
+        getFID(sendToAnalytics);
+        getFCP(sendToAnalytics);
+        getLCP(sendToAnalytics);
+        getTTFB(sendToAnalytics);
+      }
     </script>
     
-    <!-- Razorpay Script -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Razorpay Script - Only load in web environment -->
+    <script>
+      // Only load Razorpay in web environment, not Electron
+      if (!window.electronAPI) {
+        const razorpayScript = document.createElement('script');
+        razorpayScript.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        razorpayScript.async = true;
+        document.head.appendChild(razorpayScript);
+      }
+    </script>
     
     <!-- Critical CSS (above the fold styles) -->
     <style>
@@ -355,9 +366,10 @@
     <noscript>You need to enable JavaScript to run InfoScope OSINT.</noscript>
     <div id="root"></div>
     
-    <!-- PWA Installation Script -->
+    <!-- PWA Installation Script (disabled in Electron) -->
     <script>
-      if ('serviceWorker' in navigator) {
+      // Only register service worker in browser, not in Electron
+      if ('serviceWorker' in navigator && !window.electronAPI) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js')
             .then(function(registration) {

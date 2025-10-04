@@ -4395,28 +4395,6 @@ function OSINTTools() {
 
                   {/* Action Buttons */}
                   <div className="space-y-2">
-                    {/* Primary Action Button */}
-                    <button
-                      onClick={() => openToolWithBrowserSelector(tool)}
-                      className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 transform hover:scale-105 ${
-                        tool.integration === 'native' || tool.integration === 'builtin'
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg' 
-                          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 shadow-sm hover:shadow-md'
-                      }`}
-                    >
-                      {tool.integration === 'native' || tool.integration === 'builtin' ? (
-                        <>
-                          <Zap className="w-4 h-4" />
-                          Launch Tool
-                        </>
-                      ) : (
-                        <>
-                          <ExternalLink className="w-4 h-4" />
-                          Open Site
-                        </>
-                      )}
-                    </button>
-
                     {/* Quick Launch Button for External Tools */}
                     {tool.integration === 'external' && tool.url && (
                       <button
@@ -4430,11 +4408,22 @@ function OSINTTools() {
                           }
                           trackToolLaunch(tool, 'quick_launch');
                         }}
-                        className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg font-medium text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 transition-all duration-200"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-medium text-sm bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                         title="Quick launch in default browser"
                       >
-                        <Zap className="w-3 h-3" />
+                        <Zap className="w-4 h-4" />
                         Quick Launch
+                      </button>
+                    )}
+
+                    {/* Quick Launch Button for Built-in Tools */}
+                    {(tool.integration === 'native' || tool.integration === 'builtin') && (
+                      <button
+                        onClick={() => openTool(tool)}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-medium text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                      >
+                        <Zap className="w-4 h-4" />
+                        Launch Tool
                       </button>
                     )}
                   </div>

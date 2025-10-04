@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, Monitor, MessageCircle, Star, MessageSquare, Moon, Sun, Menu, X, Zap, Crown } from 'lucide-react';
+import { Search, Home, User, Settings, LogOut, Globe, Link, Shield, Info, Heart, MessageCircle, Star, MessageSquare, Moon, Sun, Menu, X, Zap, Crown } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import BrowserSelector from './BrowserSelector';
-import BrowserManager from './BrowserManager';
 import InfoScopeIcon from './InfoScopeIcon';
 
 function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavorites, onOpenFeedback, onShowLanding, onOpenBrowser }) {
   const [showBrowserSelector, setShowBrowserSelector] = useState(false);
-  const [showBrowserManager, setShowBrowserManager] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
 
@@ -120,15 +118,6 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
             <span className="hidden xl:inline">Browser</span>
           </button>
 
-          {/* Browser Manager Button */}
-          <button
-            onClick={() => setShowBrowserManager(true)}
-            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-all duration-200"
-            title="Manage Browser Instances"
-          >
-            <Monitor className="w-4 h-4" />
-            <span className="hidden xl:inline">Manager</span>
-          </button>
           {/* Action Buttons - Desktop */}
           <div className="hidden md:flex items-center gap-2">
             {/* AI Chat Button */}
@@ -239,17 +228,6 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
                 <Globe className="w-5 h-5" />
                 <span className="font-medium">Open Browser</span>
               </button>
-              
-              <button
-                onClick={() => {
-                  setShowBrowserManager(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
-              >
-                <Monitor className="w-5 h-5" />
-                <span className="font-medium">Browser Manager</span>
-              </button>
             </div>
 
             {/* Mobile Action Buttons */}
@@ -316,12 +294,6 @@ function Navigation({ currentView, setCurrentView, user, onOpenChat, onOpenFavor
         onClose={() => setShowBrowserSelector(false)}
         url="https://www.google.com"
         onBrowserSelect={handleBrowserSelect}
-      />
-
-      {/* Browser Manager Modal */}
-      <BrowserManager
-        isOpen={showBrowserManager}
-        onClose={() => setShowBrowserManager(false)}
       />
     </nav>
   );

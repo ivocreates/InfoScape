@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, ipcMain, shell, session, dialog } = require('electron');
 const path = require('path');
-const isDev = require('electron-is-dev');
+const isDev = process.env.NODE_ENV === 'development' && process.env.ELECTRON_IS_DEV !== 'false';
 const { autoUpdater } = require('electron-updater');
 const windowStateKeeper = require('electron-window-state');
 
@@ -69,7 +69,6 @@ class InfoScopeElectronApp {
       minWidth: 1000,
       minHeight: 700,
       show: false, // Don't show until ready
-      icon: path.join(__dirname, '../assets/icons/icon.png'),
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
       webPreferences: {
         nodeIntegration: false,
@@ -78,8 +77,7 @@ class InfoScopeElectronApp {
         preload: path.join(__dirname, 'preload.js'),
         webSecurity: true,
         allowRunningInsecureContent: false,
-        experimentalFeatures: false,
-        additionalArguments: ['--disable-web-security'] // Only for development
+        experimentalFeatures: false
       }
     });
 
@@ -87,9 +85,16 @@ class InfoScopeElectronApp {
     mainWindowState.manage(this.mainWindow);
 
     // Load the application
-    const startUrl = isDev 
-      ? 'http://localhost:3000' 
-      : `file://${path.join(__dirname, '../build/index.html')}`;
+    let startUrl;
+    if (isDev) {
+      startUrl = 'http://localhost:3000';
+    } else {
+      // In production, we need to handle both development and packaged scenarios
+      const buildPath = app.isPackaged 
+        ? path.join(process.resourcesPath, 'app', 'build', 'index.html')
+        : path.join(__dirname, '../build/index.html');
+      startUrl = `file://${buildPath}`;
+    }
     
     this.mainWindow.loadURL(startUrl);
 
@@ -273,10 +278,10 @@ class InfoScopeElectronApp {
                    "object-src 'none'; " +
                    "base-uri 'self';";
       } else {
-        // Stricter CSP for production
+        // Stricter CSP for production Electron (no payment processing)
         cspPolicy = "default-src 'self' data: https:; " +
-                   "script-src 'self' https://www.googletagmanager.com https://checkout.razorpay.com; " +
-                   "script-src-elem 'self' https://www.googletagmanager.com https://checkout.razorpay.com; " +
+                   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; " +
+                   "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com; " +
                    "connect-src 'self' https:; " +
                    "img-src 'self' data: https:; " +
                    "style-src 'self' 'unsafe-inline' https:; " +

@@ -85,6 +85,13 @@ class SubscriptionService {
   // Load Razorpay script
   async loadRazorpayScript() {
     return new Promise((resolve) => {
+      // Disable Razorpay in Electron desktop app
+      if (window.electronAPI) {
+        console.log('Razorpay disabled in desktop mode');
+        resolve(false);
+        return;
+      }
+      
       if (window.Razorpay) {
         resolve(true);
         return;

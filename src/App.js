@@ -150,33 +150,64 @@ function App() {
   }, [currentView, user]);
 
   useEffect(() => {
-    // Listen to Electron menu events
-    if (window.electronAPI && typeof window.electronAPI.onNewInvestigation === 'function') {
-      const newInvestigationHandler = () => {
-        setCurrentView('investigation');
-      };
+    // Listen to Electron menu events with retry mechanism
+    const setupElectronListeners = () => {
+      try {
+        if (window.electronAPI && typeof window.electronAPI.onNewInvestigation === 'function') {
+          const newInvestigationHandler = () => {
+            console.log('Electron: New investigation triggered');
+            setCurrentView('investigation');
+          };
 
-      const saveInvestigationHandler = () => {
-        // Trigger save in current component
-        // This would be handled by the active component
-      };
+          const saveInvestigationHandler = () => {
+            console.log('Electron: Save investigation triggered');
+            // Trigger save in current component
+            // This would be handled by the active component
+          };
 
-      window.electronAPI.onNewInvestigation(newInvestigationHandler);
-      
-      if (typeof window.electronAPI.onSaveInvestigation === 'function') {
-        window.electronAPI.onSaveInvestigation(saveInvestigationHandler);
+          window.electronAPI.onNewInvestigation(newInvestigationHandler);
+          
+          if (typeof window.electronAPI.onSaveInvestigation === 'function') {
+            window.electronAPI.onSaveInvestigation(saveInvestigationHandler);
+          }
+
+          console.log('Electron listeners set up successfully');
+
+          // Cleanup
+          return () => {
+            try {
+              if (typeof window.electronAPI.removeNewInvestigationListener === 'function') {
+                window.electronAPI.removeNewInvestigationListener(newInvestigationHandler);
+              }
+              if (typeof window.electronAPI.removeSaveInvestigationListener === 'function') {
+                window.electronAPI.removeSaveInvestigationListener(saveInvestigationHandler);
+              }
+            } catch (error) {
+              console.warn('Error cleaning up Electron listeners:', error);
+            }
+          };
+        }
+      } catch (error) {
+        console.warn('Error setting up Electron listeners:', error);
       }
+    };
 
-      // Cleanup
+    // Try immediately
+    const cleanup = setupElectronListeners();
+    
+    // If no electronAPI, try again after a short delay
+    if (!window.electronAPI) {
+      const timeout = setTimeout(() => {
+        setupElectronListeners();
+      }, 100);
+      
       return () => {
-        if (typeof window.electronAPI.removeNewInvestigationListener === 'function') {
-          window.electronAPI.removeNewInvestigationListener(newInvestigationHandler);
-        }
-        if (typeof window.electronAPI.removeSaveInvestigationListener === 'function') {
-          window.electronAPI.removeSaveInvestigationListener(saveInvestigationHandler);
-        }
+        clearTimeout(timeout);
+        if (cleanup) cleanup();
       };
     }
+    
+    return cleanup;
 
     // Handle PWA deep linking parameters
     if (window.infoscopeParams) {
