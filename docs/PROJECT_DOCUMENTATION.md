@@ -518,7 +518,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup,
          createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBXjt8YL7RjCnTkdP-a8rq0_QmEo9Q5TxE",
+  apiKey: "FIREBASE_KEY",
   authDomain: "infoscope-osint.firebaseapp.com",
   projectId: "infoscope-osint",
   // ... other config
