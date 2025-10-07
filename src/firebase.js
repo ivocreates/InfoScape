@@ -7,7 +7,7 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC7LfMgmB9Vo7tAw8D_z366zgqPB__oScs",
+  apiKey: "FIREBASE-KEY",
   authDomain: "infoscope-osint.firebaseapp.com",
   projectId: "infoscope-osint",
   storageBucket: "infoscope-osint.firebasestorage.app",
